@@ -119,7 +119,7 @@ See `SUBMISSION.md` for a requirement-by-requirement mapping to evidence.
 
 ## Demo video
 
-🎥 **Demo:** _<add your unlisted YouTube link here before submitting>_
+🎥 **Demo:** [_<add your unlisted YouTube link here before submitting>_](https://youtu.be/FG19aIasp4E?si=KK5oqtJb0WalE-Jh)
 
 ## Configuration
 
