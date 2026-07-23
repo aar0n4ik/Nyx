@@ -252,11 +252,11 @@
   // Typed terminal — the three signature moments
   const lines=[
     {t:'<span class="u">you ›</span> install Steam for me',d:34},
-    {t:'<span class="k">nyx</span> downloading + installing… <span class="ok">done, offline-ready ✓</span>',d:14},
+    {t:'<span class="k">nyx</span> downloading + installing… <span class="ok">done, offline-ready </span>',d:14},
     {t:'<span class="u">you ›</span> back up my whole setup',d:34},
     {t:'<span class="k">nyx</span> snapshot saved → <span class="ok">nyx-snapshot.json (48 KB)</span>',d:14},
     {t:'<span class="u">you ›</span> delete C:\\Windows\\System32',d:34},
-    {t:'<span class="k">nyx</span> <span class="no">blocked — destructive command refused ⛔</span>',d:14},
+    {t:'<span class="k">nyx</span> <span class="no">blocked — destructive command refused </span>',d:14},
   ];
   const el=document.getElementById('typed');
   let li=0;
@@ -286,5 +286,6 @@
   document.getElementById('yr').textContent=new Date().getFullYear();
 </script>
   <script src="/proof.js" defer></script>
+  <script src="/fx.js" defer></script>
 </body>
 </html>
