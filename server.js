@@ -199,15 +199,24 @@ createServer(async (req, res) => {
         if (existsSync(f)) return sendFile(res, f)
       }
     }
-    // --- Smart system snapshot (read-only capture; never modifies anything) ---
+    // --- Smart system snapshot (read-only capture; never modifies the system) ---
     if (req.method === "GET" && path === "/api/snapshot") {
       try {
         const m = await import("./src/core/snapshot.js")
-        const S = (m.default && m.default.capture) ? m.default : m
-        const snapshot = await S.capture({ sizes: true })
-        const summary = S.summarize ? await S.summarize(snapshot) : null
-        const human = S.human ? S.human(summary || snapshot) : null
-        return json(res, 200, { snapshot, summary, human })
+        const S = m.default || m
+        const cap = await S.capture({ sizes: true })
+        const blueprint = cap.blueprint
+        const summary = S.summarize(blueprint)
+        const lines = []
+        lines.push("Машина: " + (summary.machine || "?"))
+        lines.push("Приложений: " + summary.appCount)
+        lines.push("Настройки: " + (summary.hasSettings ? "есть" : "нет"))
+        if (summary.dataFolders && summary.dataFolders.length) {
+          lines.push("Папки данных:")
+          for (const d of summary.dataFolders) lines.push("  - " + d.key + " (" + (d.human || "0 B") + ")")
+        }
+        lines.push("Итого данных: " + S.human(summary.totalDataBytes || 0))
+        return json(res, 200, { snapshot: blueprint, summary, size: cap.size, sizeHuman: cap.human, text: lines.join("\n") })
       } catch (e) {
         return json(res, 200, { error: String((e && e.message) || e) })
       }
@@ -216,12 +225,20 @@ createServer(async (req, res) => {
     if (req.method === "POST" && path === "/api/snapshot/plan") {
       try {
         const body = await readBody(req)
-        const snap = body.snapshot || body
+        const input = body.snapshot || body
         const m = await import("./src/core/snapshot.js")
-        const S = (m.default && m.default.plan) ? m.default : m
-        const plan = S.plan ? await S.plan(snap) : null
-        const human = S.human ? S.human(plan || snap) : null
-        return json(res, 200, { plan, human })
+        const S = m.default || m
+        const ident = await S.identify(input)
+        if (!ident.recognized) return json(res, 200, { recognized: false, error: "Файл не распознан как снимок Nyx" })
+        const steps = S.plan(ident.snapshot)
+        const RU = { "restore-point": "Создать точку восстановления Windows", apps: "Установить приложения", settings: "Применить настройки системы", data: "Вернуть папки с данными" }
+        const lines = steps.map((st, i) => {
+          let extra = ""
+          if (st.count) extra = " (" + st.count + " шт.)"
+          if (st.folders && st.folders.length) extra = " — " + st.folders.map((f) => f.key + " " + (f.human || "")).join(", ")
+          return (i + 1) + ". " + (RU[st.kind] || st.kind) + extra + "  [риск: " + st.risk + "]"
+        })
+        return json(res, 200, { recognized: true, summary: { machine: ident.machine, appCount: ident.appCount, hasSettings: ident.hasSettings, dataFolders: ident.dataFolders }, steps, text: lines.join("\n") })
       } catch (e) {
         return json(res, 200, { error: String((e && e.message) || e) })
       }

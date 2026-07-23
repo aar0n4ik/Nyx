@@ -36,7 +36,7 @@
     out.textContent = "Сканирую систему…"; dl.style.display = "none";
     api("/api/snapshot").then(function (d) {
       if (!d || d.error || !d.snapshot) { out.textContent = "Не удалось собрать слепок" + (d && d.error ? (": " + d.error) : ""); return; }
-      out.textContent = d.human || JSON.stringify(d.summary || d.snapshot, null, 2);
+      out.textContent = d.text || JSON.stringify(d.summary || d.snapshot, null, 2);
       var blob = new Blob([JSON.stringify(d.snapshot, null, 2)], { type: "application/json" });
       dl.href = URL.createObjectURL(blob); dl.download = "nyx-system.nyx"; dl.style.display = "inline-flex";
     }).catch(function () { out.textContent = "Сервер не отвечает — запусти: node server.js"; });
@@ -51,7 +51,7 @@
       api("/api/snapshot/plan", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ snapshot: snap }) })
         .then(function (d) {
           if (!d || d.error) { out.textContent = "Ошибка: " + ((d && d.error) || "неизвестно"); return; }
-          out.textContent = d.human || JSON.stringify(d.plan || {}, null, 2);
+          out.textContent = d.text || JSON.stringify(d.steps || {}, null, 2);
         })
         .catch(function () { out.textContent = "Сервер не отвечает"; });
     };

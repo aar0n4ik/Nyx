@@ -78,7 +78,7 @@
       cout.textContent = "Сканирую систему…"; dl.style.display = "none";
       api("/api/snapshot").then(function (d) {
         if (!d || d.error || !d.snapshot) { cout.textContent = "Не удалось собрать слепок" + (d && d.error ? (": " + d.error) : ""); return; }
-        cout.textContent = d.human || JSON.stringify(d.summary || d.snapshot, null, 2);
+        cout.textContent = d.text || JSON.stringify(d.summary || d.snapshot, null, 2);
         var blob = new Blob([JSON.stringify(d.snapshot, null, 2)], { type: "application/json" });
         dl.href = URL.createObjectURL(blob); dl.download = "nyx-system.nyx"; dl.style.display = "inline-flex";
       }).catch(function () { cout.textContent = "Сервер не отвечает — запусти: node server.js"; });

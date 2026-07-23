@@ -80,7 +80,7 @@ function specsTable(specs, latency, lang) {
 	const t = L(lang)
 	const gpu = [].concat(specs.gpu || []).filter(Boolean).join(", ") || "—"
 	return [
-		`🖥️ **${t.title}**`,
+		`**${t.title}**`,
 		"",
 		`| ${t.comp} | ${t.val} |`,
 		"|---|---|",
@@ -165,6 +165,29 @@ export async function answer(query, { onToken, lang: forcedLang, history: convoH
 	// 0a) Tier 1 — Automated Fast-Path Router: routine/low-level ops bypass the LLM.
 	const fast = await fastPath(query, lang, guard, started)
 	if (fast) { onToken?.(fast.text); return fast }
+
+    // 0a2) Deterministic software operator: explicit install/uninstall of a known
+    // app ("скачай Стим", "установи Discord") -> ONE exact winget command. No model,
+    // no browser. Fires only on a catalog hit so it never hijacks other requests.
+    {
+      try {
+        const soft = await import("./agent/software.js")
+        const intent = soft.detectSoftwareIntent(query)
+        if (intent && (intent.op === "install" || intent.op === "uninstall") && soft.resolveFromCatalog(intent.appQuery) && !COMPLAINT_RE.test(query)) {
+          const cmd = soft.buildSoftwareCommand(intent)
+          if (cmd && cmd.script) {
+            const v = validateScript(cmd.script, { shell: cmd.shell, lang })
+            if (v.safe) {
+              const rw = RISK_WORD[lang] || RISK_WORD.en
+              const text = [PROPOSE_HEAD[lang] || PROPOSE_HEAD.en, "", cmd.explanation || "", "", "> " + cmd.script, "", rw + ": " + (cmd.risk || "?"), CONFIRM_HINT[lang] || CONFIRM_HINT.en].join("\n")
+              onToken?.(text)
+              recordInference({ model: "nyx-software", prompt: query, output: cmd.script })
+              return { text, lang, sources: [], injection: guard, mode: "action-proposal", proposal: { script: cmd.script, shell: cmd.shell, risk: cmd.risk, explanation: cmd.explanation, warnings: [] }, ms: Date.now() - started }
+            }
+          }
+        }
+      } catch {}
+    }
 
   // 0c) Universal operator: любой реальный запрос на действие с ПК идёт в
   // готовый pipeline generate -> validate -> execute -> self-correct. Без списков.
