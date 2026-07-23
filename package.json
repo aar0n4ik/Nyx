@@ -13,7 +13,12 @@
     "verify": "node verify.js",
     "demo": "bash scripts/demo.sh",
     "hwproof": "node scripts/hwproof.js",
-    "evidence": "node scripts/evidence.js"
+    "evidence": "node scripts/evidence.js",
+    "desktop": "electron .",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win",
+    "dist:mac": "electron-builder --mac",
+    "dist:linux": "electron-builder --linux"
   },
   "dependencies": {
     "@qvac/sdk": "^0.13.5",
@@ -21,5 +26,45 @@
   },
   "optionalDependencies": {
     "systeminformation": "^5.22.0"
+  },
+  "main": "electron/main.cjs",
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "app.nyx.desktop",
+    "productName": "Nyx",
+    "asar": false,
+    "compression": "maximum",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Nyx"
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.productivity"
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Utility"
+    }
   }
 }
