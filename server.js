@@ -135,7 +135,9 @@ createServer(async (req, res) => {
 		if (req.method === "POST" && path === "/api/agent/exec") {
 			const { script, shell, confirm } = await readBody(req)
 			if (!script) return json(res, 400, { error: "script обязателен" })
-			return json(res, 200, await runScript(script, { shell, confirm: !!confirm }))
+			const execResult = await runScript(script, { shell, confirm: !!confirm })
+      if (execResult && execResult.executed && execResult.code === 0) import("./src/core/metrics.js").then((mm) => mm.track && mm.track("task_done")).catch(() => {})
+      return json(res, 200, execResult)
 		}
 		if (req.method === "GET" && path === "/api/agent/cache") {
 			return json(res, 200, solutionCache.stats())
