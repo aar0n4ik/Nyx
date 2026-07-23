@@ -212,6 +212,20 @@ createServer(async (req, res) => {
         return json(res, 200, { error: String((e && e.message) || e) })
       }
     }
+    // --- Snapshot restore PLAN from an uploaded .nyx (dry-run; never executes) ---
+    if (req.method === "POST" && path === "/api/snapshot/plan") {
+      try {
+        const body = await readBody(req)
+        const snap = body.snapshot || body
+        const m = await import("./src/core/snapshot.js")
+        const S = (m.default && m.default.plan) ? m.default : m
+        const plan = S.plan ? await S.plan(snap) : null
+        const human = S.human ? S.human(plan || snap) : null
+        return json(res, 200, { plan, human })
+      } catch (e) {
+        return json(res, 200, { error: String((e && e.message) || e) })
+      }
+    }
     json(res, 404, { error: "not found" })
 	} catch (e) {
 		json(res, 500, { error: String(e?.message || e) })
