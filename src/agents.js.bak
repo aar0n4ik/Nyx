@@ -210,8 +210,7 @@ export async function answer(query, { onToken, lang: forcedLang, history: convoH
 	// MODEL authors the command (the playbook only GROUNDS it) so Nyx never
 	// returns a canned template; offline, the proven playbook is the safe path.
 	const provider = await pickProvider()
-	try { import("./core/metrics.js").then((m) => m.track("query")).catch(() => {}) } catch {}
-  const hasModel = provider.name !== "fallback"
+	const hasModel = provider.name !== "fallback"
 
   // Nyx Brain — единый разум: одно рассуждение решает chat / действие / снимок.
   // Мгновенные fast-path (приветствие, характеристики, пинг) и живой рынок отработали выше.

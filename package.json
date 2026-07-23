@@ -16,7 +16,8 @@
     "evidence": "node scripts/evidence.js"
   },
   "dependencies": {
-    "@qvac/sdk": "^0.13.5"
+    "@qvac/sdk": "^0.13.5",
+    "zod": "^4.4.3"
   },
   "optionalDependencies": {
     "systeminformation": "^5.22.0"

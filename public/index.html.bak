@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nyx — private, verifiable, on-device AI on Tether QVAC</title>
+<style>
+/*
+ * _base.css — Global design tokens, element defaults, page shell, and tiny utilities.
+ * ALWAYS included in every page.
+ *
+ * Provides:
+ *   :root variables (light + dark), box-sizing, html/body,
+ *   element defaults (button, input, select, textarea, label, fieldset, legend,
+ *   a, hr, img, h1-h4, p, ul/ol/li, blockquote, table/th/td, details/summary,
+ *   pre/code), main / .notion-shell, utility classes, .notion-footer,
+ *   reduced-motion and responsive breakpoints for base elements.
+ */
+
+:root {
+	color-scheme: light dark;
+	--notion-bg: #ffffff;
+	--notion-bg-soft: #f9f9f8;
+	--notion-surface: #ffffff;
+	--notion-surface-hover: #f6f5f4;
+	--notion-text: #191918;
+	--notion-text-soft: rgba(0, 0, 0, 0.54);
+	--notion-text-faint: rgba(0, 0, 0, 0.3);
+	--notion-border: rgba(0, 0, 0, 0.1);
+	--notion-border-soft: rgba(0, 0, 0, 0.05);
+	--notion-shadow:
+		0px 0.7px 1.462px rgba(0, 0, 0, 0.015), 0px 3px 9px rgba(0, 0, 0, 0.03);
+	--notion-blue: #2783de;
+	--notion-orange: #d5803b;
+	--notion-red: #e56458;
+	--notion-blue-bg: #f3f9fd;
+	--notion-yellow-bg: #fcfaef;
+	--notion-orange-bg: #fcf7f4;
+	--notion-green-bg: #f6f9f7;
+	--notion-red-bg: #fdf6f6;
+	--notion-gray-bg: #f9f8f7;
+	--notion-radius: 8px;
+	--notion-page-width: 900px;
+	--notion-chart-1: #5e9fe8;
+	--notion-chart-2: #eac26b;
+	--notion-chart-3: #72bc8f;
+	--notion-chart-4: #bf8eda;
+	--notion-chart-5: #de9255;
+	--notion-chart-6: #df84a8;
+	--notion-chart-7: #4fb9c9;
+	--notion-chart-8: #e97366;
+	--diff-add: #47c1b6;
+	--diff-del: #f07070;
+	--pr-approved: #2b8a3e;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--notion-bg: #000000;
+		--notion-bg-soft: #191918;
+		--notion-surface: #191918;
+		--notion-surface-hover: #31302e;
+		--notion-text: #ffffff;
+		--notion-text-soft: rgba(255, 255, 255, 0.5);
+		--notion-text-faint: rgba(255, 255, 255, 0.3);
+		--notion-border: rgba(255, 255, 255, 0.2);
+		--notion-border-soft: rgba(255, 255, 255, 0.1);
+		--notion-shadow:
+			0px 0.7px 1.462px rgba(0, 0, 0, 0.06), 0px 3px 9px rgba(0, 0, 0, 0.12);
+		--notion-blue: #5e9fe8;
+		--notion-orange: #de9255;
+		--notion-red: #e97366;
+		--notion-blue-bg: rgba(41, 139, 253, 0.061);
+		--notion-yellow-bg: rgba(203, 145, 47, 0.08);
+		--notion-orange-bg: rgba(246, 126, 35, 0.08);
+		--notion-green-bg: rgba(42, 157, 118, 0.08);
+		--notion-red-bg: rgba(246, 73, 50, 0.08);
+		--notion-gray-bg: #31302e;
+		--diff-add: #5dd8cb;
+		--diff-del: #ff8a80;
+		--pr-approved: #69db7c;
+	}
+}
+
+* {
+	box-sizing: border-box;
+}
+html {
+	scroll-behavior: smooth;
+}
+body {
+	margin: 0;
+	background: var(--notion-bg);
+	color: var(--notion-text);
+	font-family:
+		ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica,
+		"Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+	font-size: 16px;
+	line-height: 1.5;
+	transition:
+		background 180ms ease,
+		color 180ms ease;
+}
+
+/* -- Base element defaults -------------------------------- */
+button,
+[type="button"],
+[type="submit"],
+[type="reset"] {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 8px 16px;
+	font: inherit;
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 1.2;
+	color: #ffffff;
+	background: var(--notion-blue);
+	border: 1px solid transparent;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: background 150ms;
+	white-space: nowrap;
+}
+button:hover,
+[type="button"]:hover,
+[type="submit"]:hover,
+[type="reset"]:hover {
+	background: color-mix(in srgb, var(--notion-blue) 82%, black);
+}
+button:focus-visible,
+[type="button"]:focus-visible,
+[type="submit"]:focus-visible,
+[type="reset"]:focus-visible {
+	outline: 2px solid var(--notion-blue);
+	outline-offset: 2px;
+}
+
+input,
+select,
+textarea {
+	font: inherit;
+	font-size: 14px;
+	line-height: 1.4;
+	color: var(--notion-text);
+	background: var(--notion-surface);
+	border: 1px solid var(--notion-border);
+	border-radius: 8px;
+	padding: 8px 12px;
+	transition: border-color 150ms;
+}
+input:focus,
+select:focus,
+textarea:focus {
+	outline: none;
+	border-color: var(--notion-blue);
+	box-shadow: 0 0 0 2px rgba(9, 127, 232, 0.15);
+}
+input::placeholder,
+textarea::placeholder {
+	color: var(--notion-text-faint);
+}
+select {
+	appearance: none;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' fill='none' stroke='%23999' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 10px center;
+	padding-right: 30px;
+}
+textarea {
+	resize: vertical;
+	min-height: 80px;
+}
+input[type="range"] {
+	border: none;
+	padding: 0;
+	background: transparent;
+	accent-color: var(--notion-blue);
+	height: 18px;
+	cursor: pointer;
+	box-shadow: none;
+}
+input[type="range"]:focus {
+	box-shadow: none;
+}
+input[type="checkbox"],
+input[type="radio"] {
+	width: 16px;
+	height: 16px;
+	accent-color: var(--notion-blue);
+	border: 1px solid var(--notion-border);
+	padding: 0;
+	cursor: pointer;
+}
+label {
+	display: block;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--notion-text);
+	margin-bottom: 6px;
+}
+fieldset {
+	border: 1px solid var(--notion-border-soft);
+	border-radius: 10px;
+	padding: 16px;
+	margin: 0;
+}
+legend {
+	font-weight: 600;
+	padding: 0 4px;
+}
+
+a {
+	color: var(--notion-text);
+	text-decoration: underline;
+	text-underline-offset: 2px;
+	text-decoration-color: var(--notion-border);
+}
+a:hover {
+	text-decoration-color: var(--notion-text);
+}
+
+hr {
+	height: 1px;
+	margin: 34px 0;
+	border: none;
+	background: var(--notion-border-soft);
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+	border-radius: 8px;
+}
+
+h1,
+h2,
+h3,
+h4 {
+	text-wrap: balance;
+}
+h1 {
+	margin: 0 0 14px;
+	font-size: clamp(42px, 7vw, 72px);
+	line-height: 1.1;
+	letter-spacing: -0.035em;
+	font-weight: 700;
+}
+h2 {
+	margin: 44px 0 10px;
+	font-size: 32px;
+	line-height: 1.25;
+	letter-spacing: -0.025em;
+}
+h3 {
+	margin: 0 0 6px;
+	font-size: 18px;
+	line-height: 1.556;
+	letter-spacing: -0.007em;
+}
+p {
+	margin: 0 0 10px;
+}
+
+ul,
+ol {
+	margin: 8px 0 16px;
+	padding-left: 24px;
+}
+li {
+	margin-bottom: 4px;
+}
+li::marker {
+	color: var(--notion-text-faint);
+}
+
+blockquote {
+	border-left: 3px solid var(--notion-text);
+	padding: 4px 0 4px 16px;
+	margin: 24px 0;
+}
+blockquote p {
+	font-size: 18px;
+	line-height: 1.5;
+	margin: 0;
+}
+
+table {
+	width: 100%;
+	margin: 14px 0;
+	border-collapse: separate;
+	border-spacing: 0;
+	border: 1px solid var(--notion-border-soft);
+	border-radius: 10px;
+	overflow: hidden;
+	background: var(--notion-surface);
+	font-size: 14px;
+}
+th,
+td {
+	padding: 12px 14px;
+	vertical-align: top;
+	text-align: left;
+	border-right: 1px solid var(--notion-border-soft);
+	border-bottom: 1px solid var(--notion-border-soft);
+}
+th:last-child,
+td:last-child {
+	border-right: 0;
+}
+tr:last-child td {
+	border-bottom: 0;
+}
+th {
+	background: var(--notion-bg-soft);
+	color: var(--notion-text-soft);
+	font-weight: 600;
+}
+
+details {
+	margin: 16px 0;
+	border-radius: var(--notion-radius);
+}
+summary {
+	padding: 8px 10px;
+	border-radius: var(--notion-radius);
+	cursor: pointer;
+	font-weight: 600;
+}
+summary:hover {
+	background: var(--notion-surface-hover);
+}
+details p {
+	margin: 8px 10px 0 28px;
+	color: var(--notion-text-soft);
+}
+
+pre,
+code {
+	font-family: ui-monospace, "iA Writer Mono", Nitti, Menlo, Courier, monospace;
+}
+pre {
+	margin: 16px 0;
+	padding: 14px 16px;
+	overflow-x: auto;
+	border: 1px solid var(--notion-border-soft);
+	border-radius: 10px;
+	background: var(--notion-gray-bg);
+	font-size: 13px;
+	line-height: 1.55;
+}
+code {
+	font-size: 0.9em;
+	padding: 2px 5px;
+	border-radius: 4px;
+	background: var(--notion-gray-bg);
+}
+pre code {
+	font-size: inherit;
+	padding: 0;
+	border-radius: 0;
+	background: none;
+}
+
+main {
+	max-width: var(--notion-page-width);
+	margin: 0 auto;
+	padding: 76px 24px 88px;
+}
+
+section {
+	margin-top: 44px;
+}
+section:first-child {
+	margin-top: 0;
+}
+
+/* -- Page shell ------------------------------------------- */
+.notion-shell {
+	max-width: var(--notion-page-width);
+	margin: 0 auto;
+	padding: 76px 24px 88px;
+}
+
+/* -- Tiny utilities --------------------------------------- */
+.notion-lede {
+	max-width: 720px;
+	margin: 0 0 24px;
+	color: var(--notion-text-soft);
+	font-size: 20px;
+}
+.notion-muted {
+	color: var(--notion-text-soft);
+}
+.notion-faint {
+	color: var(--notion-text-faint);
+}
+.notion-divider {
+	height: 1px;
+	margin: 34px 0;
+	background: var(--notion-border-soft);
+}
+.notion-eyebrow {
+	display: inline-block;
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.0078125rem;
+	text-transform: uppercase;
+	color: var(--notion-blue);
+}
+
+/* -- Footer ----------------------------------------------- */
+.notion-footer {
+	margin-top: 52px;
+	padding-top: 18px;
+	border-top: 1px solid var(--notion-border-soft);
+	color: var(--notion-text-faint);
+	font-size: 13px;
+}
+
+/* -- Accessibility & motion ------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}
+
+/* -- Responsive: 560px (base elements) -------------------- */
+@media (max-width: 560px) {
+	main,
+	.notion-shell {
+		padding-inline: 16px;
+	}
+	table {
+		display: block;
+		overflow-x: auto;
+	}
+}
+/*
+ * hero — Full-width hero section with title, subtitle, and optional eyebrow.
+ *
+ * HTML:
+ * <section class="notion-hero">
+ *   <span class="notion-eyebrow">Category</span>
+ *   <h1>Page Title</h1>
+ *   <p>A brief description that supports the title with additional context.</p>
+ *   <div class="notion-button-group">
+ *     <a class="notion-button" data-variant="primary" href="#">Get started</a>
+ *     <a class="notion-button" data-variant="secondary" href="#">Learn more</a>
+ *   </div>
+ * </section>
+ */
+
+.notion-hero {
+	padding: 48px 0 40px;
+	max-width: var(--notion-page-width);
+}
+.notion-hero h1 {
+	font-size: clamp(42px, 7vw, 72px);
+	font-weight: 700;
+	letter-spacing: -0.04em;
+	line-height: 1.05;
+	margin: 0;
+	text-wrap: balance;
+}
+.notion-hero p {
+	font-size: 20px;
+	line-height: 1.5;
+	color: var(--notion-text-soft);
+	margin: 16px 0 0;
+	max-width: 640px;
+}
+.notion-hero .notion-eyebrow {
+	margin-bottom: 12px;
+}
+
+/* -- Responsive: 820px ------------------------------------ */
+@media (max-width: 820px) {
+	.notion-hero {
+		padding: 32px 0 24px;
+	}
+	.notion-hero h1 {
+		font-size: clamp(32px, 8vw, 48px);
+	}
+}
+/*
+ * callout — Highlighted info box with icon and text.
+ * Options: data-tone="blue" | "green" | "orange" | "red" (default: yellow)
+ *
+ * HTML:
+ * <div class="notion-callout" data-tone="blue">
+ *   <div>💡</div>
+ *   <div><strong>Note</strong><p>Helpful context.</p></div>
+ * </div>
+ */
+
+.notion-callout {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 14px;
+	margin: 18px 0;
+	padding: 16px 18px;
+	border-radius: var(--notion-radius);
+	background: var(--notion-yellow-bg);
+	box-shadow: inset 0 0 0 1px var(--notion-border-soft);
+}
+.notion-callout[data-tone="blue"] {
+	background: var(--notion-blue-bg);
+}
+.notion-callout[data-tone="green"] {
+	background: var(--notion-green-bg);
+}
+.notion-callout[data-tone="orange"] {
+	background: var(--notion-orange-bg);
+}
+.notion-callout[data-tone="red"] {
+	background: var(--notion-red-bg);
+}
+.notion-callout strong {
+	display: block;
+	margin-bottom: 3px;
+}
+.notion-callout p {
+	margin: 0;
+	color: var(--notion-text-soft);
+}
+/*
+ * card-grid — Grid of clickable cards with icon, title, and description.
+ *
+ * HTML:
+ * <section class="notion-card-grid">
+ *   <article class="notion-card">
+ *     <div class="notion-card-icon">%</div>
+ *     <h3>Card</h3>
+ *     <p>Card text.</p>
+ *   </article>
+ * </section>
+ */
+
+.notion-card-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 12px;
+	margin: 20px 0 6px;
+}
+.notion-card {
+	padding: 16px;
+	border: 1px solid var(--notion-border-soft);
+	border-radius: 10px;
+	background: var(--notion-surface);
+	box-shadow: var(--notion-shadow);
+	transition:
+		transform 140ms ease,
+		background 140ms ease,
+		border-color 140ms ease;
+}
+.notion-card:hover {
+	transform: translateY(-1px);
+	background: var(--notion-surface-hover);
+	border-color: var(--notion-border);
+}
+.notion-card-icon {
+	width: 34px;
+	height: 34px;
+	display: grid;
+	place-items: center;
+	margin-bottom: 12px;
+	border-radius: 8px;
+	background: var(--notion-gray-bg);
+	font-size: 20px;
+}
+.notion-card p {
+	color: var(--notion-text-soft);
+}
+
+/* -- Responsive: 820px ------------------------------------ */
+@media (max-width: 820px) {
+	.notion-card-grid {
+		grid-template-columns: 1fr;
+	}
+}
+/*
+ * stat-grid — Grid of stat cards with label, big number, caption, and trend.
+ *
+ * HTML:
+ * <section class="notion-stat-grid">
+ *   <div class="notion-stat">
+ *     <p class="notion-stat-label">Metric</p>
+ *     <p class="notion-stat-value">42%</p>
+ *     <p class="notion-stat-caption">Short explanation.</p>
+ *     <span class="notion-stat-trend">&#x2197; trend</span>
+ *   </div>
+ * </section>
+ */
+
+.notion-stat-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 12px;
+	margin: 20px 0 6px;
+}
+.notion-stat {
+	padding: 16px;
+	border: 1px solid var(--notion-border-soft);
+	border-radius: 10px;
+	background: var(--notion-surface);
+	box-shadow: var(--notion-shadow);
+}
+.notion-stat-label {
+	margin: 0 0 6px;
+	color: var(--notion-text-soft);
+	font-size: 13px;
+	font-weight: 600;
+}
+.notion-stat-value {
+	margin: 0;
+	font-size: 32px;
+	line-height: 1.05;
+	letter-spacing: -0.04em;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+}
+.notion-stat-caption {
+	margin: 8px 0 0;
+	color: var(--notion-text-soft);
+	font-size: 13px;
+}
+.notion-stat-trend {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	margin-top: 10px;
+	padding: 3px 7px;
+	border-radius: 999px;
+	background: var(--notion-blue-bg);
+	color: var(--notion-blue);
+	font-size: 12px;
+	font-weight: 650;
+}
+
+/* -- Responsive: 1080px ----------------------------------- */
+@media (max-width: 1080px) {
+	.notion-stat-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+/* -- Responsive: 820px ------------------------------------ */
+@media (max-width: 820px) {
+	.notion-stat-grid {
+		grid-template-columns: 1fr;
+	}
+}
+/*
+ * timeline — Vertical list of phase/date entries.
+ *
+ * HTML:
+ * <div class="notion-timeline">
+ *   <div class="notion-timeline-item">
+ *     <strong>Phase</strong>
+ *     <p>What happens.</p>
+ *   </div>
+ * </div>
+ */
+
+.notion-timeline {
+	display: grid;
+	gap: 8px;
+	margin-top: 14px;
+}
+.notion-timeline-item {
+	display: grid;
+	grid-template-columns: 170px 1fr;
+	gap: 16px;
+	padding: 12px 14px;
+	border-radius: var(--notion-radius);
+	background: transparent;
+}
+.notion-timeline-item:hover {
+	background: var(--notion-surface-hover);
+}
+.notion-timeline-item strong {
+	color: var(--notion-blue);
+}
+.notion-timeline-item p {
+	color: var(--notion-text-soft);
+}
+
+/* -- Responsive: 820px ------------------------------------ */
+@media (max-width: 820px) {
+	.notion-timeline-item {
+		grid-template-columns: 1fr;
+		gap: 4px;
+	}
+}
+/*
+ * button — Styled link/button with variant and size options.
+ * Options: data-variant="primary"|"secondary"|"tertiary"
+ *          data-size="small"|"large"
+ *
+ * HTML:
+ * <a class="notion-button" data-variant="primary" href="#">Primary</a>
+ */
+
+.notion-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 8px 16px;
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 1.2;
+	border-radius: 8px;
+	border: 1px solid transparent;
+	cursor: pointer;
+	transition:
+		background 150ms,
+		box-shadow 150ms,
+		border-color 150ms;
+	text-decoration: none;
+	font-family: inherit;
+	white-space: nowrap;
+}
+.notion-button:focus-visible {
+	outline: 2px solid var(--notion-blue);
+	outline-offset: 2px;
+}
+/* Primary */
+.notion-button[data-variant="primary"],
+.notion-button:not([data-variant]) {
+	background: var(--notion-blue);
+	color: #ffffff;
+	border-color: transparent;
+}
+.notion-button[data-variant="primary"]:hover,
+.notion-button:not([data-variant]):hover {
+	background: color-mix(in srgb, var(--notion-blue) 82%, black);
+}
+/* Secondary */
+.notion-button[data-variant="secondary"] {
+	background: var(--notion-blue-bg);
+	color: var(--notion-blue);
+	border-color: transparent;
+}
+.notion-button[data-variant="secondary"]:hover {
+	background: color-mix(in srgb, var(--notion-blue-bg) 70%, var(--notion-blue));
+}
+/* Tertiary */
+.notion-button[data-variant="tertiary"] {
+	background: transparent;
+	color: var(--notion-text);
+	border-color: transparent;
+}
+.notion-button[data-variant="tertiary"]:hover {
+	background: var(--notion-surface-hover);
+}
+/* Small modifier */
+.notion-button[data-size="small"] {
+	padding: 4px 12px;
+	font-size: 12px;
+}
+/* Large modifier */
+.notion-button[data-size="large"] {
+	padding: 12px 24px;
+	font-size: 16px;
+}
+.notion-button-group {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 24px;
+}
+
+/* -- Responsive: 820px ------------------------------------ */
+@media (max-width: 820px) {
+	.notion-button-group {
+		flex-direction: column;
+	}
+	.notion-button-group .notion-button {
+		width: 100%;
+	}
+}
+/*
+ * list — Numbered list with index badges and descriptions.
+ *
+ * HTML:
+ * <div class="notion-list">
+ *   <div class="notion-list-item">
+ *     <div class="notion-index">1</div>
+ *     <div>
+ *       <h3>Item</h3>
+ *       <p>Item details.</p>
+ *     </div>
+ *   </div>
+ * </div>
+ */
+
+.notion-list {
+	display: grid;
+	gap: 8px;
+	margin-top: 14px;
+}
+.notion-list-item {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 12px;
+	padding: 12px 14px;
+	border-radius: var(--notion-radius);
+	background: transparent;
+	transition: background 120ms ease;
+}
+.notion-list-item:hover {
+	background: var(--notion-surface-hover);
+}
+.notion-index {
+	width: 28px;
+	height: 28px;
+	display: grid;
+	place-items: center;
+	border-radius: 6px;
+	background: var(--notion-blue-bg);
+	color: var(--notion-blue);
+	font-weight: 700;
+	font-size: 14px;
+}
+.notion-list-item p {
+	color: var(--notion-text-soft);
+}
+/*
+ * checklist — To-do style list with check icons.
+ *
+ * HTML:
+ * <ul class="notion-checklist">
+ *   <li>
+ *     <span class="notion-check">&#x2713;</span>
+ *     <span>Compare offers using the same loan amount, term, and points.</span>
+ *   </li>
+ * </ul>
+ */
+
+.notion-checklist {
+	display: grid;
+	gap: 8px;
+	margin-top: 14px;
+	padding: 0;
+	list-style: none;
+}
+.notion-checklist li {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 10px;
+	align-items: start;
+	padding: 9px 10px;
+	border-radius: var(--notion-radius);
+}
+.notion-checklist li:hover {
+	background: var(--notion-surface-hover);
+}
+.notion-checklist > div {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 10px;
+	align-items: start;
+	padding: 9px 10px;
+	border-radius: var(--notion-radius);
+}
+.notion-checklist > div:hover {
+	background: var(--notion-surface-hover);
+}
+.notion-check {
+	width: 18px;
+	height: 18px;
+	display: grid;
+	place-items: center;
+	margin-top: 2px;
+	border-radius: 5px;
+	background: var(--notion-blue-bg);
+	color: var(--notion-blue);
+	font-size: 12px;
+	font-weight: 700;
+}
+/* Nyx — supplemental theme on top of Notion _base.css (white theme) */
+:root{
+  --nyx-blue:#2783de; --nyx-ink:#1d1d1f; --nyx-muted:#6b7280;
+  --nyx-line:#ececec; --nyx-bg:#ffffff; --nyx-soft:#f7f8fa;
+  --nyx-green:#15a06b; --nyx-radius:16px; --nyx-shadow:0 6px 24px rgba(20,30,55,.08);
+  --nyx-grad:linear-gradient(135deg,#eaf3fe 0%,#f7faff 40%,#ffffff 100%);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--nyx-bg);color:var(--nyx-ink);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Roboto,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;line-height:1.6}
+a{color:var(--nyx-blue);text-decoration:none}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+.anchor{scroll-margin-top:84px;display:block}
+
+/* NАВ */
+.site-nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.82);
+  backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--nyx-line)}
+.nav-in{max-width:1080px;margin:0 auto;display:flex;align-items:center;gap:18px;
+  padding:12px 20px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:18px;letter-spacing:-.02em}
+.brand .dot{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;
+  background:var(--nyx-blue);color:#fff;font-size:15px}
+.nav-links{display:flex;gap:6px;margin-left:8px}
+.nav-links a{color:#374151;font-weight:550;font-size:14.5px;padding:8px 12px;border-radius:9px}
+.nav-links a:hover{background:var(--nyx-soft);color:var(--nyx-ink)}
+.nav-cta{margin-left:auto;display:flex;align-items:center;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:11px;padding:10px 16px;
+  font-weight:650;font-size:14.5px;border:1px solid transparent;cursor:pointer;transition:.15s}
+.btn-primary{background:var(--nyx-blue);color:#fff}
+.btn-primary:hover{background:#1f6dc0;transform:translateY(-1px)}
+.btn-ghost{background:#fff;border-color:var(--nyx-line);color:var(--nyx-ink)}
+.btn-ghost:hover{background:var(--nyx-soft)}
+.nav-burger{display:none;margin-left:auto;background:none;border:0;font-size:24px;cursor:pointer}
+
+/* HERO */
+.hero-wrap{background:var(--nyx-grad);border-bottom:1px solid var(--nyx-line);overflow:hidden}
+.hero{max-width:1080px;margin:0 auto;padding:74px 20px 64px;text-align:center}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--nyx-line);
+  color:#2c3a4f;border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600;box-shadow:var(--nyx-shadow)}
+.hero h1{font-size:clamp(34px,6vw,62px);line-height:1.04;letter-spacing:-.03em;margin:22px auto 14px;max-width:14ch;font-weight:820}
+.hero h1 .accent{background:linear-gradient(90deg,#2783de,#15a06b);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.lede{font-size:clamp(16px,2.2vw,20px);color:var(--nyx-muted);max-width:62ch;margin:0 auto 26px}
+.hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.pill-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:30px}
+.pill{background:#fff;border:1px solid var(--nyx-line);border-radius:999px;padding:8px 15px;
+  font-size:13.5px;font-weight:600;color:#33425a;box-shadow:var(--nyx-shadow)}
+.pill b{color:var(--nyx-blue)}
+
+/* SECTIONS */
+section{padding:64px 0}
+section.alt{background:var(--nyx-soft);border-top:1px solid var(--nyx-line);border-bottom:1px solid var(--nyx-line)}
+.section-head{text-align:center;max-width:64ch;margin:0 auto 40px}
+.section-head .kicker{color:var(--nyx-blue);font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+.section-head h2{font-size:clamp(26px,4vw,40px);letter-spacing:-.02em;margin:10px 0 12px;font-weight:780}
+.section-head p{color:var(--nyx-muted);font-size:17px;margin:0}
+
+/* STAT STRIP */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.stat{background:#fff;border:1px solid var(--nyx-line);border-radius:var(--nyx-radius);padding:22px;text-align:center;box-shadow:var(--nyx-shadow)}
+.stat .num{font-size:30px;font-weight:820;letter-spacing:-.02em;color:var(--nyx-ink)}
+.stat .lab{color:var(--nyx-muted);font-size:13.5px;margin-top:4px}
+
+/* CARD GRID */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{background:#fff;border:1px solid var(--nyx-line);border-radius:var(--nyx-radius);padding:24px;
+  box-shadow:var(--nyx-shadow);transition:.18s}
+.card:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(20,30,55,.12);border-color:#dbe6f5}
+.card .ico{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:22px;
+  background:#eaf3fe;margin-bottom:14px}
+.card h3{margin:0 0 6px;font-size:18px;font-weight:720;letter-spacing:-.01em}
+.card p{margin:0;color:var(--nyx-muted);font-size:14.5px}
+.cards.two{grid-template-columns:repeat(2,1fr)}
+
+/* CHAT */
+.demo-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:26px;align-items:start}
+.chat{background:#fff;border:1px solid var(--nyx-line);border-radius:20px;overflow:hidden;box-shadow:0 18px 48px rgba(20,30,55,.12)}
+.chat-bar{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid var(--nyx-line);background:linear-gradient(180deg,#fff,#fbfcfe)}
+.chat-bar .live{width:9px;height:9px;border-radius:50%;background:var(--nyx-green);box-shadow:0 0 0 4px rgba(21,160,107,.15)}
+.chat-bar b{font-size:14.5px}
+.chat-bar .sub{font-size:12px;color:var(--nyx-muted)}
+.lang-pick{margin-left:auto;display:flex;gap:4px;background:var(--nyx-soft);padding:4px;border-radius:10px}
+.lang-pick button{border:0;background:none;font-size:12.5px;font-weight:650;color:#6b7280;padding:5px 9px;border-radius:7px;cursor:pointer}
+.lang-pick button.on{background:#fff;color:var(--nyx-blue);box-shadow:var(--nyx-shadow)}
+.chat-log{height:360px;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px;background:#fcfcfd}
+.msg{max-width:84%;padding:11px 15px;border-radius:16px;font-size:14.5px;line-height:1.5;white-space:pre-wrap;word-wrap:break-word}
+.msg.bot{align-self:flex-start;background:#fff;border:1px solid var(--nyx-line);border-bottom-left-radius:5px}
+.msg.you{align-self:flex-end;background:var(--nyx-blue);color:#fff;border-bottom-right-radius:5px}
+.msg .src{display:block;margin-top:7px;font-size:11.5px;color:var(--nyx-muted)}
+.msg.you .src{color:#dbe9fb}
+.typing{align-self:flex-start;display:flex;gap:4px;padding:13px 16px;background:#fff;border:1px solid var(--nyx-line);border-radius:16px}
+.typing span{width:7px;height:7px;border-radius:50%;background:#c3ccd8;animation:bb 1.2s infinite}
+.typing span:nth-child(2){animation-delay:.18s}.typing span:nth-child(3){animation-delay:.36s}
+@keyframes bb{0%,60%,100%{opacity:.35;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+.chat-form{display:flex;gap:9px;padding:13px;border-top:1px solid var(--nyx-line);background:#fff}
+.chat-form input{flex:1;border:1px solid var(--nyx-line);border-radius:12px;padding:12px 14px;font-size:14.5px;outline:none}
+.chat-form input:focus{border-color:var(--nyx-blue);box-shadow:0 0 0 3px rgba(39,131,222,.12)}
+.chat-form button{border:0;background:var(--nyx-blue);color:#fff;border-radius:12px;padding:0 18px;font-weight:700;cursor:pointer}
+.chips{display:flex;gap:8px;flex-wrap:wrap;padding:0 13px 13px;background:#fff}
+.chip{font-size:12.5px;border:1px solid var(--nyx-line);background:var(--nyx-soft);border-radius:999px;padding:6px 12px;cursor:pointer;color:#374151}
+.chip:hover{border-color:var(--nyx-blue);color:var(--nyx-blue)}
+.demo-side .card{margin-bottom:14px}
+.demo-side .card p{font-size:14px}
+.meter{height:8px;background:var(--nyx-soft);border-radius:6px;overflow:hidden;margin-top:10px}
+.meter i{display:block;height:100%;background:linear-gradient(90deg,#2783de,#15a06b);width:100%}
+
+/* TIMELINE */
+.tl{max-width:760px;margin:0 auto;position:relative;padding-left:28px}
+.tl:before{content:"";position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--nyx-line)}
+.tl-item{position:relative;padding:0 0 26px 14px}
+.tl-item:before{content:"";position:absolute;left:-26px;top:4px;width:14px;height:14px;border-radius:50%;
+  background:#fff;border:3px solid var(--nyx-blue)}
+.tl-item.done:before{background:var(--nyx-green);border-color:var(--nyx-green)}
+.tl-item h4{margin:0 0 3px;font-size:16.5px;font-weight:720}
+.tl-item .when{font-size:12.5px;font-weight:700;color:var(--nyx-blue);text-transform:uppercase;letter-spacing:.05em}
+.tl-item p{margin:4px 0 0;color:var(--nyx-muted);font-size:14.5px}
+
+/* CHECKLIST */
+.checks{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:840px;margin:0 auto}
+.check{display:flex;gap:11px;background:#fff;border:1px solid var(--nyx-line);border-radius:12px;padding:14px 16px;box-shadow:var(--nyx-shadow)}
+.check .tick{color:var(--nyx-green);font-weight:800}
+.check b{font-size:14.5px}.check p{margin:2px 0 0;color:var(--nyx-muted);font-size:13px}
+
+/* SPONSORS */
+.logos{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.logo{background:#fff;border:1px solid var(--nyx-line);border-radius:var(--nyx-radius);padding:22px;text-align:center;box-shadow:var(--nyx-shadow);transition:.15s}
+.logo:hover{transform:translateY(-2px)}
+.logo .em{font-size:26px}
+.logo b{display:block;margin-top:8px;font-size:15.5px}
+.logo span{display:block;color:var(--nyx-muted);font-size:12.5px;margin-top:2px}
+.note{max-width:760px;margin:22px auto 0;background:#fffbe9;border:1px solid #f3e6b3;border-radius:12px;padding:14px 18px;font-size:13.5px;color:#7a6a2f}
+
+/* ABOUT */
+.about{display:grid;grid-template-columns:.8fr 1.2fr;gap:26px;align-items:center}
+.about .avatar{width:96px;height:96px;border-radius:24px;background:linear-gradient(135deg,#2783de,#15a06b);display:grid;place-items:center;color:#fff;font-size:40px;font-weight:800}
+.about h3{margin:14px 0 4px;font-size:22px}
+.about .role{color:var(--nyx-muted);font-size:14.5px}
+.about ul{margin:10px 0 0;padding-left:18px;color:#374151}
+.about ul li{margin:5px 0}
+
+/* CTA BAND */
+.cta-band{background:linear-gradient(135deg,#1f6dc0,#2783de);color:#fff;border-radius:22px;padding:44px;text-align:center;box-shadow:var(--nyx-shadow)}
+.cta-band h2{font-size:30px;margin:0 0 8px;font-weight:800}
+.cta-band p{opacity:.92;margin:0 0 20px;font-size:16px}
+.cta-band .btn-primary{background:#fff;color:var(--nyx-blue)}
+.cta-band .btn-ghost{background:transparent;border-color:rgba(255,255,255,.5);color:#fff}
+
+/* FOOTER */
+.site-foot{border-top:1px solid var(--nyx-line);background:var(--nyx-soft);padding:40px 0 30px;margin-top:10px}
+.foot-in{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:24px}
+.foot-in .brand{margin-bottom:10px}
+.site-foot p{color:var(--nyx-muted);font-size:14px;margin:0 0 6px}
+.foot-col b{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#374151}
+.foot-col a{display:block;color:#4b5563;font-size:14px;margin-top:9px}
+.foot-bottom{max-width:1080px;margin:26px auto 0;padding:18px 20px 0;border-top:1px solid var(--nyx-line);
+  display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--nyx-muted);font-size:13px}
+
+/* MOBILE */
+@media(max-width:860px){
+  .nav-links{display:none;position:absolute;top:58px;left:0;right:0;flex-direction:column;background:#fff;
+    border-bottom:1px solid var(--nyx-line);padding:8px 14px;box-shadow:var(--nyx-shadow)}
+  .nav-links.open{display:flex}
+  .nav-cta .btn-ghost{display:none}
+  .nav-burger{display:block}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .cards,.cards.two,.logos{grid-template-columns:1fr}
+  .demo-grid{grid-template-columns:1fr}
+  .about{grid-template-columns:1fr;text-align:center}
+  .about .avatar{margin:0 auto}
+  .about ul{text-align:left}
+  .checks{grid-template-columns:1fr}
+  .foot-in{grid-template-columns:1fr}
+  .cta-band{padding:30px 20px}
+}
+@media(max-width:480px){
+  .stats{grid-template-columns:1fr}
+  .hero{padding:54px 20px 44px}
+}
+/* respect base dark-mode override removal: force white look */
+
+/* ===== REFRESH: socials, lang selector, reveal, CTA, animations ===== */
+.btn{transition:transform .15s ease,box-shadow .2s ease,background .15s}
+.btn.big{padding:13px 22px;font-size:15px;border-radius:12px}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(39,131,222,.28)}
+.socials{display:flex;align-items:center;gap:6px}
+.sico{display:grid;place-items:center;width:36px;height:36px;border-radius:10px;color:#374151;background:#fff;border:1px solid var(--nyx-line);text-decoration:none;transition:.16s}
+.sico:hover{color:var(--nyx-blue);border-color:var(--nyx-blue);transform:translateY(-2px);box-shadow:0 8px 22px rgba(39,131,222,.18)}
+.lang-global{border:1px solid var(--nyx-line);border-radius:10px;padding:8px 10px;font-size:13px;font-weight:600;background:#fff;color:#374151;cursor:pointer}
+.lang-global:hover{border-color:var(--nyx-blue)}
+.chat-cta{position:relative;overflow:hidden;background:linear-gradient(135deg,#0f2747,#1f6dc0);color:#fff;border-radius:20px;padding:34px;display:flex;flex-direction:column;gap:12px;justify-content:center;box-shadow:var(--nyx-shadow)}
+.chat-cta h3{font-size:24px;margin:6px 0 0;font-weight:800;color:#fff}
+.chat-cta p{opacity:.92;font-size:15px;margin:0 0 8px;color:#eaf2ff}
+.chat-cta .btn-primary{background:#fff;color:var(--nyx-blue);align-self:flex-start}
+.chat-cta .btn-primary:hover{box-shadow:0 12px 30px rgba(0,0,0,.25)}
+.cc-badge{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);padding:6px 12px;border-radius:999px;align-self:flex-start}
+.cc-badge .live{width:8px;height:8px;border-radius:50%;background:#43d17a;box-shadow:0 0 0 4px rgba(67,209,122,.25);animation:ccpulse 1.8s infinite}
+@keyframes ccpulse{50%{box-shadow:0 0 0 8px rgba(67,209,122,0)}}
+.dev-socials{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.dev-soc{font-size:13px;font-weight:700;text-decoration:none;padding:8px 14px;border-radius:10px;border:1px solid var(--nyx-line);color:#374151;transition:.16s}
+.dev-soc:hover{transform:translateY(-2px);box-shadow:var(--nyx-shadow)}
+.dev-soc.gh:hover{background:#0a0e14;color:#fff;border-color:#0a0e14}
+.dev-soc.x:hover{background:#000;color:#fff;border-color:#000}
+.dev-soc.ig:hover{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:#fff;border-color:transparent}
+.foot-dev .foot-socials{display:flex;gap:12px;margin-top:12px}
+.fsoc{display:grid;place-items:center;width:46px;height:46px;border-radius:13px;color:#374151;background:#fff;border:1px solid var(--nyx-line);text-decoration:none;transition:.16s}
+.fsoc:hover{transform:translateY(-3px);color:var(--nyx-blue);border-color:var(--nyx-blue);box-shadow:0 10px 26px rgba(39,131,222,.2)}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .6s cubic-bezier(.2,.7,.2,1),transform .6s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.btn:hover{transform:none}}
+@media(max-width:860px){.socials{display:none}.lang-global{padding:6px 8px}}
+/* ===== NYX brand logo ===== */
+.brand{display:inline-flex;align-items:center;gap:8px}
+.brand .logo-mark{display:inline-grid;place-items:center;line-height:0}
+.brand .logo-mark svg{display:block}
+/* ===== premium branded social buttons ===== */
+.cta-socials{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.brandbtn{display:inline-grid;place-items:center;width:50px;height:50px;border-radius:15px;color:#fff;text-decoration:none;transition:transform .16s ease,box-shadow .16s ease,filter .16s ease;will-change:transform;box-shadow:0 6px 18px rgba(10,20,40,.18)}
+.brandbtn:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 14px 30px rgba(10,20,40,.32);filter:saturate(1.1)}
+.brandbtn.gh{background:#181717}
+.brandbtn.x{background:#000}
+.brandbtn.ig{background:radial-gradient(circle at 30% 110%,#feda75,#fa7e1e 25%,#d62976 50%,#962fbf 75%,#4f5bd5)}
+.fsoc{transition:transform .16s ease,box-shadow .16s ease,background .16s ease,color .16s ease,border-color .16s ease;will-change:transform}
+.fsoc.gh:hover{color:#fff;background:#181717;border-color:#181717;transform:translateY(-3px)}
+.fsoc.x:hover{color:#fff;background:#000;border-color:#000;transform:translateY(-3px)}
+.fsoc.ig:hover{color:#fff;border-color:transparent;background:radial-gradient(circle at 30% 110%,#feda75,#fa7e1e 25%,#d62976 50%,#962fbf 75%,#4f5bd5);transform:translateY(-3px)}
+/* ===== top-nav brand social cluster (cloned from CTA, scaled down, centered) ===== */
+.nav-cta .socials{display:flex;align-items:center;gap:8px}
+.brandbtn.nav-soc{width:34px;height:34px;border-radius:10px;box-shadow:0 3px 10px rgba(10,20,40,.16)}
+.brandbtn.nav-soc svg{width:16px;height:16px;display:block}
+.brandbtn.nav-soc:hover{transform:translateY(-2px) scale(1.06)}
+/* ===== footer dev socials: robust flexbox centering ===== */
+.foot-dev .foot-socials .fsoc{display:flex;align-items:center;justify-content:center}
+.foot-dev .foot-socials .fsoc svg{display:block}
+/* ===== i18n-safe responsive containers ===== */
+.nav-links,.hero-actions,.pill-row{flex-wrap:wrap}
+.card,.stat,.logo,.check{min-width:0;overflow-wrap:anywhere}
+.btn{white-space:normal}
+@media(max-width:560px){.cta-band{padding:30px 20px}}
+</style>
+</head>
+<body>
+<!-- NAV -->
+<header class="site-nav">
+  <nav class="nav-in">
+    <a class="brand" href="#top"><span class="logo-mark"><svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><defs><linearGradient id="nyxg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2783de"/><stop offset="1" stop-color="#7b5cff"/></linearGradient></defs><rect x="2" y="2" width="28" height="28" rx="8" fill="url(#nyxg1)"/><path d="M9 23V9l14 14V9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Nyx</a>
+    <div class="nav-links" id="navlinks">
+      <a href="/app" data-i18n="nav_chat">AI Chat</a>
+      <a href="#features" data-i18n="nav_features">Features</a>
+      <a href="#integrations" data-i18n="nav_integrations">Integrations</a>
+      <a href="#trust" data-i18n="nav_security">Security</a>
+      <a href="#roadmap" data-i18n="nav_me">Me &amp; Roadmap</a>
+      <a href="#sponsors" data-i18n="nav_sponsors">Sponsors</a>
+    </div>
+    <div class="nav-cta">
+      <div class="socials">
+        <a class="brandbtn nav-soc gh" href="https://github.com/aar0n4ik" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 .5A11.5 11.5 0 0 0 .5 12 11.5 11.5 0 0 0 8.4 23c.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.5-.3-5.2-1.3-5.2-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17 5 18 5.3 18 5.3c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.2 5.7.4.3.8 1 .8 2.1v3.1c0 .3.2.7.8.6A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg></a>
+        <a class="brandbtn nav-soc x" href="https://x.com/_AARON4IK_" target="_blank" rel="noopener" aria-label="X" title="X (Twitter)"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M18.244 2H21.5l-7.5 8.57L23 22h-6.594l-5.16-6.74L5.34 22H2.08l8.02-9.165L1.5 2h6.76l4.66 6.16L18.244 2Zm-1.156 18h1.83L7.03 3.9H5.07l12.018 16.1Z"/></svg></a>
+        <a class="brandbtn nav-soc ig" href="https://www.instagram.com/bohdan.aaron4ik/" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 2.2c3.2 0 3.6 0 4.9.07 1.2.06 1.8.25 2.2.42.6.22 1 .48 1.4.9.42.4.68.8.9 1.4.17.5.36 1.1.42 2.2.06 1.3.07 1.7.07 4.9s0 3.6-.07 4.9c-.06 1.2-.25 1.8-.42 2.2-.22.6-.48 1-.9 1.4-.4.42-.8.68-1.4.9-.5.17-1.1.36-2.2.42-1.3.06-1.7.07-4.9.07s-3.6 0-4.9-.07c-1.2-.06-1.8-.25-2.2-.42-.6-.22-1-.48-1.4-.9-.42-.4-.68-.8-.9-1.4-.17-.5-.36-1.1-.42-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.07-4.9c.06-1.2.25-1.8.42-2.2.22-.6.48-1 .9-1.4.4-.42.8-.68 1.4-.9.5-.17 1.1-.36 2.2-.42C8.4 2.2 8.8 2.2 12 2.2Zm0 1.8c-3.1 0-3.5 0-4.7.07-.9.04-1.4.2-1.7.32-.43.17-.74.37-1.06.7-.32.31-.52.62-.7 1.05-.12.3-.28.8-.32 1.7C3.2 8.5 3.2 8.9 3.2 12s0 3.5.07 4.7c.04.9.2 1.4.32 1.7.17.43.37.74.7 1.06.31.32.62.52 1.05.7.3.12.8.28 1.7.32 1.2.06 1.6.07 4.7.07s3.5 0 4.7-.07c.9-.04 1.4-.2 1.7-.32.43-.17.74-.37 1.06-.7.32-.31.52-.62.7-1.05.12-.3.28-.8.32-1.7.06-1.2.07-1.6.07-4.7s0-3.5-.07-4.7c-.04-.9-.2-1.4-.32-1.7a2.8 2.8 0 0 0-.7-1.06 2.8 2.8 0 0 0-1.05-.7c-.3-.12-.8-.28-1.7-.32C15.5 4 15.1 4 12 4Zm0 3.05A4.95 4.95 0 1 1 12 17a4.95 4.95 0 0 1 0-9.95Zm0 1.8a3.15 3.15 0 1 0 0 6.3 3.15 3.15 0 0 0 0-6.3Zm5.15-.9a1.15 1.15 0 1 1-2.3 0 1.15 1.15 0 0 1 2.3 0Z"/></svg></a>
+      </div>
+      <select class="lang-global" id="langGlobal" aria-label="Site language">
+        <option value="en">🇺🇸 EN</option>
+        <option value="ru">🇷🇺 RU</option>
+        <option value="uk">🇺🇦 UK</option>
+        <option value="es">🇪🇸 ES</option>
+        <option value="de">🇩🇪 DE</option>
+      </select>
+      <a class="btn btn-primary" href="/app" data-i18n="cta_chat">Try the AI Chat</a>
+      <button class="nav-burger" id="burger" aria-label="Menu">☰</button>
+    </div>
+  </nav>
+</header>
+
+<span class="anchor" id="top"></span>
+
+<!-- HERO -->
+<div class="hero-wrap">
+  <div class="hero">
+    <span class="eyebrow" data-i18n="hero_eyebrow">⚡ QVAC Hackathon I · Unleash Edge AI</span>
+    <h1 data-i18n="hero_h">Nyx — the autonomous AI that <span class="accent">runs your machine</span></h1>
+    <p class="lede" data-i18n="hero_p">Nyx is a fully autonomous on-device AI operator. It scans your hardware, writes and validates real system scripts, and executes everything locally — from running native Windows updates to opening live USD₮ trades on Bitfinex — with a signed proof for every action and zero cloud calls.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary big" href="/app" data-i18n="cta_chat">Try the AI Chat</a>
+      <a class="btn btn-ghost" href="#features" data-i18n="hero_see">See what it does</a>
+    </div>
+    <div class="pill-row">
+      <span class="pill"><b>0</b> <span data-i18n="pill_cloud">cloud calls</span></span>
+      <span class="pill"><b>Auto</b> <span data-i18n="pill_os">OS automation</span></span>
+      <span class="pill"><b>USD₮</b> <span data-i18n="pill_trade">Zero-Trust trades</span></span>
+      <span class="pill"><b>Ed25519</b> <span data-i18n="pill_proof">proof log</span></span>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<section>
+  <div class="wrap stats">
+    <div class="stat"><div class="num">100%</div><div class="lab" data-i18n="st1">on-device inference</div></div>
+    <div class="stat"><div class="num">0</div><div class="lab" data-i18n="st2">unapproved connections</div></div>
+    <div class="stat"><div class="num">&lt;1s</div><div class="lab" data-i18n="st3">first response</div></div>
+    <div class="stat"><div class="num">USD₮</div><div class="lab" data-i18n="st4">native accounting (WDK planned)</div></div>
+  </div>
+</section>
+
+<!-- DEMO -->
+<span class="anchor" id="demo"></span>
+<section class="alt">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker" data-i18n="demo_kicker">The operator</div>
+      <h2 data-i18n="demo_h2">A full-screen AI workspace — not a chat popup</h2>
+      <p data-i18n="demo_p2">Open a dedicated, full-screen operator: a multi-chat sidebar with neuro-naming, live device telemetry, and the Zero-Trust trade flow. It detects your language and stays in it.</p>
+    </div>
+    <div class="demo-grid">
+      <div class="chat-cta reveal">
+        <div class="cc-badge"><span class="live"></span> on-device · private</div>
+        <h3 data-i18n="cc_h">Launch the full-screen operator</h3>
+        <p data-i18n="cc_p">Multi-chat sidebar, neuro-naming, live PC telemetry and Zero-Trust trading — in a dedicated workspace, not a popup.</p>
+        <a class="btn btn-primary big" href="/app" data-i18n="cta_chat">Try the AI Chat</a>
+      </div>
+      <div class="demo-side">
+        <div class="card reveal"><div class="ico">🛠️</div><h3 data-i18n="cc_c1h">Acts on your OS</h3><p data-i18n="cc_c1p">Generates and validates PowerShell/Bash on the fly, runs it through a Zero-Trust safety check, then executes it itself.</p></div>
+        <div class="card reveal"><div class="ico">⚡</div><h3 data-i18n="cc_c2h">Instant, never hangs</h3><p data-i18n="cc_c2p">Greetings answer in &lt;1s; heavy compute is spent only on real automation.</p><div class="meter"><i></i></div></div>
+        <div class="card reveal"><div class="ico">💱</div><h3 data-i18n="cc_c3h">Tether-native trading</h3><p data-i18n="cc_c3p">Live USD₮ data from Bitfinex with on-device risk checks and USD₮ fee accounting (WDK settlement planned).</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<span class="anchor" id="features"></span>
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker" data-i18n="feat_k">Capabilities</div>
+      <h2 data-i18n="feat_h">Everything runs on the edge</h2>
+      <p data-i18n="feat_p">A complete private-AI stack — reasoning, retrieval, autonomous OS actions and security — with nothing leaving the device.</p>
+    </div>
+    <div class="cards">
+      <div class="card"><div class="ico">🧠</div><h3 data-i18n="f1h">Multi-agent reasoner</h3><p data-i18n="f1p">Router → retriever → reasoner pipeline that grounds answers in your local notes.</p></div>
+      <div class="card"><div class="ico">🌍</div><h3 data-i18n="f2h">6-language assistant</h3><p data-i18n="f2p">Auto-detects EN/RU/UK/ES/DE/FR and always replies in the user’s language.</p></div>
+      <div class="card"><div class="ico">🤖</div><h3 data-i18n="f3h">Autonomous PC control</h3><p data-i18n="f3p">Diagnoses an issue, then writes and runs the fix (PowerShell/Bash) itself — time, language, updates, settings — with one-click confirm and Windows UAC.</p></div>
+      <div class="card"><div class="ico">📜</div><h3 data-i18n="f4h">Proof-of-Local-Inference</h3><p data-i18n="f4p">Signed, verifiable hash-chain proving every answer was computed locally.</p></div>
+      <div class="card"><div class="ico">🛡️</div><h3 data-i18n="f5h">NetGuard + injection firewall</h3><p data-i18n="f5p">Blocks egress and scrubs prompt-injection from retrieved context before the model.</p></div>
+      <div class="card"><div class="ico">💸</div><h3 data-i18n="f6h">USD₮ fee accounting</h3><p data-i18n="f6p">Tracks per-inference fees in USD₮ on-device; full micro-settlement through the Tether WDK is on the roadmap.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- INTEGRATIONS -->
+<span class="anchor" id="integrations"></span>
+<section class="alt">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker" data-i18n="int_k">Tether ecosystem</div>
+      <h2 data-i18n="int_h">Deep, native integrations</h2>
+      <p data-i18n="int_p">Nyx is built for the Tether stack end to end. QVAC and Bitfinex are live in this build today; the remaining rails are on the roadmap.</p>
+    </div>
+    <div class="cards">
+      <div class="card"><div class="ico">🧩</div><h3 data-i18n="i1h">QVAC SDK</h3><p data-i18n="i1p">On-device LLM + embeddings via the Bare runtime, accelerated with TurboQuant.</p></div>
+      <div class="card"><div class="ico">💳</div><h3 data-i18n="i2h">Tether WDK <span style="opacity:.55">(planned)</span></h3><p data-i18n="i2p">Wallet dev kit earmarked for gasless USD₮ micro-payments per inference — integration on the roadmap.</p></div>
+      <div class="card"><div class="ico">📊</div><h3 data-i18n="i3h">Bitfinex (prop copilot)</h3><p data-i18n="i3p">Live USD₮ market data + on-device risk-guardian. Bitfinex is Tether’s sister company under iFinex.</p></div>
+      <div class="card"><div class="ico">🌐</div><h3 data-i18n="i4h">Plasma / USDT0 <span style="opacity:.55">(planned)</span></h3><p data-i18n="i4p">Zero-fee USD₮ rails for cross-chain settlement — on the roadmap.</p></div>
+      <div class="card"><div class="ico">🔗</div><h3 data-i18n="i5h">Holepunch P2P <span style="opacity:.55">(scaffold)</span></h3><p data-i18n="i5p">Serverless peer-to-peer model and payment exchange — scaffolded, not yet wired end to end.</p></div>
+      <div class="card"><div class="ico">🧱</div><h3 data-i18n="i6h">Hadron <span style="opacity:.55">(planned)</span></h3><p data-i18n="i6p">Tokenization rails for real-world asset workflows — on the roadmap.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST -->
+<span class="anchor" id="trust"></span>
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker" data-i18n="tr_k">Trust, proven</div>
+      <h2 data-i18n="tr_h">Why a judge can believe it</h2>
+      <p data-i18n="tr_p">Every privacy claim ships with machine-checkable evidence — not marketing.</p>
+    </div>
+    <div class="checks">
+      <div class="check"><span class="tick">✔</span><div><b data-i18n="c1b">Signed inference log</b><p data-i18n="c1p">Ed25519 hash-chain; verify with <code>npm run verify</code>.</p></div></div>
+      <div class="check"><span class="tick">✔</span><div><b data-i18n="c2b">Zero egress evidence</b><p data-i18n="c2p">NetGuard logs every socket and blocks all egress except the allowlist (loopback + Bitfinex); unapproved connections = 0.</p></div></div>
+      <div class="check"><span class="tick">✔</span><div><b data-i18n="c3b">Injection firewall</b><p data-i18n="c3p">Untrusted context is scanned + sanitized before the model.</p></div></div>
+      <div class="check"><span class="tick">✔</span><div><b data-i18n="c4b">Hardened security layer</b><p data-i18n="c4p">All local API keys and private variables are sealed with high-grade, device-native encryption — secrets never touch the cloud.</p></div></div>
+      <div class="check"><span class="tick">✔</span><div><b data-i18n="c5b">Proactive trading protection</b><p data-i18n="c5p">Before any Bitfinex order executes, Nyx runs interactive dual-stage security checks, explicit confirmations and automatic safety overrides — guaranteeing full human control.</p></div></div>
+      <div class="check"><span class="tick">✔</span><div><b data-i18n="c6b">Attestation</b><p data-i18n="c6p">Device + model hashes captured for each session.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ME & ROADMAP -->
+<span class="anchor" id="roadmap"></span>
+<section class="alt">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">Me &amp; Roadmap</div>
+      <h2 data-i18n="about_h2">The Builder &amp; The Plan</h2>
+    </div>
+    <div class="about">
+      <div style="text-align:center"><div class="avatar">BA</div><h3>Bohdan (AARON4IK)</h3><div class="role">17 · solo founder, engineer &amp; trader</div>
+        <div class="dev-socials">
+          <a class="dev-soc gh" href="https://github.com/aar0n4ik" target="_blank" rel="noopener">GitHub</a>
+          <a class="dev-soc x" href="https://x.com/_AARON4IK_" target="_blank" rel="noopener">X</a>
+          <a class="dev-soc ig" href="https://www.instagram.com/bohdan.aaron4ik/" target="_blank" rel="noopener">Instagram</a>
+        </div>
+      </div>
+      <div>
+        <p style="margin-top:0;color:#374151" data-i18n="about_p">17, solo, engineer and trader. I built Nyx end to end to prove on-device AI can actually operate a machine and trade safely — the foundation for Tether's machine economy. This isn’t a one-off: I’m committed to building it <b>with you</b>, for the long run.</p>
+      </div>
+    </div>
+    <div style="margin:26px 0 4px;padding:22px 24px;border-radius:16px;background:linear-gradient(135deg,#2783de10,#7b5cff18);border:1px solid #7b5cff33">
+      <div style="font-weight:800;font-size:1.18rem;color:#1f2937;margin-bottom:8px" data-i18n="commit_h">I’m here for the long run — not to take and leave.</div>
+      <p style="margin:0;color:#374151;line-height:1.6" data-i18n="commit_p">Nyx isn’t a hackathon throwaway. It’s the first stone of a multi-year build for the private, on-device machine economy Tether is creating. <b>Give me the opportunity, and together we can build all of it</b> — a real, evolving operating layer, backed by a 17-year-old solo founder who already ships production-grade work and is fully committed to building the future <i>with</i> you.</p>
+    </div>
+    <div style="height:34px"></div>
+    <div class="tl">
+      <div class="tl-item done"><div class="when">Done · Hackathon build</div><h4>Core engine + proofs</h4><p>On-device brain, 6-language chat, PoLI, NetGuard, injection firewall, USD₮ settlement scaffold.</p></div>
+      <div class="tl-item done"><div class="when">Done · Integration</div><h4>Bitfinex prop copilot</h4><p>Live USD₮ market data + on-device risk-guardian for funded-account rules.</p></div>
+      <div class="tl-item"><div class="when">2026–2027</div><h4>Advanced Cognitive Core &amp; Omnipresent UX</h4><p>Real-time local model streaming, zero-latency on-device speech synthesis (TTS), and live audio/video diagnostic streams.</p></div>
+      <div class="tl-item"><div class="when">2026–2027</div><h4>Autonomous Machine-to-Machine Infrastructure</h4><p>Holepunch P2P model &amp; inference sync layers — a private compute network settled entirely in USD₮ per inference call.</p></div>
+      <div class="tl-item"><div class="when">2026–2027</div><h4>Tether Deep Ecosystem Synergy</h4><p>Production-ready private-AI sandbox environments that turn Nyx into the core operating engine for sovereign decentralized devices.</p></div>
+      <div class="tl-item"><div class="when" data-i18n="tl_commit_w">The commitment</div><h4 data-i18n="tl_commit_h">A future built with Tether — not an exit</h4><p data-i18n="tl_commit_p">I’m not here to collect a prize and disappear. I’m in this for years: give me the runway and I’ll help build the entire private machine economy alongside you. I’m ready.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- SPONSORS -->
+<span class="anchor" id="sponsors"></span>
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker" data-i18n="sp_k">Sponsors &amp; ecosystem</div>
+      <h2 data-i18n="sp_h">Built on and aligned with</h2>
+      <p data-i18n="sp_p">The technologies and organizations Nyx integrates with or builds upon.</p>
+    </div>
+    <div class="logos">
+      <div class="logo"><div class="em">🟢</div><b>Tether</b><span>QVAC · USD₮ · WDK · grants</span></div>
+      <div class="logo"><div class="em">🧩</div><b>QVAC</b><span>Verifiable AI compute SDK</span></div>
+      <div class="logo"><div class="em">📊</div><b>Bitfinex</b><span>Sister company (iFinex) · market data</span></div>
+      <div class="logo"><div class="em">🌐</div><b>Plasma / USDT0</b><span>Zero-fee stablecoin rails</span></div>
+      <div class="logo"><div class="em">🔗</div><b>Holepunch</b><span>P2P infrastructure</span></div>
+      <div class="logo"><div class="em">🧱</div><b>Hadron</b><span>Tokenization platform</span></div>
+    </div>
+    <div class="note" data-i18n="sp_note">ℹ️ Honesty note: these are ecosystem technologies Nyx integrates with or builds upon for the hackathon. They are not paid endorsements or official partnerships.</div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="alt">
+  <div class="wrap">
+    <div class="cta-band">
+      <h2 data-i18n="cta_h">Let’s build the private machine economy</h2>
+      <p data-i18n="cta_p">Nyx is open for collaboration, feedback and the Tether Developer Grant track.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="/app" data-i18n="cta_chat">Try the AI Chat</a>
+      </div>
+      <div class="cta-socials">
+        <a class="brandbtn gh" href="https://github.com/aar0n4ik" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 .5A11.5 11.5 0 0 0 .5 12 11.5 11.5 0 0 0 8.4 23c.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.5-.3-5.2-1.3-5.2-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17 5 18 5.3 18 5.3c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.2 5.7.4.3.8 1 .8 2.1v3.1c0 .3.2.7.8.6A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg></a>
+        <a class="brandbtn x" href="https://x.com/_AARON4IK_" target="_blank" rel="noopener" aria-label="X" title="X (Twitter)"><svg viewBox="0 0 24 24" width="19" height="19"><path fill="currentColor" d="M18.244 2H21.5l-7.5 8.57L23 22h-6.594l-5.16-6.74L5.34 22H2.08l8.02-9.165L1.5 2h6.76l4.66 6.16L18.244 2Zm-1.156 18h1.83L7.03 3.9H5.07l12.018 16.1Z"/></svg></a>
+        <a class="brandbtn ig" href="https://www.instagram.com/bohdan.aaron4ik/" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 2.2c3.2 0 3.6 0 4.9.07 1.2.06 1.8.25 2.2.42.6.22 1 .48 1.4.9.42.4.68.8.9 1.4.17.5.36 1.1.42 2.2.06 1.3.07 1.7.07 4.9s0 3.6-.07 4.9c-.06 1.2-.25 1.8-.42 2.2-.22.6-.48 1-.9 1.4-.4.42-.8.68-1.4.9-.5.17-1.1.36-2.2.42-1.3.06-1.7.07-4.9.07s-3.6 0-4.9-.07c-1.2-.06-1.8-.25-2.2-.42-.6-.22-1-.48-1.4-.9-.42-.4-.68-.8-.9-1.4-.17-.5-.36-1.1-.42-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.07-4.9c.06-1.2.25-1.8.42-2.2.22-.6.48-1 .9-1.4.4-.42.8-.68 1.4-.9.5-.17 1.1-.36 2.2-.42C8.4 2.2 8.8 2.2 12 2.2Zm0 1.8c-3.1 0-3.5 0-4.7.07-.9.04-1.4.2-1.7.32-.43.17-.74.37-1.06.7-.32.31-.52.62-.7 1.05-.12.3-.28.8-.32 1.7C3.2 8.5 3.2 8.9 3.2 12s0 3.5.07 4.7c.04.9.2 1.4.32 1.7.17.43.37.74.7 1.06.31.32.62.52 1.05.7.3.12.8.28 1.7.32 1.2.06 1.6.07 4.7.07s3.5 0 4.7-.07c.9-.04 1.4-.2 1.7-.32.43-.17.74-.37 1.06-.7.32-.31.52-.62.7-1.05.12-.3.28-.8.32-1.7.06-1.2.07-1.6.07-4.7s0-3.5-.07-4.7c-.04-.9-.2-1.4-.32-1.7a2.8 2.8 0 0 0-.7-1.06 2.8 2.8 0 0 0-1.05-.7c-.3-.12-.8-.28-1.7-.32C15.5 4 15.1 4 12 4Zm0 3.05A4.95 4.95 0 1 1 12 17a4.95 4.95 0 0 1 0-9.95Zm0 1.8a3.15 3.15 0 1 0 0 6.3 3.15 3.15 0 0 0 0-6.3Zm5.15-.9a1.15 1.15 0 1 1-2.3 0 1.15 1.15 0 0 1 2.3 0Z"/></svg></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="site-foot">
+  <div class="wrap foot-in">
+    <div>
+      <div class="brand"><span class="logo-mark"><svg viewBox="0 0 32 32" width="24" height="24" aria-hidden="true"><defs><linearGradient id="nyxg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2783de"/><stop offset="1" stop-color="#7b5cff"/></linearGradient></defs><rect x="2" y="2" width="28" height="28" rx="8" fill="url(#nyxg2)"/><path d="M9 23V9l14 14V9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Nyx</div>
+      <p data-i18n="foot_p">On-device autonomous AI operator on Tether QVAC. It runs your PC and trades in USD₮ — zero cloud calls, provably private.</p>
+    </div>
+    <div class="foot-col">
+      <b data-i18n="foot_product">Product</b>
+      <a href="/app" data-i18n="cta_chat">Try the AI Chat</a>
+      <a href="#features" data-i18n="nav_features">Features</a>
+      <a href="#integrations" data-i18n="nav_integrations">Integrations</a>
+      <a href="#trust" data-i18n="nav_security">Security</a>
+    </div>
+    <div class="foot-col foot-dev">
+      <b data-i18n="foot_connect">Connect with the Dev</b>
+      <div class="foot-socials">
+        <a class="fsoc gh" href="https://github.com/aar0n4ik" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub"><svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12 .5A11.5 11.5 0 0 0 .5 12 11.5 11.5 0 0 0 8.4 23c.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.5-.3-5.2-1.3-5.2-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17 5 18 5.3 18 5.3c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.2 5.7.4.3.8 1 .8 2.1v3.1c0 .3.2.7.8.6A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg></a>
+        <a class="fsoc x" href="https://x.com/_AARON4IK_" target="_blank" rel="noopener" aria-label="X" title="X (Twitter)"><svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M18.244 2H21.5l-7.5 8.57L23 22h-6.594l-5.16-6.74L5.34 22H2.08l8.02-9.165L1.5 2h6.76l4.66 6.16L18.244 2Zm-1.156 18h1.83L7.03 3.9H5.07l12.018 16.1Z"/></svg></a>
+        <a class="fsoc ig" href="https://www.instagram.com/bohdan.aaron4ik/" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12 2.2c3.2 0 3.6 0 4.9.07 1.2.06 1.8.25 2.2.42.6.22 1 .48 1.4.9.42.4.68.8.9 1.4.17.5.36 1.1.42 2.2.06 1.3.07 1.7.07 4.9s0 3.6-.07 4.9c-.06 1.2-.25 1.8-.42 2.2-.22.6-.48 1-.9 1.4-.4.42-.8.68-1.4.9-.5.17-1.1.36-2.2.42-1.3.06-1.7.07-4.9.07s-3.6 0-4.9-.07c-1.2-.06-1.8-.25-2.2-.42-.6-.22-1-.48-1.4-.9-.42-.4-.68-.8-.9-1.4-.17-.5-.36-1.1-.42-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.07-4.9c.06-1.2.25-1.8.42-2.2.22-.6.48-1 .9-1.4.4-.42.8-.68 1.4-.9.5-.17 1.1-.36 2.2-.42C8.4 2.2 8.8 2.2 12 2.2Zm0 1.8c-3.1 0-3.5 0-4.7.07-.9.04-1.4.2-1.7.32-.43.17-.74.37-1.06.7-.32.31-.52.62-.7 1.05-.12.3-.28.8-.32 1.7C3.2 8.5 3.2 8.9 3.2 12s0 3.5.07 4.7c.04.9.2 1.4.32 1.7.17.43.37.74.7 1.06.31.32.62.52 1.05.7.3.12.8.28 1.7.32 1.2.06 1.6.07 4.7.07s3.5 0 4.7-.07c.9-.04 1.4-.2 1.7-.32.43-.17.74-.37 1.06-.7.32-.31.52-.62.7-1.05.12-.3.28-.8.32-1.7.06-1.2.07-1.6.07-4.7s0-3.5-.07-4.7c-.04-.9-.2-1.4-.32-1.7a2.8 2.8 0 0 0-.7-1.06 2.8 2.8 0 0 0-1.05-.7c-.3-.12-.8-.28-1.7-.32C15.5 4 15.1 4 12 4Zm0 3.05A4.95 4.95 0 1 1 12 17a4.95 4.95 0 0 1 0-9.95Zm0 1.8a3.15 3.15 0 1 0 0 6.3 3.15 3.15 0 0 0 0-6.3Zm5.15-.9a1.15 1.15 0 1 1-2.3 0 1.15 1.15 0 0 1 2.3 0Z"/></svg></a>
+      </div>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 Nyx · Built by Bohdan (AARON4IK) for the QVAC Hackathon I</span>
+    <span>Made with privacy · Apache-2.0</span>
+  </div>
+</footer>
+
+<script>
+// ---- mobile nav ----
+document.getElementById('burger').addEventListener('click',()=>document.getElementById('navlinks').classList.toggle('open'));
+
+// ---- global website localization (the AI chat is exempt; it infers language itself) ----
+const I18N={"en":{},"ru":{"nav_chat":"ИИ-чат","nav_features":"Возможности","nav_integrations":"Интеграции","nav_security":"Безопасность","nav_me":"Обо мне","nav_sponsors":"Партнёры","cta_chat":"Открыть ИИ-чат","hero_eyebrow":"⚡ QVAC Hackathon I · Unleash Edge AI","hero_h":"Nyx — автономный ИИ, который <span class='accent'>управляет вашей машиной</span>","hero_p":"Nyx — полностью автономный ИИ-оператор на устройстве. Он сканирует железо, пишет и проверяет реальные системные скрипты и выполняет всё локально — от установки обновлений Windows до открытия живых сделок в USD₮ на Bitfinex — с подписанным доказательством каждого действия и нулём облачных вызовов.","hero_see":"Что он умеет","pill_cloud":"облачных вызовов","pill_os":"автоматизация ОС","pill_trade":"сделки Zero-Trust","pill_proof":"журнал доказательств","demo_kicker":"Опе��атор","demo_h2":"Полноэкранное ИИ-пространство — а не всплывающий чат","demo_p2":"Откройте отдельный полноэкранный оператор: сайдбар с мульти-чатами и нейро-нейминг, живая телеметрия ПК и поток Zero-Trust сделок. Он определяет ваш язык и держит его.","cc_h":"Запустить полноэкранный оператор","cc_p":"Сайдбар мульти-чатов, нейро-нейминг, живая телеметрия ПК и Zero-Trust трейдинг — в отдельном пространстве, а не во всплывашке.","cc_c1h":"Действует в вашей ОС","cc_c1p":"Генерирует и проверяет PowerShell/Bash на лету, прогоняет через 6 шагов Zero-Trust и выполняет.","cc_c2h":"Мгновенно, без зависаний","cc_c2p":"Приветствия отвечают за <1с; тяжёлые вычисления — только на реальную автоматизацию.","cc_c3h":"Трейдинг в экосистеме Tether","cc_c3p":"Живые данные USD₮ с Bitfinex, локальные риск-проверки и pay-per-inference через WDK.","st1":"инференс на устройстве","st2":"внешних подключений","st3":"первый ответ","st4":"расчёты через WDK","feat_k":"Возможности","feat_h":"Всё работает на устройстве","feat_p":"Полный приватный ИИ-стек — рассуждение, голос, поиск, безопасность и платежи — и ничего не покидает устройство.","f1h":"Мульти-агентный ризонер","f1p":"Конвейер роутер → ретривер → ризонер заземляет ответы на ваших локальных заметках.","f2h":"Ассистент на 6 языков","f2p":"Автоопределение EN/RU/UK/ES/DE/FR и всегда отвечает на языке пользователя.","f3h":"Мультимодальный ввод-вывод","f3p":"Речь на устройстве (TTS) и OCR через QVAC SDK — говорите, слушайте, читайте изображения.","f4h":"Proof-of-Local-Inference","f4p":"Подписанная проверяемая хеш-цепочка доказывает, что каждый ответ вычислен локально.","f5h":"NetGuard + файрвол инъекций","f5p":"Блокирует исходящий трафик и вычищает prompt-инъекции из контекста до модели.","f6h":"Оплата за инференс","f6p":"Микрорасчёты в USD₮ через Tether WDK — машинная экономика на устройстве.","int_k":"Экосистема Tether","int_h":"Глубокие нативные интеграции","int_p":"Nyx не прикручивает API сбоку — он встроен в стек Tether от и до, включая prop-трейдинг-копилот на Bitfinex.","i1h":"QVAC SDK","i1p":"LLM + TTS на устройстве через рантайм Bare, ускорение TurboQuant.","i2h":"Tether WDK","i2p":"Кошельковый SDK для безгазовых микроплатежей USD₮ за инференс.","i3h":"Bitfinex (prop-копилот)","i3p":"Живые рыночные данные USD₮ + риск-гардиан на устройстве. Bitfinex — сестринская компания Tether в составе iFinex.","i4h":"Plasma / USDT0","i4p":"Безкомиссионные рельсы USD₮ для расчётов между сетями.","i5h":"Holepunch P2P","i5p":"Бессерверный P2P-обмен моделями и платежами.","i6h":"Hadron","i6p":"Рельсы токенизации для процессов с реальными активами.","tr_k":"Доверие, доказанное","tr_h":"Почему судья может в это поверить","tr_p":"Каждое заявление о приватности сопровождается машинно-проверяемым доказательством — без маркетинга.","c1b":"Подписанный лог инференса","c1p":"Хеш-цепочка Ed25519; проверка командой <code>npm run verify</code>.","c2b":"Доказательство нулевого egress","c2p":"NetGuard фиксирует каждый сокет; число внешних подключений = 0.","c3b":"Файрвол инъекций","c3p":"Недоверенный контекст сканируется и очищается до модели.","c4b":"Усиленный уровень безопасности","c4p":"Все локальные API-ключи и приватные переменные запечатаны device-native шифрованием высокого класса — секреты не попадают в облако.","c5b":"Проактивная защита трейдинга","c5p":"Перед исполнением любого ордера на Bitfinex Nyx выполняет интерактивные двухэтапные проверки безопасности, явные подтверждения и автоматические защитные блокировки — полный контроль человека.","c6b":"Аттестация","c6p":"Хеши устройства и модели фиксируются для каждой сессии.","sp_k":"Партнёры и экосистема","sp_h":"Построено на и согласовано с","sp_p":"Технологии и организации, с которыми Nyx интегрируется или на которых строится.","sp_note":"ℹ️ Честное примечание: это технологии экосистемы, с которыми Nyx интегрируется или на которых строится в рамках хакатона. Это не оплаченные рекомендации и не официальные партнёрства.","cta_h":"Построим приватную машинную экономику","cta_p":"Nyx открыт для сотрудничества, обратной связи и трека Tether Developer Grant.","about_h2":"Создатель и план","about_p":"17 лет, соло, инженер и трейдер. Я собрал Nyx от и до, чтобы доказать: ИИ на устройстве может реально управлять машиной и безопасно торговать — основа машинной экономики Tether. Это не разовый проект — я готов строить его <b>вместе с вами</b>, вдолгую.","commit_h":"Я здесь надолго — не забрать и уйти.","commit_p":"Nyx — не одноразовый хакатон-проект. Это первый камень многолетней работы над приватной машинной экономикой на устройстве, которую строит Tether. <b>Дайте мне возможность — и вместе мы построим всё это</b>: настоящий, развивающийся операционный слой, за которым стоит 17-летний соло-разработчик, уже делающий продакшн-уровень и полностью преданный будущему <i>вместе</i> с вами.","tl_commit_w":"Обязательство","tl_commit_h":"Будущее вместе с Tether — а не уход","tl_commit_p":"Я не за тем, чтобы забрать приз и исчезнуть. Я в этом на годы: дайте ресурс — и я помогу построить всю приватную машинную экономику вместе с вами. Я готов.","foot_product":"Продукт","foot_connect":"Связь с разработчиком","foot_p":"Автономный ИИ-оператор на устройстве на базе Tether QVAC. Управляет вашим ПК и торгует в USD₮ — ноль облачных вызовов, доказуемо приватно."},"uk":{"nav_chat":"ШІ-чат","nav_features":"Можливості","nav_integrations":"Інтеграції","nav_security":"Безпека","nav_me":"Про мене","nav_sponsors":"Партнери","cta_chat":"Відкрити ШІ-чат","hero_eyebrow":"⚡ QVAC Hackathon I · Unleash Edge AI","hero_h":"Nyx — автономний ШІ, який <span class='accent'>керує вашою машиною</span>","hero_p":"Nyx — повністю автономний ШІ-оператор на пристрої. Він сканує залізо, пише й перевіряє реальні системні скрипти та виконує все локально — від встановлення оновлень Windows до відкриття живих угод у USD₮ на Bitfinex — з підписаним доказом кожної дії та нулем хмарних викликів.","hero_see":"Що він уміє","pill_cloud":"хмарних викликів","pill_os":"автоматизація ОС","pill_trade":"угоди Zero-Trust","pill_proof":"журнал доказів","demo_kicker":"Оператор","demo_h2":"Повноекранний ШІ-простір — а не спливаючий чат","demo_p2":"Відкрийте окремий повноекранний оператор: сайдбар із мульти-чатами та нейро-неймінг, жива телеметрія ПК і потік Zero-Trust угод. Він визначає вашу мову й тримає її.","cc_h":"Запустити повноекранний оператор","cc_p":"Сайдбар мульти-чатів, нейро-неймінг, жива телеметрія ПК і Zero-Trust трейдинг — в окремому просторі, а не у спливашці.","cc_c1h":"Діє у вашій ОС","cc_c1p":"Генерує й перевіряє PowerShell/Bash на льоту, проганяє через 6 кроків Zero-Trust і виконує.","cc_c2h":"Миттєво, без зависань","cc_c2p":"Привітання відповідають за <1с; важкі обчислення — лише на реальну автоматизацію.","cc_c3h":"Трейдинг в екосистемі Tether","cc_c3p":"Живі дані USD₮ з Bitfinex, локальні ризик-перевірки та pay-per-inference через WDK.","st1":"інференс на пристрої","st2":"зовнішніх підключень","st3":"перша відповідь","st4":"розрахунки через WDK","feat_k":"Можливості","feat_h":"Усе працює на пристрої","feat_p":"Повний приватний ШІ-стек — міркування, голос, пошук, безпека й платежі — і ніщо не залишає пристрій.","f1h":"Мульти-агентний ризонер","f1p":"Конвеєр роутер → ретривер → ризонер заземлює відповіді на ваших локальних нотатках.","f2h":"Асистент 6 мов","f2p":"Автовизначення EN/RU/UK/ES/DE/FR і завжди відповідає мовою користувача.","f3h":"Мультимодальний ввід-вивід","f3p":"Мовлення на пристрої (TTS) та OCR через QVAC SDK — говоріть, слухайте, читайте зображення.","f4h":"Proof-of-Local-Inference","f4p":"Підписаний перевірюваний хеш-ланцюг доводить, що кожна відповідь обчислена локально.","f5h":"NetGuard + файрвол ін'єкцій","f5p":"Блокує вихідний трафік і вичищає prompt-ін'єкції з контексту до моделі.","f6h":"Оплата за інференс","f6p":"Мікророзрахунки в USD₮ через Tether WDK — машинна економіка на пристрої.","int_k":"Екосистема Tether","int_h":"Глибокі нативні інтеграції","int_p":"Nyx не прикручує API збоку — він вбудований у стек Tether від і до, включно з prop-трейдинг-копілотом на Bitfinex.","i1h":"QVAC SDK","i1p":"LLM + TTS на пристрої через рантайм Bare, прискорення TurboQuant.","i2h":"Tether WDK","i2p":"Гаманцевий SDK для безгазових мікроплатежів USD₮ за інференс.","i3h":"Bitfinex (prop-копілот)","i3p":"Живі ринкові дані USD₮ + ризик-гардіан на пристрої. Bitfinex — сестринська компанія Tether у складі iFinex.","i4h":"Plasma / USDT0","i4p":"Безкомісійні рейки USD₮ для розрахунків між мережами.","i5h":"Holepunch P2P","i5p":"Безсерверний P2P-обмін моделями та платежами.","i6h":"Hadron","i6p":"Рейки токенізації для процесів з реальними активами.","tr_k":"Довіра, доведена","tr_h":"Чому суддя може в це повірити","tr_p":"Кожне твердження про приватність супроводжується машинно-перевірюваним доказом — без маркетингу.","c1b":"Підписаний лог інференсу","c1p":"Хеш-ланцюг Ed25519; перевірка командою <code>npm run verify</code>.","c2b":"Доказ нульового egress","c2p":"NetGuard фіксує кожен сокет; кількість зовнішніх підключень = 0.","c3b":"Файрвол ін'єкцій","c3p":"Недовірений контекст сканується й очищується до моделі.","c4b":"Посилений рівень безпеки","c4p":"Усі локальні API-ключі та приватні змінні запечатані device-native шифруванням високого класу — секрети не потрапляють у хмару.","c5b":"Проактивний захист трейдингу","c5p":"Перед виконанням будь-якого ордера на Bitfinex Nyx виконує інтерактивні двоетапні перевірки безпеки, явні підтвердження та автоматичні захисні блокування — повний контроль людини.","c6b":"Атестація","c6p":"Хеші пристрою та моделі фіксуються для кожної сесії.","sp_k":"Партнери та екосистема","sp_h":"Побудовано на та узгоджено з","sp_p":"Технології й організації, з якими Nyx інтегрується або на яких будується.","sp_note":"ℹ️ Чесна примітка: це технології екосистеми, з якими Nyx інтегрується або на яких будується в межах хакатону. Це не оплачені рекомендації та не офіційні партнерства.","cta_h":"Збудуймо приватну машинну економіку","cta_p":"Nyx відкритий для співпраці, відгуків і треку Tether Developer Grant.","about_h2":"Творець і план","about_p":"17 років, соло, інженер і трейдер. Я зібрав Nyx від і до, щоб довести: ШІ на пристрої може реально керувати машиною й безпечно торгувати — основа машинної економіки Tether. Це не разовий проєкт — я готовий будувати його <b>разом із вами</b>, надовго.","commit_h":"Я тут надовго — не забрати й піти.","commit_p":"Nyx — не одноразовий хакатон-проєкт. Це перший камінь багаторічної роботи над приватною машинною економікою на пристрої, яку будує Tether. <b>Дайте мені можливість — і разом ми побудуємо все це</b>: справжній, що розвивається операційний шар, за яким стоїть 17-річний соло-розробник, який уже робить продакшн-рівень і повністю відданий майбутньому <i>разом</i> із вами.","tl_commit_w":"Зобов'язання","tl_commit_h":"Майбутнє разом із Tether — а не вихід","tl_commit_p":"Я не за тим, щоб забрати приз і зникнути. Я в цьому на роки: дайте ресурс — і я допоможу побудувати всю приватну машинну економіку разом із вами. Я готовий.","foot_product":"Продукт","foot_connect":"Зв'язок з розробником","foot_p":"Автономний ШІ-оператор на пристрої на базі Tether QVAC. Керує ��ашим ПК і торгує в USD₮ — нуль хмарних викликів, доказово приватно."},"es":{"nav_chat":"Chat IA","nav_features":"Funciones","nav_integrations":"Integraciones","nav_security":"Seguridad","nav_me":"Sobre mí","nav_sponsors":"Patrocinadores","cta_chat":"Probar el Chat IA","hero_see":"Qué hace","pill_cloud":"llamadas a la nube","pill_os":"automatización del SO","pill_trade":"operaciones Zero-Trust","pill_proof":"registro de prueba","demo_kicker":"El operador","foot_product":"Producto","foot_connect":"Conecta con el dev"},"de":{"nav_chat":"KI-Chat","nav_features":"Funktionen","nav_integrations":"Integrationen","nav_security":"Sicherheit","nav_me":"Über mich","nav_sponsors":"Partner","cta_chat":"KI-Chat öffnen","hero_see":"Was es kann","pill_cloud":"Cloud-Aufrufe","pill_os":"OS-Automatisierung","pill_trade":"Zero-Trust-Trades","pill_proof":"Beweis-Log","demo_kicker":"Der Operator","foot_product":"Produkt","foot_connect":"Verbinde dich mit dem Dev"}};
+const I18N_BASE={};
+document.querySelectorAll('[data-i18n]').forEach(n=>I18N_BASE[n.getAttribute('data-i18n')]=n.innerHTML);
+function applyLang(l){
+ const dict=I18N[l]||{};
+ document.querySelectorAll('[data-i18n]').forEach(n=>{const k=n.getAttribute('data-i18n');n.innerHTML=(dict[k]!=null?dict[k]:I18N_BASE[k]);});
+ document.documentElement.lang=l; try{localStorage.setItem('nyx.lang',l)}catch(e){}
+}
+const langSel=document.getElementById('langGlobal');
+if(langSel){const saved=(()=>{try{return localStorage.getItem('nyx.lang')}catch(e){return null}})()||'en';langSel.value=saved;applyLang(saved);langSel.addEventListener('change',e=>{applyLang(e.target.value);blip();});}
+
+// ---- scroll-reveal animations (GPU transform/opacity, low CPU) ----
+const io=new IntersectionObserver((es)=>{es.forEach(en=>{if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}})},{threshold:.12});
+document.querySelectorAll('.reveal,.card,.tl-item,.logo,.check,.stat').forEach(n=>{n.classList.add('reveal');io.observe(n);});
+
+// ---- subtle premium UI sound feedback ----
+let actx;function blip(){try{actx=actx||new(window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();o.type='sine';o.frequency.value=660;g.gain.setValueAtTime(.0001,actx.currentTime);g.gain.exponentialRampToValueAtTime(.05,actx.currentTime+.01);g.gain.exponentialRampToValueAtTime(.0001,actx.currentTime+.18);o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+.2);}catch(e){}}
+document.querySelectorAll('a.btn,.sico,.fsoc').forEach(b=>b.addEventListener('click',()=>blip()));
+</script>
+</body></html>

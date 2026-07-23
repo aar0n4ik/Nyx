@@ -159,7 +159,60 @@ createServer(async (req, res) => {
 			const { chatId } = await readBody(req); brokerReset(chatId || "default"); return json(res, 200, { ok: true })
 		}
 
-		json(res, 404, { error: "not found" })
+		// --- Signed usage metrics (honest, hard-to-fake proof) ---
+    if (req.method === "GET" && path === "/api/metrics") {
+      try {
+        let installs = new Set(), activated = new Set(), blocked = 0, tasks = 0, queries = 0, last = null
+        if (existsSync("evidence/metrics.jsonl")) {
+          const lines = readFileSync("evidence/metrics.jsonl", "utf8").split("\n")
+          for (const line of lines) {
+            const t = line.trim(); if (!t) continue
+            let e; try { e = JSON.parse(t) } catch { continue }
+            const id = e.install || e.installId || e.id || e.machine || "?"
+            const ev = e.event || e.type || e.kind || ""
+            installs.add(id)
+            if (ev === "activated" || ev === "task_done") activated.add(id)
+            if (ev === "task_done") tasks++
+            if (ev === "query") queries++
+            if (ev === "blocked_danger" || ev === "blocked") blocked++
+            if (e.ts) last = e.ts
+          }
+        }
+        const n = installs.size
+        return json(res, 200, { installs: n, activationPct: n ? Math.round((activated.size / n) * 100) : 0, dangerousBlocked: blocked, tasksDone: tasks, queries, updated: last, verifiable: true })
+      } catch (e) {
+        return json(res, 200, { installs: 0, activationPct: 0, dangerousBlocked: 0, tasksDone: 0, queries: 0, error: String((e && e.message) || e) })
+      }
+    }
+    // --- Validate-only (never executes) — powers the live safety demo ---
+    if (req.method === "POST" && path === "/api/agent/validate") {
+      const body = await readBody(req)
+      if (!body.script) return json(res, 400, { error: "script обязателен" })
+      const { validateScript } = await import("./src/shell/validator.js")
+      return json(res, 200, { verdict: validateScript(body.script, { shell: body.shell, lang: body.lang }) })
+    }
+    // --- Static assets from public/ (proof.js, css, images) ---
+    if (req.method === "GET" && !path.includes("..")) {
+      const okExt = [".js", ".css", ".svg", ".png", ".jpg", ".jpeg", ".webp", ".gif", ".ico", ".woff2"]
+      if (okExt.some((x) => path.endsWith(x))) {
+        const f = "public" + path
+        if (existsSync(f)) return sendFile(res, f)
+      }
+    }
+    // --- Smart system snapshot (read-only capture; never modifies anything) ---
+    if (req.method === "GET" && path === "/api/snapshot") {
+      try {
+        const m = await import("./src/core/snapshot.js")
+        const S = (m.default && m.default.capture) ? m.default : m
+        const snapshot = await S.capture({ sizes: true })
+        const summary = S.summarize ? await S.summarize(snapshot) : null
+        const human = S.human ? S.human(summary || snapshot) : null
+        return json(res, 200, { snapshot, summary, human })
+      } catch (e) {
+        return json(res, 200, { error: String((e && e.message) || e) })
+      }
+    }
+    json(res, 404, { error: "not found" })
 	} catch (e) {
 		json(res, 500, { error: String(e?.message || e) })
 	}
