@@ -227,3 +227,9 @@
 <script src="/app-controls.js"></script>
 </body>
 </html>
+<script>
+document.getElementById('toolsBtn')?.addEventListener('click',()=>{
+  if(window.nyxTools?.openTools) window.nyxTools.openTools()
+  else alert('Инструменты доступны в десктоп-приложении Nyx для Windows.')
+})
+</script>

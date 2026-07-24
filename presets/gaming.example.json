@@ -1,0 +1,18 @@
+{
+  "id": "nyx.gaming.pro",
+  "title": "Игровая сборка Pro",
+  "author": "Nyx Team",
+  "createdAt": "2026-07-24",
+  "for": "Соревновательные игроки",
+  "why": "Снижает фоновую нагрузку и задержки ввода",
+  "users": 0,
+  "rating": 0,
+  "site": "https://github.com/aar0n4ik/Nyx",
+  "contents": {
+    "remove": ["Microsoft.XboxGamingOverlay", "Microsoft.549981C3F5F10"],
+    "tweaks": [
+      { "path": "HKCU:\\System\\GameConfigStore", "name": "GameDVR_Enabled", "value": 0, "type": "DWord" }
+    ],
+    "install": ["Valve.Steam"]
+  }
+}

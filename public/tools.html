@@ -1,0 +1,298 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nyx · Инструменты</title>
+<script>try{var t=localStorage.getItem('nyx-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<style>
+:root{--bg:#06060b;--panel:#0d0d12;--line:#1c1c24;--text:#f2f2f5;--muted:#93939f;--accent:#7c5cff;--accent2:#19e3b1;--danger:#ff5d6c}
+[data-theme=light]{--bg:#f6f7fb;--panel:#fff;--line:#e6e6ee;--text:#14141a;--muted:#6a6a78;--accent:#6a4bff;--accent2:#079e7a}
+*{box-sizing:border-box}body{margin:0;font:14px/1.5 system-ui,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text)}
+header{display:flex;align-items:center;gap:14px;padding:16px 22px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:5}
+.logo{font-weight:800;letter-spacing:.5px}.tabs{display:flex;gap:8px;margin-left:8px}
+.tab{padding:8px 14px;border-radius:10px;cursor:pointer;color:var(--muted);border:1px solid transparent}
+.tab.on{color:var(--text);background:var(--panel);border-color:var(--line)}
+.spacer{flex:1}.icon-btn{background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:8px 12px;cursor:pointer}
+main{padding:22px;max-width:1000px;margin:0 auto}.hidden{display:none!important}
+.bar{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+input[type=search]{flex:1;min-width:200px;background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px 14px}
+.btn{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:10px 16px;font-weight:600;cursor:pointer}
+.btn.ghost{background:var(--panel);border:1px solid var(--line);color:var(--text)}
+.btn.danger{background:var(--danger)}.btn:disabled{opacity:.4;cursor:not-allowed}
+.list{display:flex;flex-direction:column;gap:8px}
+.row{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.row img{width:34px;height:34px;border-radius:8px;object-fit:contain;background:#0003}
+.row .meta{flex:1;min-width:0}.row .nm{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .sz{color:var(--muted);font-size:12px}
+.chk{width:20px;height:20px;accent-color:var(--accent)}
+.dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+.footbar{position:sticky;bottom:0;margin-top:16px;display:flex;gap:12px;align-items:center;background:var(--bg);padding:14px 0;border-top:1px solid var(--line)}
+.total{font-weight:700}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+.card h3{margin:0 0 6px}.card .tag{color:var(--muted);font-size:12px}.card .row2{display:flex;gap:10px;color:var(--muted);font-size:12px;margin:8px 0}
+.empty{text-align:center;color:var(--muted);padding:60px 20px;border:1px dashed var(--line);border-radius:16px}
+.modal{position:fixed;inset:0;background:#000a;display:flex;align-items:center;justify-content:center;z-index:20;padding:20px}
+.sheet{background:var(--panel);border:1px solid var(--line);border-radius:18px;max-width:560px;width:100%;padding:24px;max-height:86vh;overflow:auto}
+.sheet h2{margin:0 0 8px}.toggle{display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:12px;margin:10px 0}
+.toggle input{width:20px;height:20px;accent-color:var(--accent2)}.rec{color:var(--accent2);font-size:12px;font-weight:600}
+.sellist{max-height:220px;overflow:auto;margin:12px 0;display:flex;flex-direction:column;gap:6px}
+.selist .i{display:flex;justify-content:space-between;color:var(--muted);font-size:13px}
+.ring{--p:0;width:160px;height:160px;border-radius:50%;margin:10px auto;background:conic-gradient(var(--accent) calc(var(--p)*1%),var(--line) 0);display:flex;align-items:center;justify-content:center}
+.ring .in{width:128px;height:128px;border-radius:50%;background:var(--panel);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.ring .in b{font-size:26px}.curapp{display:flex;align-items:center;gap:12px;justify-content:center;margin:10px 0}
+.curapp img{width:40px;height:40px;border-radius:10px;background:#0003;object-fit:contain}
+.freed{height:10px;border-radius:6px;background:var(--line);overflow:hidden;margin:14px 0}
+.freed>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .4s}
+.log{max-height:160px;overflow:auto;font-size:12px;color:var(--muted);margin-top:10px}
+.row.gone{opacity:0;transform:translateX(30px);transition:.5s}
+.footer{color:var(--muted);font-size:12px;text-align:center;padding:20px}
+</style></head><body>
+<header>
+  <span class="logo">Nyx</span>
+  <div class="tabs">
+    <div class="tab on" data-view="clean" data-i18n="tab_clean">Очистка Windows</div>
+    <div class="tab" data-view="builds" data-i18n="tab_builds">Готовые сборки</div>
+    <div class="tab" data-view="auto" data-i18n="tab_auto">Автоматизация</div>
+  </div>
+  <div class="spacer"></div>
+  <button class="icon-btn" id="langBtn">RU</button>
+  <button class="icon-btn" id="themeBtn">◐</button>
+</header>
+<main>
+  <!-- ОЧИСТКА -->
+  <section id="v-clean">
+    <div class="bar">
+      <input type="search" id="q" placeholder="Поиск приложений…" data-i18n-ph="ph_search">
+      <button class="btn ghost" id="selAll" data-i18n="sel_all">Выбрать все</button>
+      <button class="btn ghost" id="selNone" data-i18n="sel_none">Снять все</button>
+    </div>
+    <div class="list" id="apps"><div class="empty" data-i18n="loading">Загрузка списка приложений…</div></div>
+    <div class="footbar">
+      <span class="total" id="total">Выбрано 0 · ~0 МБ</span>
+      <div class="spacer"></div>
+      <button class="btn" id="proceed" disabled data-i18n="proceed">Продолжить</button>
+    </div>
+  </section>
+  <!-- СБОРКИ -->
+  <section id="v-builds" class="hidden">
+    <div class="grid" id="presets"><div class="empty" data-i18n="loading_b">Загрузка сборок…</div></div>
+  </section>
+  <!-- АВТОМАТИЗАЦИЯ -->
+  <section id="v-auto" class="hidden">
+    <div class="card" style="max-width:520px">
+      <h3 data-i18n="auto_title">Профиль запуска</h3>
+      <p class="tag" data-i18n="auto_desc">Создай ярлык, который одним кликом открывает нужные приложения — для игр, работы и т.д.</p>
+      <input type="search" id="profName" placeholder="Название профиля (напр. Игры)" style="width:100%;margin:10px 0">
+      <input type="search" id="profTargets" placeholder="Пути/приложения через ; (напр. C:\Steam\steam.exe)" style="width:100%;margin-bottom:10px">
+      <button class="btn" id="makeProfile" data-i18n="auto_make">Создать профиль</button>
+      <div id="autoMsg" class="tag" style="margin-top:10px"></div>
+    </div>
+  </section>
+</main>
+<div class="footer">Nyx · инструменты работают только в десктоп-приложении на Windows. Реальные изменения требуют прав администратора (UAC).</div>
+
+<!-- МОДАЛКИ -->
+<div class="modal hidden" id="m-backup"><div class="sheet">
+  <h2 data-i18n="bk_title">Сначала сделаем резервную копию</h2>
+  <p class="tag" data-i18n="bk_sub">Рекомендуется оставить оба варианта — так любые изменения можно откатить.</p>
+  <label class="toggle"><input type="checkbox" id="bkWin" checked><span><b data-i18n="bk_win">Точка восстановления Windows</b> <span class="rec" data-i18n="rec">рекомендуется</span><br><span class="tag" data-i18n="bk_win_d">Системный откат средствами Windows.</span></span></label>
+  <label class="toggle"><input type="checkbox" id="bkNyx" checked><span><b data-i18n="bk_nyx">Файл восстановления Nyx</b> <span class="rec" data-i18n="rec">рекомендуется</span><br><span class="tag" data-i18n="bk_nyx_d">Файл на рабочем столе для переустановки удалённого.</span></span></label>
+  <div class="bar" style="margin-top:14px"><button class="btn ghost" data-close data-i18n="cancel">Отмена</button><div class="spacer"></div><button class="btn" id="toConfirm" data-i18n="next">Далее</button></div>
+</div></div>
+
+<div class="modal hidden" id="m-confirm"><div class="sheet">
+  <h2 data-i18n="cf_title">Будут удалены</h2>
+  <div class="sellist selist" id="selList"></div>
+  <p class="total" id="cfTotal"></p>
+  <p class="tag" data-i18n="cf_mode">Режим удаления:</p>
+  <div class="bar">
+    <button class="btn" id="modeAll" data-i18n="mode_all">⚡ Удалить всё сразу</button>
+    <button class="btn ghost" id="modeOne" data-i18n="mode_one">👁 По одному</button>
+    <div class="spacer"></div><button class="btn ghost" data-close data-i18n="cancel">Отмена</button>
+  </div>
+</div></div>
+
+<div class="modal hidden" id="m-progress"><div class="sheet" style="text-align:center">
+  <h2 id="prTitle" data-i18n="pr_title">Удаление…</h2>
+  <div class="ring" id="ring"><div class="in"><b id="prPct">0%</b><span class="tag" id="prCount">0 / 0</span></div></div>
+  <div class="curapp" id="curApp"></div>
+  <div class="freed"><i id="freedBar"></i></div>
+  <p class="tag" id="freedText">Освобождено: 0 МБ</p>
+  <div id="oneChoice" class="bar hidden" style="justify-content:center">
+    <button class="btn ghost" id="keepBtn" data-i18n="keep">Оставить</button>
+    <button class="btn danger" id="delBtn" data-i18n="del">Удалить</button>
+  </div>
+  <div class="log" id="prLog"></div>
+</div></div>
+
+<div class="modal hidden" id="m-done"><div class="sheet" style="text-align:center">
+  <h2 data-i18n="dn_title">Готово ✓</h2>
+  <p id="dnSummary" class="total"></p>
+  <div class="bar" style="justify-content:center;margin-top:16px">
+    <button class="btn ghost" id="openBackup" data-i18n="dn_open">Открыть файл восстановления</button>
+    <button class="btn" id="goBuilds" data-i18n="tab_builds">Готовые сборки</button>
+    <button class="btn ghost" data-close data-i18n="close">Закрыть</button>
+  </div>
+</div></div>
+
+<script>
+const API = window.nyxTools
+const I18N = {
+ ru:{tab_clean:'Очистка Windows',tab_builds:'Готовые сборки',tab_auto:'Автоматизация',ph_search:'Поиск приложений…',sel_all:'Выбрать все',sel_none:'Снять все',proceed:'Продолжить',loading:'Загрузка списка приложений…',loading_b:'Загрузка сборок…',bk_title:'Сначала сделаем резервную копию',bk_sub:'Рекомендуется оставить оба варианта — так любые изменения можно откатить.',bk_win:'Точка восстановления Windows',bk_nyx:'Файл восстановления Nyx',bk_win_d:'Системный откат средствами Windows.',bk_nyx_d:'Файл на рабочем столе для переустановки удалённого.',rec:'рекомендуется',cancel:'Отмена',next:'Далее',cf_title:'Будут удалены',cf_mode:'Режим удаления:',mode_all:'⚡ Удалить всё сразу',mode_one:'👁 По одному',pr_title:'Удаление…',keep:'Оставить',del:'Удалить',dn_title:'Готово ✓',dn_open:'Открыть файл восстановления',close:'Закрыть',auto_title:'Профиль запуска',auto_desc:'Создай ярлык, который одним кликом открывает нужные приложения — для игр, работы и т.д.',auto_make:'Создать профиль'},
+ en:{tab_clean:'Clean Windows',tab_builds:'Ready builds',tab_auto:'Automation',ph_search:'Search apps…',sel_all:'Select all',sel_none:'Deselect all',proceed:'Continue',loading:'Loading apps…',loading_b:'Loading builds…',bk_title:'Let’s back up first',bk_sub:'Keep both — so any change can be rolled back.',bk_win:'Windows restore point',bk_nyx:'Nyx restore file',bk_win_d:'System rollback via Windows.',bk_nyx_d:'Desktop file to reinstall removed apps.',rec:'recommended',cancel:'Cancel',next:'Next',cf_title:'Will be removed',cf_mode:'Removal mode:',mode_all:'⚡ Remove all',mode_one:'👁 One by one',pr_title:'Removing…',keep:'Keep',del:'Remove',dn_title:'Done ✓',dn_open:'Open restore file',close:'Close',auto_title:'Launch profile',auto_desc:'Create a shortcut that opens your apps in one click — gaming, work, etc.',auto_make:'Create profile'}
+}
+let LANG = (localStorage.getItem('nyx.lang')||'ru').slice(0,2); if(!I18N[LANG])LANG='en'
+function applyI18n(){
+ const d=I18N[LANG]||I18N.en
+ document.querySelectorAll('[data-i18n]').forEach(e=>{const k=e.dataset.i18n;if(d[k])e.textContent=d[k]})
+ document.querySelectorAll('[data-i18n-ph]').forEach(e=>{const k=e.dataset.i18nPh;if(d[k])e.placeholder=d[k]})
+ document.getElementById('langBtn').textContent=LANG.toUpperCase()
+}
+function T(k){return (I18N[LANG]||I18N.en)[k]||k}
+document.getElementById('langBtn').onclick=()=>{const a=Object.keys(I18N);LANG=a[(a.indexOf(LANG)+1)%a.length];localStorage.setItem('nyx.lang',LANG);applyI18n()}
+document.getElementById('themeBtn').onclick=()=>{const c=document.documentElement.dataset.theme==='light'?'dark':'light';document.documentElement.dataset.theme=c;localStorage.setItem('nyx-theme',c)}
+
+function fmt(b){const mb=b/1048576;return mb>=1000?(mb/1024).toFixed(1)+' ГБ':Math.round(mb)+' МБ'}
+function pretty(id){return id.replace(/^Microsoft\./,'').replace(/([a-z])([A-Z])/g,'$1 $2')}
+function tier(id){const risky=/Edge|Cortana|SecHealth|Store|Xbox/i,safe=/CandyCrush|Solitaire|Spotify|Disney|BingWeather|GetHelp|Tips|Feedback|3DViewer|MixedReality|OfficeHub|Todos|People|News/i;return safe.test(id)?'safe':risky.test(id)?'risky':'caution'}
+const TCOLOR={safe:'#19e3b1',caution:'#ffb020',risky:'#ff5d6c'}
+
+let APPS=[],SEL=new Set()
+async function loadApps(){
+ try{APPS=await API.invoke('listApps')||[]}catch(e){document.getElementById('apps').innerHTML='<div class=empty>Недоступно: '+e.message+'</div>';return}
+ APPS.sort((a,b)=>b.sizeBytes-a.sizeBytes)
+ APPS.forEach(a=>{if(tier(a.id)==='safe')SEL.add(a.id)})
+ renderApps();updateTotal()
+}
+function renderApps(){
+ const q=(document.getElementById('q').value||'').toLowerCase()
+ const box=document.getElementById('apps');box.innerHTML=''
+ APPS.filter(a=>a.id.toLowerCase().includes(q)).forEach(a=>{
+  const t=tier(a.id),r=document.createElement('div');r.className='row';r.dataset.id=a.id
+  const logo=a.logo?('file:///'+a.logo.replace(/\\/g,'/')):''
+  r.innerHTML=`<span class=dot style="background:${TCOLOR[t]}"></span>
+   <img src="${logo}" onerror="this.style.visibility='hidden'">
+   <div class=meta><div class=nm>${pretty(a.id)}</div><div class=sz>${fmt(a.sizeBytes)} · ${a.publisher||''}</div></div>
+   <input type=checkbox class=chk ${SEL.has(a.id)?'checked':''}>`
+  r.querySelector('.chk').onchange=e=>{e.target.checked?SEL.add(a.id):SEL.delete(a.id);updateTotal()}
+  box.appendChild(r)
+ })
+}
+function updateTotal(){
+ let n=0,b=0;APPS.forEach(a=>{if(SEL.has(a.id)){n++;b+=a.sizeBytes}})
+ document.getElementById('total').textContent=`Выбрано ${n} · ~${fmt(b)}`
+ document.getElementById('proceed').disabled=n===0
+}
+document.getElementById('q').oninput=renderApps
+document.getElementById('selAll').onclick=()=>{APPS.forEach(a=>SEL.add(a.id));renderApps();updateTotal()}
+document.getElementById('selNone').onclick=()=>{SEL.clear();renderApps();updateTotal()}
+
+// навигация
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>show(t.dataset.view))
+function show(v){document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.view===v))
+ ;['clean','builds','auto'].forEach(x=>document.getElementById('v-'+x).classList.toggle('hidden',x!==v))
+ if(v==='builds')loadPresets()}
+
+// модалки
+function open(id){document.getElementById(id).classList.remove('hidden')}
+function close(id){document.getElementById(id).classList.add('hidden')}
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=e=>e.target.closest('.modal').classList.add('hidden'))
+
+document.getElementById('proceed').onclick=()=>open('m-backup')
+document.getElementById('toConfirm').onclick=()=>{
+ close('m-backup')
+ const sel=APPS.filter(a=>SEL.has(a.id));let b=0
+ document.getElementById('selList').innerHTML=sel.map(a=>{b+=a.sizeBytes;return `<div class=i><span>${pretty(a.id)}</span><span>${fmt(a.sizeBytes)}</span></div>`}).join('')
+ document.getElementById('cfTotal').textContent='Итого освободится: ~'+fmt(b)
+ open('m-confirm')
+}
+
+let jobApps=[],oneIdx=0,oneResolve=null
+function currentSelection(){return APPS.filter(a=>SEL.has(a.id)).map(a=>({id:a.id,logo:a.logo,sizeBytes:a.sizeBytes}))}
+document.getElementById('modeAll').onclick=()=>startJob('all')
+document.getElementById('modeOne').onclick=()=>startJob('one')
+
+function startJob(mode){
+ close('m-confirm')
+ jobApps=currentSelection()
+ document.getElementById('prLog').innerHTML=''
+ document.getElementById('freedBar').style.width='0'
+ document.getElementById('ring').style.setProperty('--p',0)
+ document.getElementById('prPct').textContent='0%'
+ document.getElementById('oneChoice').classList.toggle('hidden',mode!=='one')
+ open('m-progress')
+ const bkWin=document.getElementById('bkWin').checked,bkNyx=document.getElementById('bkNyx').checked
+ const finalApps = mode==='one' ? jobApps : jobApps // фильтрация one-by-one — на этапе подтверждения ниже
+ runJob(finalApps,bkWin,bkNyx,mode)
+}
+
+async function runJob(apps,bkWin,bkNyx,mode){
+ // one-by-one: спросить по каждому оставить/удалить ДО запуска
+ let toRemove=apps
+ if(mode==='one'){
+  toRemove=[]
+  for(const a of apps){
+   showCur(a);setTitle('Оставить или удалить?')
+   const keep=await ask()
+   if(!keep)toRemove.push(a)
+  }
+  document.getElementById('oneChoice').classList.add('hidden')
+  if(!toRemove.length){close('m-progress');return}
+ }
+ setTitle(T('pr_title'))
+ const total=toRemove.length;let done=0,freed=0
+ const off=API.onProgress(ev=>{
+  if(ev.type==='restore-point')log(ev.ok?'✓ Точка восстановления создана':'⚠ Точка восстановления: '+(ev.error||'ошибка'))
+  if(ev.type==='backup')log('✓ Файл восстановления: '+ev.file), window.__nyxBackup=ev.file
+  if(ev.type==='item-start')showCur(toRemove.find(x=>x.id===ev.id)||{id:ev.id,logo:ev.logo})
+  if(ev.type==='item-done'){done++;freed=ev.freedBytes||freed;const p=Math.round(done/total*100)
+   document.getElementById('ring').style.setProperty('--p',p)
+   document.getElementById('prPct').textContent=p+'%'
+   document.getElementById('prCount').textContent=done+' / '+total
+   document.getElementById('freedBar').style.width=Math.min(100,p)+'%'
+   document.getElementById('freedText').textContent='Освобождено: '+fmt(freed)
+   log((ev.ok?'✓ ':'✗ ')+pretty(ev.id))
+   const row=document.querySelector('.row[data-id="'+ev.id+'"]');if(row){row.classList.add('gone');setTimeout(()=>row.remove(),500)}
+  }
+  if(ev.type==='complete'){log('— завершено —')
+   document.getElementById('dnSummary').textContent=`Удалено ${ev.removed}, освобождено ${fmt(ev.freedBytes)}`}
+ })
+ try{
+  await API.invoke('runRemovalJob',{apps:toRemove,backupWindows:bkWin,backupNyx:bkNyx})
+ }catch(e){log('Ошибка: '+e.message)}
+ off()
+ setTimeout(()=>{close('m-progress');open('m-done');toRemove.forEach(a=>SEL.delete(a.id));updateTotal()},700)
+}
+function setTitle(t){document.getElementById('prTitle').textContent=t}
+function showCur(a){const logo=a.logo?('file:///'+a.logo.replace(/\\/g,'/')):''
+ document.getElementById('curApp').innerHTML=`<img src="${logo}" onerror="this.style.visibility='hidden'"><b>${pretty(a.id)}</b>`}
+function log(s){const l=document.getElementById('prLog');l.innerHTML+=s+'<br>';l.scrollTop=l.scrollHeight}
+function ask(){document.getElementById('oneChoice').classList.remove('hidden')
+ return new Promise(res=>{oneResolve=res
+  document.getElementById('keepBtn').onclick=()=>{oneResolve(true)}
+  document.getElementById('delBtn').onclick=()=>{oneResolve(false)}})}
+
+document.getElementById('openBackup').onclick=()=>{if(window.__nyxBackup)API.invoke('wingetInstall',{id:''}).catch(()=>{});alert('Файл: '+(window.__nyxBackup||'не создан'))}
+document.getElementById('goBuilds').onclick=()=>{close('m-done');show('builds')}
+
+// СБОРКИ
+async function loadPresets(){
+ const box=document.getElementById('presets')
+ let data={presets:[]};try{data=await API.invoke('listPresets')}catch(e){}
+ if(!data.presets||!data.presets.length){box.innerHTML='<div class=empty>Пока нет готовых сборок.<br>Скоро здесь появятся проверенные пресеты для игр, производительности и приватности.</div>';return}
+ box.innerHTML=data.presets.map(p=>`<div class=card>
+  <h3>${p.title}</h3><div class=tag>${p.for||''}</div>
+  <div class=row2><span>★ ${p.rating||0}</span><span>👥 ${p.users||0}</span><span>${p.author||''}</span></div>
+  <p class=tag>${p.why||''}</p>
+  ${p.site?`<a href="${p.site}" target="_blank" style="color:var(--accent)">Подробнее</a>`:''}
+  <div style="margin-top:10px"><button class=btn disabled>Применить</button></div></div>`).join('')
+}
+
+// АВТОМАТИЗАЦИЯ
+document.getElementById('makeProfile').onclick=async()=>{
+ const name=document.getElementById('profName').value.trim()
+ const targets=document.getElementById('profTargets').value.split(';').map(s=>s.trim()).filter(Boolean)
+ if(!name||!targets.length){document.getElementById('autoMsg').textContent='Укажи название и хотя бы один путь.';return}
+ try{const f=await API.invoke('createProfileLauncher',{name,targets});document.getElementById('autoMsg').textContent='✓ Создан: '+f}
+ catch(e){document.getElementById('autoMsg').textContent='Ошибка: '+e.message}
+}
+
+applyI18n();loadApps()
+</script></body></html>
