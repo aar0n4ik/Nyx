@@ -1,0 +1,15 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "outputDirectory": "public",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "installCommand": "echo skip",
+  "buildCommand": "echo static",
+  "framework": null,
+  "functions": { "api/*.js": { "maxDuration": 10 } },
+  "rewrites": [
+    { "source": "/app", "destination": "/app.html" },
+    { "source": "/setup", "destination": "/setup.html" },
+    { "source": "/account", "destination": "/account.html" }
+  ]
+}

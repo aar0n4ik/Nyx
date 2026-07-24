@@ -1,0 +1,12 @@
+node_modules
+electron
+src
+server.js
+qvac.js
+poli.js
+netguard.js
+validator.js
+agents.js
+*.key
+evidence
+data

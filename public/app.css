@@ -158,3 +158,31 @@ button{font-family:inherit;cursor:pointer}
 /* NYX sidebar logo mark (transparent, lets the gradient SVG breathe) */
 .side .brand .logo{background:transparent;width:auto;height:auto;display:inline-grid;place-items:center;line-height:0}
 .side .brand .logo svg{display:block}
+
+/* ===== Nyx app — тёмная тема (добавлено) ===== */
+[data-theme="dark"]{
+  --bg:#0b0b0f; --ink:#f2f2f5; --muted:#9a9aa6; --line:#1c1c24;
+  --blue:#7c5cff; --blue-soft:#191426; --blue-deep:#9d86ff;
+  --ok:#19e3b1; --warn:#febc2e; --bad:#ff6b6b;
+}
+[data-theme="dark"] body{background:var(--bg);color:var(--ink)}
+[data-theme="dark"] .side{background:#0e0e14;border-color:var(--line)}
+[data-theme="dark"] .newchat{background:var(--blue);color:#0b0b0f}
+[data-theme="dark"] .chat-item{color:var(--ink)}
+[data-theme="dark"] .chat-item:hover,[data-theme="dark"] .chat-item.active{background:#15151d}
+[data-theme="dark"] .topbar{background:rgba(11,11,15,.8);border-color:var(--line)}
+[data-theme="dark"] .bubble.user{background:var(--blue-soft);color:var(--ink)}
+[data-theme="dark"] .bubble.bot{background:#111119;border-color:var(--line);color:var(--ink)}
+[data-theme="dark"] .qbtn{background:#12121a;border-color:var(--line);color:var(--ink)}
+[data-theme="dark"] .qbtn:hover{border-color:var(--blue);color:var(--blue-deep)}
+[data-theme="dark"] .wcard{background:#111119;border-color:var(--line)}
+[data-theme="dark"] .composer{background:#0e0e14;border-color:var(--line)}
+[data-theme="dark"] .composer textarea,[data-theme="dark"] #input{background:#12121a;color:var(--ink);border-color:var(--line)}
+[data-theme="dark"] .typing span{background:var(--muted)}
+[data-theme="dark"] .appfoot{color:var(--muted);border-color:var(--line)}
+[data-theme="dark"] .act{background:#12121a;border-color:var(--line);color:var(--ink)}
+[data-theme="dark"] .warnbox{background:#241a0a;border-color:#4a3a12;color:#ffd88a}
+[data-theme="dark"] .okbox{background:#0c2018;border-color:#124a36;color:#8affd6}
+[data-theme="dark"] .langsel{background:#12121a;color:var(--ink);border-color:var(--line)}
+.langsel{height:34px;border-radius:8px;border:1px solid var(--line);background:var(--bg);
+  color:var(--ink);padding:0 8px;font:inherit;cursor:pointer}
