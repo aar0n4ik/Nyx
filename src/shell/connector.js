@@ -59,7 +59,7 @@ function shellCmd(shell, script) {
 export async function runScript(script, {
 	shell = defaultShell(),
 	timeoutMs = Number(process.env.NYX_EXEC_TIMEOUT || 15000),
-	allowExec = process.env.NYX_ALLOW_EXEC !== "0",
+	allowExec = process.env.NYX_ALLOW_EXEC === "1",
 	confirm = false,
 	maxOutput = 16000,
 	cwd,

@@ -1,8 +1,15 @@
-// NetGuard: runtime egress auditor.
-// Default-deny model: every non-loopback socket is blocked UNLESS its host is on
-// an explicit allowlist (the user-approved exchange endpoint). Allowed calls are
-// still recorded, so the privacy claim is precise and honest:
-// "no egress except the allowlisted, user-approved endpoints, fully logged."
+// NetGuard: runtime egress auditor for THIS Node process.
+// DEFAULT-DENY, and blocking is ON by default (set NYX_STRICT=0 for log-only):
+// every non-loopback socket is blocked UNLESS its host is on an explicit
+// allowlist (the user-approved exchange endpoint). Allowed calls are still
+// recorded, so the privacy claim stays precise and honest:
+//   "no egress except the allowlisted, user-approved endpoints — fully logged."
+//
+// Scope & limits (stated honestly, not marketing): this hooks
+// net.Socket.prototype.connect, so it covers Node's TCP/TLS/HTTP(S)/fetch
+// traffic. It does NOT intercept UDP, OS-level DNS resolvers, child processes,
+// or native addons that open their own sockets. It is a strong in-process guard
+// plus a tamper-evident audit log — not a kernel/OS firewall.
 import net from "node:net"
 import { writeFileSync, mkdirSync } from "node:fs"
 
@@ -17,7 +24,8 @@ const ALLOWLIST = [
 ]
 
 const report = {
-	strict: process.env.NYX_STRICT === "1",
+	// Block by default; opt out explicitly with NYX_STRICT=0 (log-only mode).
+	strict: process.env.NYX_STRICT !== "0",
 	allowlist: ALLOWLIST,
 	nonLoopback: 0, // blocked / unexpected egress
 	allowed: 0, // allowlisted egress (counted, not a violation)

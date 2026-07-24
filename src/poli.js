@@ -1,8 +1,21 @@
-// Proof-of-Local-Inference: a tamper-evident, Ed25519-signed hash chain.
+// Proof-of-Local-Inference (PoLI): a tamper-evident, Ed25519-signed hash chain.
 // Every inference appends an entry whose hash chains to the previous one, so a
-// verifier can prove the log was not altered or reordered. Each entry also
-// records which engine produced the answer and (optionally) its performance
-// telemetry (TTFT, tokens/sec) so the metrics are part of the signed evidence.
+// verifier can prove the log was NOT altered or reordered, and that each entry
+// was produced by the holder of the local signing key.
+//
+// Honest scope (important — do NOT overstate this):
+//   PoLI proves INTEGRITY + ORDERING of the recorded inferences. Because the
+//   signing key is generated and kept locally, this is NOT, by itself, a
+//   cryptographic proof that inference physically ran on this machine (that
+//   would require hardware/TEE remote attestation). The "on-device" guarantee
+//   comes from the COMBINATION of: (1) there being no cloud inference code path
+//   at all (see src/llm/engine.js — QVAC SDK only), and (2) NetGuard's full
+//   egress log showing no AI endpoint was ever contacted. PoLI ties those facts
+//   to a signed, append-only record.
+//
+// Each entry also records which engine produced the answer and (optionally) its
+// performance telemetry (TTFT, tokens/sec) so the metrics are part of the
+// signed evidence.
 import { createHash, createPrivateKey, sign } from "node:crypto"
 import { readFileSync, appendFileSync, existsSync, mkdirSync } from "node:fs"
 

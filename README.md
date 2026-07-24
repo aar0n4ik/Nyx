@@ -22,14 +22,23 @@ model that answers your questions also writes the exact shell command to fix a
 problem, then hands it to a validator and to **you** for approval.
 
 - **100% on-device inference** via the QVAC SDK (Qwen3-4B, llama.cpp backend).
-- **On-device RAG** — retrieval embeddings also run through the QVAC SDK.
-- **Real autonomy, real safety** — the model authors commands; a static
-  validator blocks destructive operations; you confirm via a single UAC prompt.
-- **NetGuard** — a runtime egress firewall proves Nyx makes **zero** unapproved
-  (non-allowlisted) network calls. The only allowed egress is loopback and, when
-  you opt into trading, the Bitfinex endpoint — and every socket is logged.
-- **PoLI** — every inference is hash-chained and signed (Proof-of-Local-Inference)
-  so the "it ran locally" claim is **verifiable**, not marketing.
+  There is no cloud inference code path at all (see `src/llm/engine.js`).
+- **On-device RAG** — retrieval embeddings also run through the QVAC SDK, with
+  an honest, clearly-labeled local-hash fallback when no embedding model exists.
+- **Real autonomy, real safety** — the model authors commands; a **fast static
+  gate** (`src/shell/validator.js`, *not* a sandbox) blocks destructive and
+  obfuscated/encoded operations; execution is **off by default**, and every
+  action needs your explicit OK plus a single Windows UAC prompt.
+- **NetGuard** — a runtime egress guard that **blocks and logs** every
+  non-allowlisted network call from the app process (blocking is **on by
+  default**; `NYX_STRICT=0` for log-only). The only allowed egress is loopback
+  and, when you opt into trading, the Bitfinex endpoint. In-process guard +
+  audit log — not a kernel firewall.
+- **PoLI** — every inference is appended to a tamper-evident, Ed25519-signed
+  hash chain (Proof-of-Local-Inference). It proves the log was **not altered or
+  reordered** (integrity + ordering). Combined with the absence of any cloud
+  code path and NetGuard's egress log, this substantiates the on-device claim
+  — it is not a TEE remote-attestation proof of physical locality.
 
 ## What it does
 
@@ -44,12 +53,12 @@ problem, then hands it to a validator and to **you** for approval.
 ## Architecture (high level)
 
 ```
- Browser UI (public/)  ─►  server.js  ─►  src/agents.js (hybrid router)
-                                          ├─ Tier 1  instant fast-path (specs/uptime/ping, no LLM)
-                                          ├─ Tier 1b action pipeline  ─► diagnose ─► validator ─► exec (your OK)
-                                          └─ Tier 2  QVAC LLM + RAG (unconstrained reasoning)
-   QVAC SDK  ◄─ src/qvac.js (chat + embeddings)      RAG ◄─ src/rag.js (on-device vectors)
-   Safety    ◄─ src/shell/validator.js, src/netguard.js, src/poli.js, src/attestation.js
+ Browser UI (public/)  ->  server.js  ->  src/agents.js (tiered router)
+                                          |- Tier 1  instant fast-path (specs/uptime/ping, no LLM)
+                                          |- Tier 1b action pipeline  -> diagnose -> validator -> exec (your OK)
+                                          \- Tier 2  QVAC LLM + RAG (unconstrained reasoning)
+   QVAC SDK  <- src/qvac.js (chat + embeddings)      RAG <- src/rag.js (on-device vectors)
+   Safety    <- src/shell/validator.js, src/netguard.js, src/poli.js, src/attestation.js
 ```
 
 Detailed notes live in `docs/architecture.md`, `docs/offline-autonomy.md`,
@@ -57,7 +66,7 @@ Detailed notes live in `docs/architecture.md`, `docs/offline-autonomy.md`,
 
 ## Quick start
 
-Requirements: **Node ≥ 22.17** (a QVAC SDK requirement) and **npm ≥ 10.9**,
+Requirements: **Node >= 22.17** (a QVAC SDK requirement) and **npm >= 10.9**,
 Windows 10/11 (the action pipeline targets PowerShell). macOS/Linux run in
 chat + RAG mode.
 
@@ -69,8 +78,9 @@ npm install
 npm run model      # installs @qvac/sdk + fetches the model into ~/.qvac/models
 npm run setup      # builds the local vector index from data/notes
 
-# 3) start — autonomous execution is ON by default (one confirm + Windows UAC).
-#    Set NYX_ALLOW_EXEC=0 if you ever want pure dry-run.
+# 3) start. Autonomous execution is OFF by default (dry-run: Nyx proposes the
+#    exact command but never runs it). Set NYX_ALLOW_EXEC=1 to let it run
+#    confirmed actions itself (still one Execute click + Windows UAC).
 npm start          # -> open http://localhost:3000/app
 ```
 
@@ -91,9 +101,9 @@ npm run verify     # -> verifies the Proof-of-Local-Inference chain
 | Artifact | File | Proves |
 |---|---|---|
 | Hardware proof | `evidence/hardware.json` | the device it ran on (repo ships a sanitized sample; `npm run hwproof` writes your real one locally) |
-| Egress report | `evidence/netguard.json` | zero unapproved egress (allowlist: loopback + Bitfinex) |
+| Egress report | `evidence/netguard.json` | only allowlisted hosts (loopback + Bitfinex) were contacted; everything else was blocked and logged |
 | Model attestation | `evidence/attestation.json` | which local model + SHA-256 |
-| Inference log | `evidence/poli.jsonl` + `npm run verify` | every inference ran on-device |
+| Inference log | `evidence/poli.jsonl` + `npm run verify` | a tamper-evident, signed chain of every inference (integrity + ordering) |
 
 > The repo ships `evidence/poli.pub` (the public key) so anyone can verify the
 > chain. Private keys, built indexes, machine-specific lock files and the real
@@ -119,15 +129,16 @@ See `SUBMISSION.md` for a requirement-by-requirement mapping to evidence.
 
 ## Demo video
 
-🎥 **Demo:**  https://youtu.be/FG19aIasp4E?si=KK5oqtJb0WalE-Jh
+Demo: https://youtu.be/FG19aIasp4E?si=KK5oqtJb0WalE-Jh
 
 ## Configuration
 
 Copy `.env.example` to `.env`. Key switches: `NYX_OFFLINE` (default on),
-`NYX_ALLOW_EXEC` (autonomous execution — **on by default**; set `0` for pure
-dry-run), `NYX_QVAC_MODEL`, `NYX_QVAC_EMBED_MODEL`, `NYX_PORT`,
-`NYX_ALLOW_HOSTS`, `NYX_LIVE_TRADING` (off by default). There is **no cloud-AI
-switch** — inference is QVAC-only by design.
+`NYX_STRICT` (NetGuard egress blocking — **on by default**; `0` for log-only),
+`NYX_ALLOW_EXEC` (autonomous execution — **off by default / dry-run**; set `1`
+to enable, actions still require confirmation), `NYX_QVAC_MODEL`,
+`NYX_QVAC_EMBED_MODEL`, `NYX_PORT`, `NYX_ALLOW_HOSTS`, `NYX_LIVE_TRADING` (off by
+default). There is **no cloud-AI switch** — inference is QVAC-only by design.
 
 ## Built by
 

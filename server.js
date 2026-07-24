@@ -111,7 +111,7 @@ createServer(async (req, res) => {
 			const { keyRef } = await readBody(req); removeKey(keyRef); return json(res, 200, { ok: true })
 		}
 
-		// --- Hybrid LLM status (online/offline provider) ---
+		// --- LLM engine status (QVAC on-device; honest offline fallback, no cloud) ---
 		if (req.method === "GET" && path === "/api/llm/status") {
 			return json(res, 200, await llmStatus())
 		}
