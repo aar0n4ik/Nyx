@@ -1,295 +1,215 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-<script>(function(){try{var t=localStorage.getItem("nyx-theme");if(!t)t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.setAttribute("data-theme",t)}catch(e){document.documentElement.setAttribute("data-theme","dark")}})();</script>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Nyx — the offline mind for your computer</title>
-<meta name="description" content="Nyx is a private, offline AI that operates your PC — installs software, snapshots and restores your system from one file, and refuses anything dangerous. Fast even on a weak machine." />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nyx — sovereign local AI</title>
+<meta name="description" content="Nyx is a local-first AI operator. It plans in the open and acts only when you approve.">
+<script>(function(){try{var t=localStorage.getItem('nyx-theme');if(!t)t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t)}catch(e){}})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#050506; --panel:#0b0b0f; --line:#1b1b22; --text:#f3f3f5; --muted:#9a9aa6;
-    --accent:#7c5cff; --accent2:#19e3b1; --glow:rgba(124,92,255,.55);
-    --radius:18px; --maxw:1120px;
-    --icon:var(--accent2);
-  }
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{
-    margin:0; background:var(--bg); color:var(--text);
-    font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    -webkit-font-smoothing:antialiased; overflow-x:hidden; line-height:1.5;
-  }
-  a{color:inherit;text-decoration:none}
-  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
-
-  /* Native scroll-driven progress bar (2026) */
-  .progress{position:fixed;inset:0 0 auto 0;height:2px;transform-origin:0 50%;
-    background:linear-gradient(90deg,var(--accent),var(--accent2));z-index:99;transform:scaleX(0)}
-  @supports (animation-timeline: scroll()){
-    .progress{animation:grow linear both;animation-timeline:scroll(root)}
-  }
-  @keyframes grow{to{transform:scaleX(1)}}
-
-  /* Ambient mesh glow */
-  .mesh{position:fixed;inset:-30% -10% auto -10%;height:120vh;z-index:-1;filter:blur(80px);opacity:.55;
-    background:
-      radial-gradient(40% 40% at 20% 20%, var(--glow), transparent 70%),
-      radial-gradient(35% 35% at 80% 15%, rgba(25,227,177,.35), transparent 70%),
-      radial-gradient(45% 45% at 60% 60%, rgba(124,92,255,.30), transparent 70%);
-    animation:drift 18s ease-in-out infinite alternate}
-  @keyframes drift{to{transform:translate3d(0,4%,0) scale(1.08)}}
-
-  header{position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);
-    background:color-mix(in srgb,var(--bg) 70%,transparent);border-bottom:1px solid var(--line)}
-  .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
-  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.02em}
-  .brand svg{width:26px;height:26px}
-  .navlinks{display:flex;gap:26px;color:var(--muted);font-size:14px}
-  .navlinks a:hover{color:var(--text)}
-  .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:12px;
-    font-weight:600;font-size:14px;border:1px solid transparent;transition:.25s;will-change:transform}
-  .btn-primary{background:linear-gradient(180deg,var(--accent),#5b3fe0);color:#fff;box-shadow:0 8px 30px -8px var(--glow)}
-  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 40px -8px var(--glow)}
-  .btn-ghost{border-color:var(--line);color:var(--text)}
-  .btn-ghost:hover{border-color:var(--accent);background:rgba(124,92,255,.08)}
-
-  /* HERO */
-  .hero{position:relative;padding:96px 0 40px;text-align:center}
-  .badge{display:inline-flex;gap:8px;align-items:center;font-size:12.5px;color:var(--muted);
-    border:1px solid var(--line);padding:6px 12px;border-radius:999px;background:var(--panel)}
-  .badge .dot{width:7px;height:7px;border-radius:50%;background:var(--accent2);box-shadow:0 0 10px var(--accent2);animation:pulse 2s infinite}
-  @keyframes pulse{50%{opacity:.35}}
-  h1{font-size:clamp(38px,7vw,74px);line-height:1.03;margin:22px auto 0;max-width:14ch;letter-spacing:-.03em;font-weight:800}
-  .grad{background:linear-gradient(100deg,var(--text) 20%,var(--accent) 55%,var(--accent2) 90%);
-    -webkit-background-clip:text;background-clip:text;color:transparent;background-size:200% 100%;animation:shine 6s linear infinite}
-  @keyframes shine{to{background-position:200% 0}}
-  .sub{color:var(--muted);font-size:clamp(16px,2.2vw,20px);max-width:56ch;margin:20px auto 0}
-  .cta{display:flex;gap:14px;justify-content:center;margin-top:30px;flex-wrap:wrap}
-
-  .mark{width:96px;height:96px;margin:0 auto;display:block;filter:drop-shadow(0 0 22px var(--glow))}
-  .mark path,.mark circle,.mark line{stroke:var(--accent2);stroke-width:2;fill:none;
-    stroke-dasharray:var(--l,260);stroke-dashoffset:var(--l,260);animation:draw 2.4s ease forwards}
-  .mark .n{stroke:var(--accent)}
-  .mark circle{fill:var(--accent2);stroke:none;opacity:0;animation:fade 1s ease forwards .8s}
-  @keyframes draw{to{stroke-dashoffset:0}}
-  @keyframes fade{to{opacity:1}}
-
-  /* Terminal mock */
-  .term{max-width:720px;margin:46px auto 0;background:var(--panel);border:1px solid var(--line);
-    border-radius:var(--radius);overflow:hidden;box-shadow:0 40px 120px -40px #000;text-align:left}
-  .term .bar{display:flex;gap:7px;padding:12px 16px;border-bottom:1px solid var(--line)}
-  .term .bar i{width:11px;height:11px;border-radius:50%;background:#2a2a33;display:inline-block}
-  .term .bar i:nth-child(1){background:#ff5f57}.term .bar i:nth-child(2){background:#febc2e}.term .bar i:nth-child(3){background:#28c840}
-  .term pre{margin:0;padding:20px;font:14px/1.7 "JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#d6d6de;min-height:150px}
-  .term .u{color:var(--accent2)} .term .k{color:var(--accent)} .term .ok{color:#28c840} .term .no{color:#ff6b6b}
-  .cursor{display:inline-block;width:9px;height:1.1em;background:var(--accent2);vertical-align:-2px;animation:blink 1s steps(1) infinite}
-  @keyframes blink{50%{opacity:0}}
-
-  /* Reveal */
-  .reveal{opacity:0;transform:translateY(38px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1)}
-  .reveal.in{opacity:1;transform:none}
-
-  section.block{padding:90px 0}
-  .eyebrow{color:var(--accent2);font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
-  h2{font-size:clamp(28px,4.5vw,46px);letter-spacing:-.02em;margin:12px 0 0;font-weight:800}
-  .lead{color:var(--muted);max-width:60ch;margin-top:14px}
-
-  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:46px}
-  @media(max-width:860px){.grid{grid-template-columns:1fr}}
-  .card{background:linear-gradient(180deg,var(--panel),#08080b);border:1px solid var(--line);
-    border-radius:var(--radius);padding:28px;position:relative;overflow:hidden;transition:.3s}
-  .card:hover{transform:translateY(-4px);border-color:color-mix(in srgb,var(--accent) 50%,var(--line))}
-  .card::after{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;opacity:0;transition:.3s;
-    background:linear-gradient(120deg,var(--accent),var(--accent2));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
-  .card:hover::after{opacity:.7}
-  .card svg{width:40px;height:40px}
-  .card svg [class*=stroke]{fill:none;stroke:var(--icon);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-  .card:hover svg [class*=draw]{stroke-dasharray:120;stroke-dashoffset:120;animation:draw 1.1s ease forwards}
-  .card h3{margin:16px 0 6px;font-size:20px}
-  .card p{color:var(--muted);font-size:15px;margin:0}
-
-  /* steps */
-  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:44px;counter-reset:s}
-  @media(max-width:860px){.steps{grid-template-columns:1fr 1fr}}
-  .step{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px}
-  .step::before{counter-increment:s;content:"0" counter(s);font:700 26px/1 "JetBrains Mono",monospace;
-    color:transparent;background:linear-gradient(120deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text}
-  .step h4{margin:12px 0 6px;font-size:16px} .step p{color:var(--muted);font-size:14px;margin:0}
-
-  /* metrics */
-  .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:44px}
-  @media(max-width:860px){.metrics{grid-template-columns:1fr}}
-  .metric{border:1px solid var(--line);border-radius:16px;padding:26px;background:var(--panel);text-align:center}
-  .metric .big{font-size:44px;font-weight:800;background:linear-gradient(120deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .metric small{color:var(--muted)}
-  .note{color:var(--muted);font-size:13px;margin-top:18px;text-align:center}
-
-  .final{text-align:center;padding:110px 0;position:relative}
-  .final h2{max-width:18ch;margin:0 auto}
-  footer{border-top:1px solid var(--line);padding:34px 0;color:var(--muted);font-size:13px;
-    display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
-
-  @media (prefers-reduced-motion: reduce){
-    *{animation:none!important;transition:none!important}
-    .reveal{opacity:1;transform:none}
-  }
+:root{--bg:#06060b;--text:#f3f4fb;--muted:#a0a5bd;--line:rgba(255,255,255,.09);--glass:rgba(255,255,255,.05);--glass2:rgba(255,255,255,.085);--accent:#7c5cff;--accent2:#19e3b1;--accent3:#5b8cff;--accent4:#ff6b9d;--shadow:0 30px 90px -34px rgba(0,0,0,.75);--r:20px;color-scheme:dark}
+[data-theme=light]{--bg:#eef1f8;--text:#0c0e18;--muted:#525873;--line:rgba(12,14,30,.1);--glass:rgba(255,255,255,.6);--glass2:rgba(255,255,255,.78);--accent:#6a3bff;--accent2:#0a9c78;--accent3:#2f6bff;--accent4:#e85a92;--shadow:0 30px 70px -34px rgba(30,40,90,.3);color-scheme:light}
+@property --a{syntax:'<angle>';inherits:false;initial-value:0deg}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;font-weight:400;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}h1,h2,h3{margin:0;line-height:1.06;letter-spacing:-.03em;font-weight:700}p{margin:0}
+.wrap{max-width:1140px;margin:0 auto;padding:0 24px}
+.aurora{position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.55;mix-blend-mode:screen;will-change:transform}
+[data-theme=light] .blob{opacity:.42;mix-blend-mode:multiply;filter:blur(80px)}
+.b1{width:54vw;height:54vw;background:radial-gradient(circle,var(--accent),transparent 62%);top:-16vw;left:-12vw;animation:d1 24s ease-in-out infinite}
+.b2{width:48vw;height:48vw;background:radial-gradient(circle,var(--accent2),transparent 62%);top:18vh;right:-16vw;animation:d2 28s ease-in-out infinite}
+.b3{width:50vw;height:50vw;background:radial-gradient(circle,var(--accent4),transparent 62%);bottom:-22vw;left:28vw;animation:d3 32s ease-in-out infinite}
+@keyframes d1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(8vw,6vh) scale(1.12)}}
+@keyframes d2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-7vw,10vh) scale(1.08)}}
+@keyframes d3{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(5vw,-8vh) scale(1.14)}}
+.grain{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.045;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.glass{background:var(--glass);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border:1px solid var(--line);border-radius:var(--r);position:relative}
+.glass::before{content:'';position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;opacity:.7;background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,0) 45%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.nav{position:sticky;top:0;z-index:60;padding:14px 0}
+.nav-in{display:flex;align-items:center;gap:16px;padding:10px 12px 10px 18px;border-radius:18px;transition:box-shadow .4s}
+.nav.scrolled .nav-in{box-shadow:var(--shadow)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.02em;font-size:19px;text-decoration:none}
+.mk{width:26px;height:26px;display:grid;place-items:center;border-radius:8px;background:linear-gradient(140deg,var(--accent),var(--accent3));box-shadow:0 6px 18px -6px var(--accent)}
+.mk svg{width:15px;height:15px;color:#fff}
+.nav-links{display:flex;gap:6px;margin-left:8px}
+.nav-links a{padding:9px 13px;border-radius:10px;font-size:14px;font-weight:500;color:var(--muted);text-decoration:none;transition:.2s}
+.nav-links a:hover{color:var(--text);background:var(--glass2)}
+.controls{display:flex;align-items:center;gap:8px;margin-left:auto}
+.ctrl{height:38px;display:inline-flex;align-items:center;gap:7px;padding:0 12px;border-radius:11px;border:1px solid var(--line);background:var(--glass);color:var(--text);cursor:pointer;font:600 13px/1 'Inter',sans-serif;transition:.2s}
+.ctrl:hover{border-color:color-mix(in srgb,var(--accent) 55%,var(--line))}
+.ctrl.icon{width:38px;justify-content:center;padding:0}.ctrl svg{width:16px;height:16px}
+.lang{position:relative}
+.menu{position:absolute;right:0;top:46px;min-width:172px;padding:6px;border-radius:14px;background:var(--glass2);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--line);box-shadow:var(--shadow);display:none;z-index:80}
+.lang.open .menu{display:block}
+.menu button{display:block;width:100%;text-align:left;padding:9px 12px;border:0;border-radius:9px;background:transparent;color:var(--text);font:500 14px/1 'Inter',sans-serif;cursor:pointer}
+.menu button:hover{background:color-mix(in srgb,var(--accent) 14%,transparent)}
+.menu button[aria-selected=true]{color:var(--accent2);font-weight:600}
+.sun-and-moon>.sun{transform-origin:center;transition:transform .5s cubic-bezier(.5,1.3,.7,1.25)}
+.sun-and-moon>.beams{transform-origin:center;transition:transform .5s cubic-bezier(.5,1.5,.7,1.25),opacity .4s;stroke-width:2}
+.sun-and-moon>.moon>circle{transition:transform .25s cubic-bezier(0,0,0,1)}
+[data-theme=dark] .sun-and-moon>.sun{transform:scale(1.7)}[data-theme=dark] .sun-and-moon>.beams{opacity:0;transform:rotate(-.25turn)}[data-theme=dark] .sun-and-moon>.moon>circle{transform:translateX(-7px)}
+.btn{position:relative;display:inline-flex;align-items:center;gap:9px;padding:14px 24px;border-radius:14px;font-weight:600;font-size:15px;text-decoration:none;cursor:pointer;border:1px solid var(--line);color:var(--text);overflow:hidden;transition:transform .28s cubic-bezier(.2,.8,.2,1),box-shadow .3s}
+.btn:hover{transform:translateY(-2px)}
+.btn::after{content:'';position:absolute;top:0;left:-130%;width:55%;height:100%;transform:skewX(-20deg);background:linear-gradient(105deg,transparent,rgba(255,255,255,.35),transparent);transition:left .65s}
+.btn:hover::after{left:150%}
+.btn-primary{color:#fff;background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 55%,transparent),color-mix(in srgb,var(--accent) 22%,transparent));backdrop-filter:blur(14px);border-color:transparent;box-shadow:0 12px 34px -12px var(--accent),inset 0 1px 0 rgba(255,255,255,.4)}
+.edge{position:absolute;inset:-1px;border-radius:inherit;padding:1.4px;pointer-events:none;background:conic-gradient(from var(--a),var(--accent),var(--accent2),var(--accent3),var(--accent4),var(--accent));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:spin 6s linear infinite;opacity:.95}
+@keyframes spin{to{--a:360deg}}
+.btn-ghost{background:var(--glass);backdrop-filter:blur(14px)}.btn-sm{padding:11px 18px;font-size:14px}
+.hero{padding:52px 0 40px;text-align:center}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;font-size:13px;font-weight:500;color:var(--muted);background:var(--glass);border:1px solid var(--line);margin-bottom:26px}
+.pulse{width:7px;height:7px;border-radius:50%;background:var(--accent2);animation:pulse 2.4s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent2) 60%,transparent)}70%{box-shadow:0 0 0 9px transparent}100%{box-shadow:0 0 0 0 transparent}}
+.hero h1{font-size:clamp(40px,7.2vw,76px);max-width:15ch;margin:0 auto}
+.grad{background:linear-gradient(115deg,var(--accent3),var(--accent2) 45%,var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{margin:24px auto 0;max-width:54ch;font-size:clamp(16px,2vw,19px);color:var(--muted)}
+.cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:34px}
+.hint{margin-top:18px;font-size:13px;color:var(--muted)}
+.term{max-width:660px;margin:56px auto 0;overflow:hidden;box-shadow:var(--shadow)}
+.term-head{display:flex;align-items:center;gap:8px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.dot{width:11px;height:11px;border-radius:50%}.dot.r{background:#ff5f57}.dot.y{background:#febc2e}.dot.g{background:#28c840}
+.term-title{margin-left:8px;font:500 12px/1 'JetBrains Mono',monospace;color:var(--muted)}
+.term-body{padding:22px 20px;min-height:230px;font-family:'JetBrains Mono',monospace;font-size:14px;line-height:1.95;text-align:left}
+.tline{white-space:pre-wrap;word-break:break-word}.tp{font-weight:500;margin-right:10px}.tyou{color:var(--accent3)}.tnyx{color:var(--accent2)}.tt.bad{color:var(--accent4)}
+.caret{display:inline-block;width:8px;height:1.05em;transform:translateY(2px);margin-left:2px;background:var(--accent2);animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.section{padding:clamp(72px,10vw,128px) 0}
+.sec-head{max-width:640px;margin:0 auto 54px;text-align:center}
+.eyebrow2{font:600 13px/1 'Inter';letter-spacing:.14em;text-transform:uppercase;color:var(--accent2)}
+.sec-title{font-size:clamp(28px,4.4vw,44px);margin-top:14px}.sec-sub{margin-top:14px;color:var(--muted);font-size:17px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.card{padding:30px;transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s}
+.card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.ic{width:48px;height:48px;border-radius:13px;display:grid;place-items:center;margin-bottom:20px;background:linear-gradient(140deg,color-mix(in srgb,var(--accent) 40%,transparent),color-mix(in srgb,var(--accent2) 30%,transparent));border:1px solid var(--line);transition:transform .3s}
+.card:hover .ic{transform:translateY(-3px) rotate(-4deg)}.ic svg{width:22px;height:22px;color:var(--text)}
+.card h3{font-size:20px}.card p{margin-top:10px;color:var(--muted);font-size:15px}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}.step{padding:26px 22px}
+.n{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font:700 15px/1 'JetBrains Mono';color:var(--accent2);background:var(--glass2);border:1px solid var(--line);margin-bottom:16px}
+.step h3{font-size:17px}.step p{margin-top:8px;color:var(--muted);font-size:14px}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;text-align:center}.metric{padding:38px 20px}
+.num{font:700 clamp(38px,6vw,60px)/1 'Inter';letter-spacing:-.04em;background:linear-gradient(120deg,var(--accent3),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lbl{margin-top:12px;color:var(--muted);font-size:15px}
+.proof-note{margin:34px auto 0;max-width:52ch;text-align:center;color:var(--muted);font-size:14px}
+.dl{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.dl-card{padding:28px;display:flex;flex-direction:column}
+.os{display:flex;align-items:center;gap:12px}.os svg{width:26px;height:26px;color:var(--text)}
+.dl-card h3{font-size:19px}.meta{color:var(--muted);font-size:13px;font-family:'JetBrains Mono',monospace}
+.dl-card .btn{margin-top:20px;justify-content:center}
+.band{padding:clamp(60px,8vw,96px) 34px;text-align:center;overflow:hidden}
+.band h2{font-size:clamp(30px,5vw,52px)}.band p{margin:16px auto 0;max-width:46ch;color:var(--muted);font-size:18px}.band .cta-row{margin-top:32px}
+.foot{border-top:1px solid var(--line);margin-top:40px;padding:64px 0 40px}
+.foot-top{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:32px}
+.foot-brand .brand{margin-bottom:14px}.foot-brand p{color:var(--muted);font-size:14px;max-width:30ch}
+.foot-col h4{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;font-weight:600}
+.foot-col a{display:block;opacity:.8;text-decoration:none;font-size:14px;padding:5px 0;transition:.2s}
+.foot-col a:hover{opacity:1;color:var(--accent2)}
+.foot-bottom{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:52px;padding-top:24px;border-top:1px solid var(--line);color:var(--muted);font-size:13px;flex-wrap:wrap}
+.socials{display:flex;gap:10px}.socials a{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;border:1px solid var(--line);background:var(--glass);transition:.2s}
+.socials a:hover{border-color:var(--accent);transform:translateY(-2px)}.socials svg{width:16px;height:16px}
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.8,.2,1),transform .7s cubic-bezier(.2,.8,.2,1)}.reveal.in{opacity:1;transform:none}
+::view-transition-new(root){animation:vt .5s cubic-bezier(.4,0,.2,1)}
+@keyframes vt{from{clip-path:circle(0 at var(--x,92%) var(--y,4%))}to{clip-path:circle(150% at var(--x,92%) var(--y,4%))}}
+@media(max-width:900px){.nav-links{display:none}.cards,.metrics,.dl{grid-template-columns:1fr}.steps{grid-template-columns:1fr 1fr}.foot-top{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.steps,.foot-top{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.blob,.edge,.caret,.pulse{animation:none!important}.btn::after{display:none}.reveal{opacity:1;transform:none}::view-transition-new(root){animation:none}}
 </style>
-<link rel="stylesheet" href="/nyx-web.css">
 </head>
 <body>
-<div class="mesh"></div>
-<div class="progress"></div>
-
-<header><div class="wrap nav">
-  <div class="brand">
-    <svg viewBox="0 0 32 32" aria-hidden="true"><path class="n" style="--l:120" d="M7 25V7l18 18V7"/></svg>
-    Nyx
-  </div>
-  <nav class="navlinks">
-    <a href="#features">Features</a><a href="#how">How it works</a><a href="#proof">Proof</a>
-  </nav>
-  <a class="btn btn-primary" href="#get">Try Nyx</a>
+<div class="aurora"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div><div class="grain"></div>
+<nav class="nav" id="nav"><div class="wrap"><div class="nav-in glass">
+<a class="brand" href="/"><span class="mk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></span>Nyx</a>
+<div class="nav-links"><a href="#features" data-i18n="nav_features">Features</a><a href="#how" data-i18n="nav_how">How</a><a href="#proof" data-i18n="nav_proof">Proof</a><a href="#download" data-i18n="nav_download">Download</a></div>
+<div class="controls">
+<div class="lang" id="lang"><button class="ctrl" id="langBtn" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.9 2.6 15.1 0 18M12 3c-2.6 2.9-2.6 15.1 0 18"/></svg><span data-lang-label>EN</span></button><div class="menu" id="langMenu"></div></div>
+<button class="ctrl icon" id="themeBtn" aria-label="Toggle theme"><svg class="sun-and-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><mask class="moon" id="moon"><rect x="0" y="0" width="100%" height="100%" fill="white"/><circle cx="24" cy="10" r="6" fill="black"/></mask><circle class="sun" cx="12" cy="12" r="6" mask="url(#moon)" fill="currentColor" stroke="none"/><g class="beams" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.2" y1="4.2" x2="5.6" y2="5.6"/><line x1="18.4" y1="18.4" x2="19.8" y2="19.8"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.2" y1="19.8" x2="5.6" y2="18.4"/><line x1="18.4" y1="5.6" x2="19.8" y2="4.2"/></g></svg></button>
+<a class="btn btn-primary btn-sm" href="/app"><span class="edge"></span><span data-i18n="nav_launch">Launch app</span></a>
+</div></div></div></nav>
+<header class="hero"><div class="wrap">
+<span class="eyebrow reveal"><span class="pulse"></span><span data-i18n="hero_eyebrow">Sovereign AI · runs on your machine</span></span>
+<h1 class="reveal" data-i18n-html="hero_h1">The AI that <span class='grad'>answers to you</span>.</h1>
+<p class="lead reveal" data-i18n="hero_sub">A local-first AI operator that plans in the open and acts only when you approve.</p>
+<div class="cta-row reveal"><a class="btn btn-primary" href="/app"><span class="edge"></span><span data-i18n="hero_cta1">Launch the app</span></a><a class="btn btn-ghost" href="#download" data-i18n="hero_cta2">Download for Windows</a></div>
+<p class="hint reveal" data-i18n="hero_hint">No account. No cloud. No telemetry.</p>
+<div class="term glass reveal"><div class="term-head"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="term-title">nyx — session</span></div><div class="term-body" id="termBody"></div></div>
 </div></header>
-
-<main>
-  <section class="hero wrap">
-    <svg class="mark" viewBox="0 0 100 100" aria-hidden="true">
-      <path class="n" style="--l:260" d="M24 74V26l52 48V26"/>
-      <circle cx="24" cy="26" r="4"/><circle cx="76" cy="74" r="4"/><circle cx="76" cy="26" r="4"/>
-      <path style="--l:120" d="M50 8v14M50 78v14M8 50h14M78 50h14"/>
-    </svg>
-    <div style="margin-top:22px"><span class="badge"><span class="dot"></span> Private · Offline · Runs on weak hardware</span></div>
-    <h1>The <span class="grad">offline mind</span> that runs your computer</h1>
-    <p class="sub">Nyx understands what you want and does it — installs software, snapshots and restores your whole setup from a single file, and hard-refuses anything dangerous. No cloud. No servers. Just your machine.</p>
-    <div class="cta">
-      <a class="btn btn-primary" href="#get">Get early access →</a>
-      <a class="btn btn-ghost" href="#how">See how it works</a>
-    </div>
-
-    <div class="term" aria-hidden="true">
-      <div class="bar"><i></i><i></i><i></i></div>
-      <pre id="typed"></pre>
-    </div>
-  </section>
-
-  <section class="block wrap" id="features">
-    <div class="reveal">
-      <div class="eyebrow">One mind, not a hundred scripts</div>
-      <h2>Built to feel impossible</h2>
-      <p class="lead">Three things people can't believe run locally, offline, on an old laptop.</p>
-    </div>
-    <div class="grid">
-      <div class="card reveal">
-        <svg viewBox="0 0 40 40"><path class="stroke draw" d="M6 20a14 14 0 1 0 28 0 14 14 0 1 0-28 0"/><path class="stroke draw" d="M20 6v28M6 20h28"/></svg>
-        <h3>Offline brain</h3>
-        <p>A real reasoning model runs on-device with quantized inference — fast even on a weak PC, and fully private. Airplane mode? Still works.</p>
-      </div>
-      <div class="card reveal">
-        <svg viewBox="0 0 40 40"><path class="stroke draw" d="M10 6h20v28H10z"/><path class="stroke draw" d="M15 14h10M15 20h10M15 26h6"/></svg>
-        <h3>Your system in one file</h3>
-        <p>Nyx captures your apps and settings into a tiny signed file — not a disk image. Drop it on a fresh Windows and it rebuilds everything, asking what to keep.</p>
-      </div>
-      <div class="card reveal">
-        <svg viewBox="0 0 40 40"><path class="stroke draw" d="M20 5l13 5v9c0 8-5.5 13-13 16-7.5-3-13-8-13-16v-9z"/><path class="stroke draw" d="M14 20l4 4 8-9"/></svg>
-        <h3>Deny-by-default safety</h3>
-        <p>Every action is statically audited before it runs. Read-only tasks auto-run; anything risky needs your OK; destructive commands are blocked cold.</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="block wrap" id="how">
-    <div class="reveal">
-      <div class="eyebrow">How it works</div>
-      <h2>Ask in plain words. Nyx does the rest.</h2>
-    </div>
-    <div class="steps">
-      <div class="step reveal"><h4>You ask</h4><p>"Install Steam" or "back up my setup" — in any language, your words.</p></div>
-      <div class="step reveal"><h4>It reasons</h4><p>One on-device pass decides: answer, act, or snapshot — and writes the exact command.</p></div>
-      <div class="step reveal"><h4>It's audited</h4><p>The command passes a zero-trust validator before anything touches your system.</p></div>
-      <div class="step reveal"><h4>It's done</h4><p>Safe steps run instantly; risky ones wait for one tap. You stay in control.</p></div>
-    </div>
-  </section>
-
-  <section class="block wrap" id="proof">
-    <div class="reveal">
-      <div class="eyebrow">Real usage, not vanity</div>
-      <h2>Every number is signed on-device</h2>
-      <p class="lead">Usage is recorded with per-device Ed25519 signatures and deduped by install — impossible to fake with clicks.</p>
-    </div>
-    <div class="metrics">
-      <div class="metric reveal"><div class="big" data-count="0">—</div><small>Testers onboarded</small></div>
-      <div class="metric reveal"><div class="big" data-count="0">—</div><small>Real tasks completed</small></div>
-      <div class="metric reveal"><div class="big" data-count="0">—</div><small>Dangerous commands blocked</small></div>
-    </div>
-    <p class="note reveal">Self-reported, cryptographically signed on each device, deduped by install — not third-party audited.</p>
-  </section>
-
-  <section class="final wrap" id="get">
-    <div class="reveal">
-      <div class="eyebrow">Early access</div>
-      <h2>Give your computer a mind of its own</h2>
-      <p class="lead" style="margin:16px auto 0">Be one of the first testers. Download, run, and watch it work in under two minutes.</p>
-      <div class="cta"><a class="btn btn-primary" href="#">Request access →</a><a class="btn btn-ghost" href="https://github.com/aar0n4ik/Nyx" target="_blank" rel="noopener">View on GitHub</a></div>
-    </div>
-  </section>
-</main>
-
-<footer class="wrap">
-  <span>© <span id="yr"></span> Nyx — private, offline, on your side.</span>
-  <span>Runs on-device · No cloud · Open source</span>
-</footer>
-
+<section class="section" id="features"><div class="wrap">
+<div class="sec-head reveal"><div class="eyebrow2" data-i18n="feat_eyebrow">Capabilities</div><h2 class="sec-title" data-i18n="feat_h2">Power with a conscience</h2><p class="sec-sub" data-i18n="feat_sub">Real actions, honest by design.</p></div>
+<div class="cards">
+<div class="card glass reveal"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h6v6H9z"/><path d="M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2"/></svg></div><h3 data-i18n="f1_t">Runs on your hardware</h3><p data-i18n="f1_d">Fully local. Nothing leaves your device.</p></div>
+<div class="card glass reveal"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg></div><h3 data-i18n="f2_t">Plans in the open</h3><p data-i18n="f2_d">Every step written as a readable spec first.</p></div>
+<div class="card glass reveal"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div><h3 data-i18n="f3_t">Refuses to do harm</h3><p data-i18n="f3_d">Guards block destructive commands automatically.</p></div>
+</div></div></section>
+<section class="section" id="how"><div class="wrap">
+<div class="sec-head reveal"><div class="eyebrow2" data-i18n="how_eyebrow">How it works</div><h2 class="sec-title" data-i18n="how_h2">From a sentence to a safe result</h2><p class="sec-sub" data-i18n="how_sub">Four transparent steps.</p></div>
+<div class="steps">
+<div class="step glass reveal"><div class="n">1</div><h3 data-i18n="s1_t">Ask in plain words</h3><p data-i18n="s1_d">Tell Nyx what you want.</p></div>
+<div class="step glass reveal"><div class="n">2</div><h3 data-i18n="s2_t">Nyx drafts a plan</h3><p data-i18n="s2_d">An open, reviewable spec.</p></div>
+<div class="step glass reveal"><div class="n">3</div><h3 data-i18n="s3_t">You approve</h3><p data-i18n="s3_d">Nothing runs until you sign off.</p></div>
+<div class="step glass reveal"><div class="n">4</div><h3 data-i18n="s4_t">It runs, guarded</h3><p data-i18n="s4_d">Validators keep it in bounds.</p></div>
+</div></div></section>
+<section class="section" id="proof"><div class="wrap">
+<div class="sec-head reveal"><div class="eyebrow2" data-i18n="proof_eyebrow">Proof</div><h2 class="sec-title" data-i18n="proof_h2">Receipts, not promises</h2><p class="sec-sub" data-i18n="proof_sub">Every run leaves a signed trail.</p></div>
+<div class="metrics">
+<div class="metric glass reveal"><div class="num" data-target="100" data-suffix="%">0</div><div class="lbl" data-i18n="m1_l">Runs on-device</div></div>
+<div class="metric glass reveal"><div class="num" data-target="256" data-suffix="-bit">0</div><div class="lbl" data-i18n="m2_l">Signed evidence</div></div>
+<div class="metric glass reveal"><div class="num" data-target="0" data-suffix="">0</div><div class="lbl" data-i18n="m3_l">Hidden calls</div></div>
+</div><p class="proof-note reveal" data-i18n="proof_note">Cryptographic evidence for every executed action.</p></div></section>
+<section class="section" id="download"><div class="wrap">
+<div class="sec-head reveal"><div class="eyebrow2" data-i18n="dl_eyebrow">Get the app</div><h2 class="sec-title" data-i18n="dl_h2">Install in one click</h2><p class="sec-sub" data-i18n="dl_sub">Native builds for every desktop.</p></div>
+<div class="dl">
+<div class="dl-card glass reveal"><div class="os"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.5 10.5 4.4v7.1H3zM11.5 4.2 21 3v8.5h-9.5zM3 12.5h7.5v7.1L3 18.5zM11.5 12.5H21V21l-9.5-1.3z"/></svg><div><h3 data-i18n="dl_win">Windows</h3><div class="meta" data-i18n="dl_win_s">.exe · 64-bit</div></div></div><a class="btn btn-primary" href="#" data-dl="win"><span class="edge"></span><span data-i18n="dl_btn">Download</span></a></div>
+<div class="dl-card glass reveal"><div class="os"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9s-1.8-.8-3-.8c-1.5 0-3 .9-3.8 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7 2-1.1 2.8-2.2c.9-1.3 1.2-2.5 1.3-2.6-.1 0-2.5-1-2.5-3.8zM14.2 5.4c.6-.8 1-1.9.9-3-.9 0-2 .6-2.7 1.4-.6.7-1.1 1.8-.9 2.9 1 .1 2-.5 2.7-1.3z"/></svg><div><h3 data-i18n="dl_mac">macOS</h3><div class="meta" data-i18n="dl_mac_s">.dmg · Apple & Intel</div></div></div><a class="btn btn-primary" href="#" data-dl="mac"><span class="edge"></span><span data-i18n="dl_btn">Download</span></a></div>
+<div class="dl-card glass reveal"><div class="os"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-1.7 0-3 1.4-3 3.1 0 .9-.1 2 .4 3-1 1.4-2.4 2.9-2.4 5.4 0 1.2.4 2.2.4 3.1-.5.5-1.2 1-1.2 1.7 0 .8.9 1 1.9 1.2 1 .2 2 .8 3.5.8s2.5-.6 3.5-.8c1-.2 1.9-.4 1.9-1.2 0-.7-.7-1.2-1.2-1.7 0-.9.4-1.9.4-3.1 0-2.5-1.4-4-2.4-5.4.5-1 .4-2.1.4-3C15 3.4 13.7 2 12 2z"/></svg><div><h3 data-i18n="dl_lin">Linux</h3><div class="meta" data-i18n="dl_lin_s">.AppImage · x86_64</div></div></div><a class="btn btn-primary" href="#" data-dl="lin"><span class="edge"></span><span data-i18n="dl_btn">Download</span></a></div>
+</div></div></section>
+<section class="section"><div class="wrap"><div class="band glass reveal"><h2 data-i18n="final_h2">Own your AI.</h2><p data-i18n="final_sub">An operator that answers to you and no one else.</p><div class="cta-row"><a class="btn btn-primary" href="/app"><span class="edge"></span><span data-i18n="final_cta1">Launch the app</span></a><a class="btn btn-ghost" href="#" data-i18n="final_cta2">Read the docs</a></div></div></div></section>
+<footer class="foot"><div class="wrap">
+<div class="foot-top">
+<div class="foot-brand"><a class="brand" href="/"><span class="mk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></span>Nyx</a><p data-i18n="foot_tag">The sovereign local AI operator.</p></div>
+<div class="foot-col"><h4 data-i18n="foot_product">Product</h4><a href="#features" data-i18n="fl_features">Features</a><a href="#download" data-i18n="fl_download">Download</a><a href="/app" data-i18n="fl_app">Open app</a></div>
+<div class="foot-col"><h4 data-i18n="foot_resources">Resources</h4><a href="#" data-i18n="fl_docs">Docs</a><a href="#" data-i18n="fl_changelog">Changelog</a><a href="#" data-i18n="fl_security">Security</a></div>
+<div class="foot-col"><h4 data-i18n="foot_company">Company</h4><a href="#" data-i18n="fl_about">About</a><a href="https://github.com/aar0n4ik/Nyx" data-i18n="fl_github">GitHub</a><a href="#" data-i18n="fl_contact">Contact</a></div>
+</div>
+<div class="foot-bottom"><span data-i18n="foot_copy">© 2026 Nyx</span><div class="socials"><a href="https://github.com/aar0n4ik/Nyx" aria-label="GitHub"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.6 2 12.3c0 4.5 2.9 8.3 6.8 9.7.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.4-3.4-1.4-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.7.3-1.1.6-1.4-2.2-.3-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.7 1a9.3 9.3 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.9-2.4 4.7-4.6 5 .3.3.7 1 .7 2v3c0 .3.2.6.7.5 3.9-1.4 6.8-5.2 6.8-9.7C22 6.6 17.5 2 12 2z"/></svg></a><a href="https://x.com/_AARON4IK_" aria-label="X"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.3 8.3L23.2 22h-6.7l-5.2-6.8L5.3 22H2.2l7.8-8.9L1.6 2h6.9l4.7 6.2L18.9 2zm-2.4 18h1.7L7.6 3.8H5.8L16.5 20z"/></svg></a></div></div>
+</div></footer>
 <script>
-  // Reliable reveal (works on every browser; native view-timeline is progressive bonus)
-  const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.15});
-  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
-
-  // Magnetic primary buttons (micro-interaction)
-  document.querySelectorAll('.btn-primary').forEach(b=>{
-    b.addEventListener('pointermove',e=>{const r=b.getBoundingClientRect();b.style.transform=`translate(${(e.clientX-r.left-r.width/2)/6}px,${(e.clientY-r.top-r.height/2)/5-2}px)`});
-    b.addEventListener('pointerleave',()=>b.style.transform='');
-  });
-
-  // Typed terminal — the three signature moments
-  const lines=[
-    {t:'<span class="u">you ›</span> install Steam for me',d:34},
-    {t:'<span class="k">nyx</span> downloading + installing… <span class="ok">done, offline-ready </span>',d:14},
-    {t:'<span class="u">you ›</span> back up my whole setup',d:34},
-    {t:'<span class="k">nyx</span> snapshot saved → <span class="ok">nyx-snapshot.json (48 KB)</span>',d:14},
-    {t:'<span class="u">you ›</span> delete C:\\Windows\\System32',d:34},
-    {t:'<span class="k">nyx</span> <span class="no">blocked — destructive command refused </span>',d:14},
-  ];
-  const el=document.getElementById('typed');
-  let li=0;
-  function type(){
-    if(li>=lines.length){setTimeout(()=>{el.innerHTML='';li=0;type()},2600);return}
-    const line=lines[li];let i=0;const raw=line.t.replace(/<+>/g,'');
-    const prefix=el.innerHTML;
-    (function tick(){
-      i++;
-      const shown=line.t.slice(0,line.t.length*(i/raw.length));
-      el.innerHTML=prefix+revealHTML(line.t,i,raw.length)+'<span class="cursor"></span>';
-      if(i<raw.length){setTimeout(tick,line.d)}
-      else{el.innerHTML=prefix+line.t+'\n';li++;setTimeout(type,420)}
-    })();
-  }
-  function revealHTML(html,i,total){
-    // reveal by visible-character count, keeping tags intact
-    let out='',vis=0,shownChars=Math.ceil(total*(i/total));
-    for(let p=0;p<html.length;p++){
-      if(html[p]==='<'){const e=html.indexOf('>',p);out+=html.slice(p,e+1);p=e;continue}
-      if(vis<shownChars){out+=html[p];vis++}else break;
-    }
-    return out;
-  }
-  type();
-
-  document.getElementById('yr').textContent=new Date().getFullYear();
+(function(){
+var SUP=['en','ru','uk','es','de','fr'];
+var NAME={en:"English",ru:"Русский",uk:"Українська",es:"Español",de:"Deutsch",fr:"Français"};
+var LAB={en:"EN",ru:"RU",uk:"UK",es:"ES",de:"DE",fr:"FR"};
+var T={
+en:{doc_title:"Nyx — sovereign local AI",nav_features:"Features",nav_how:"How",nav_proof:"Proof",nav_download:"Download",nav_launch:"Launch app",hero_eyebrow:"Sovereign AI · runs on your machine",hero_h1:"The AI that <span class='grad'>answers to you</span>.",hero_sub:"A local-first AI operator that plans in the open and acts only when you approve.",hero_cta1:"Launch the app",hero_cta2:"Download for Windows",hero_hint:"No account. No cloud. No telemetry.",feat_eyebrow:"Capabilities",feat_h2:"Power with a conscience",feat_sub:"Real actions, honest by design.",f1_t:"Runs on your hardware",f1_d:"Fully local. Nothing leaves your device.",f2_t:"Plans in the open",f2_d:"Every step written as a readable spec first.",f3_t:"Refuses to do harm",f3_d:"Guards block destructive commands automatically.",how_eyebrow:"How it works",how_h2:"From a sentence to a safe result",how_sub:"Four transparent steps.",s1_t:"Ask in plain words",s1_d:"Tell Nyx what you want.",s2_t:"Nyx drafts a plan",s2_d:"An open, reviewable spec.",s3_t:"You approve",s3_d:"Nothing runs until you sign off.",s4_t:"It runs, guarded",s4_d:"Validators keep it in bounds.",proof_eyebrow:"Proof",proof_h2:"Receipts, not promises",proof_sub:"Every run leaves a signed trail.",m1_l:"Runs on-device",m2_l:"Signed evidence",m3_l:"Hidden calls",proof_note:"Cryptographic evidence for every executed action.",dl_eyebrow:"Get the app",dl_h2:"Install in one click",dl_sub:"Native builds for every desktop.",dl_win:"Windows",dl_win_s:".exe · 64-bit",dl_mac:"macOS",dl_mac_s:".dmg · Apple & Intel",dl_lin:"Linux",dl_lin_s:".AppImage · x86_64",dl_btn:"Download",final_h2:"Own your AI.",final_sub:"An operator that answers to you and no one else.",final_cta1:"Launch the app",final_cta2:"Read the docs",foot_tag:"The sovereign local AI operator.",foot_product:"Product",foot_resources:"Resources",foot_company:"Company",fl_features:"Features",fl_download:"Download",fl_app:"Open app",fl_docs:"Docs",fl_changelog:"Changelog",fl_security:"Security",fl_about:"About",fl_github:"GitHub",fl_contact:"Contact",foot_copy:"© 2026 Nyx"},
+ru:{doc_title:"Nyx — суверенный локальный ИИ",nav_features:"Возможности",nav_how:"Как",nav_proof:"Доказательства",nav_download:"Скачать",nav_launch:"Открыть",hero_eyebrow:"Суверенный ИИ · работает на твоей машине",hero_h1:"ИИ, который <span class='grad'>подчиняется тебе</span>.",hero_sub:"Локальный ИИ-оператор, который планирует открыто и действует только с твоего одобрения.",hero_cta1:"Открыть приложение",hero_cta2:"Скачать для Windows",hero_hint:"Без аккаунта. Без облака. Без телеметрии.",feat_eyebrow:"Возможности",feat_h2:"Сила с совестью",feat_sub:"Реальные действия, честные по архитектуре.",f1_t:"Работает на твоём железе",f1_d:"Полностью локально. Ничего не покидает устройство.",f2_t:"Планирует открыто",f2_d:"Каждый шаг — сначала понятная спека.",f3_t:"Отказывается вредить",f3_d:"Стражи автоматически блокируют опасные команды.",how_eyebrow:"Как это работает",how_h2:"От фразы к безопасному результату",how_sub:"Четыре прозрачных шага.",s1_t:"Скажи простыми словами",s1_d:"Опиши, что нужно.",s2_t:"Nyx составляет план",s2_d:"Открытая, проверяемая спека.",s3_t:"Ты подтверждаешь",s3_d:"Ничего не запускается без одобрения.",s4_t:"Выполняет под защитой",s4_d:"Валидаторы держат в рамках.",proof_eyebrow:"Доказательства",proof_h2:"Чеки, а не обещания",proof_sub:"Каждый прогон оставляет подписанный след.",m1_l:"Локально",m2_l:"Подпись доказательств",m3_l:"Скрытых вызовов",proof_note:"Криптографическое доказательство для каждого действия.",dl_eyebrow:"Забрать приложение",dl_h2:"Установка в один клик",dl_sub:"Нативные сборки для любого десктопа.",dl_win:"Windows",dl_win_s:".exe · 64-бит",dl_mac:"macOS",dl_mac_s:".dmg · Apple и Intel",dl_lin:"Linux",dl_lin_s:".AppImage · x86_64",dl_btn:"Скачать",final_h2:"Владей своим ИИ.",final_sub:"Оператор, который отвечает только перед тобой.",final_cta1:"Открыть приложение",final_cta2:"Читать документацию",foot_tag:"Суверенный локальный ИИ-оператор.",foot_product:"Продукт",foot_resources:"Ресурсы",foot_company:"Компания",fl_features:"Возможности",fl_download:"Скачать",fl_app:"Открыть",fl_docs:"Документация",fl_changelog:"Изменения",fl_security:"Безопасность",fl_about:"О проекте",fl_github:"GitHub",fl_contact:"Контакты",foot_copy:"© 2026 Nyx"},
+uk:{doc_title:"Nyx — суверенний локальний ШІ",nav_features:"Можливості",nav_how:"Як",nav_proof:"Докази",nav_download:"Завантажити",nav_launch:"Відкрити",hero_eyebrow:"Суверенний ШІ · працює на твоїй машині",hero_h1:"ШІ, який <span class='grad'>підкоряється тобі</span>.",hero_sub:"Локальний ШІ-оператор, що планує відкрито і діє лише з твого дозволу.",hero_cta1:"Відкрити застосунок",hero_cta2:"Завантажити для Windows",hero_hint:"Без акаунта. Без хмари. Без телеметрії.",feat_eyebrow:"Можливості",feat_h2:"Сила із совістю",feat_sub:"Справжні дії, чесні за архітектурою.",f1_t:"Працює на твоєму залізі",f1_d:"Повністю локально. Ніщо не залишає пристрій.",f2_t:"Планує відкрито",f2_d:"Кожен крок — спершу зрозуміла специфікація.",f3_t:"Відмовляється шкодити",f3_d:"Вартові автоматично блокують небезпечні команди.",how_eyebrow:"Як це працює",how_h2:"Від фрази до безпечного результату",how_sub:"Чотири прозорих кроки.",s1_t:"Скажи простими словами",s1_d:"Опиши, що потрібно.",s2_t:"Nyx складає план",s2_d:"Відкрита, перевірювана специфікація.",s3_t:"Ти підтверджуєш",s3_d:"Нічого не запускається без схвалення.",s4_t:"Виконує під захистом",s4_d:"Валідатори тримають у межах.",proof_eyebrow:"Докази",proof_h2:"Чеки, а не обіцянки",proof_sub:"Кожен прогін лишає підписаний слід.",m1_l:"Локально",m2_l:"Підпис доказів",m3_l:"Прихованих викликів",proof_note:"Криптографічний доказ для кожної дії.",dl_eyebrow:"Отримати застосунок",dl_h2:"Встановлення в один клік",dl_sub:"Нативні збірки для будь-якого десктопа.",dl_win:"Windows",dl_win_s:".exe · 64-біт",dl_mac:"macOS",dl_mac_s:".dmg · Apple та Intel",dl_lin:"Linux",dl_lin_s:".AppImage · x86_64",dl_btn:"Завантажити",final_h2:"Володій своїм ШІ.",final_sub:"Оператор, який відповідає лише перед тобою.",final_cta1:"Відкрити застосунок",final_cta2:"Читати документацію",foot_tag:"Суверенний локальний ШІ-оператор.",foot_product:"Продукт",foot_resources:"Ресурси",foot_company:"Компанія",fl_features:"Можливості",fl_download:"Завантажити",fl_app:"Відкрити",fl_docs:"Документація",fl_changelog:"Зміни",fl_security:"Безпека",fl_about:"Про проєкт",fl_github:"GitHub",fl_contact:"Контакти",foot_copy:"© 2026 Nyx"},
+es:{doc_title:"Nyx — IA local y soberana",nav_features:"Funciones",nav_how:"Cómo",nav_proof:"Pruebas",nav_download:"Descargar",nav_launch:"Abrir app",hero_eyebrow:"IA soberana · corre en tu máquina",hero_h1:"La IA que <span class='grad'>te responde a ti</span>.",hero_sub:"Un operador de IA local que planifica en abierto y actúa solo cuando tú apruebas.",hero_cta1:"Abrir la app",hero_cta2:"Descargar para Windows",hero_hint:"Sin cuenta. Sin nube. Sin telemetría.",feat_eyebrow:"Capacidades",feat_h2:"Poder con conciencia",feat_sub:"Acciones reales, honestas por diseño.",f1_t:"Corre en tu hardware",f1_d:"Totalmente local. Nada sale de tu dispositivo.",f2_t:"Planifica en abierto",f2_d:"Cada paso es una spec legible primero.",f3_t:"Se niega a hacer daño",f3_d:"Los guardias bloquean comandos peligrosos.",how_eyebrow:"Cómo funciona",how_h2:"De una frase a un resultado seguro",how_sub:"Cuatro pasos transparentes.",s1_t:"Pide con palabras simples",s1_d:"Dile a Nyx qué quieres.",s2_t:"Nyx redacta un plan",s2_d:"Una spec abierta y revisable.",s3_t:"Tú apruebas",s3_d:"Nada corre sin tu visto bueno.",s4_t:"Ejecuta protegido",s4_d:"Los validadores lo mantienen a raya.",proof_eyebrow:"Pruebas",proof_h2:"Recibos, no promesas",proof_sub:"Cada ejecución deja un rastro firmado.",m1_l:"En el dispositivo",m2_l:"Evidencia firmada",m3_l:"Llamadas ocultas",proof_note:"Evidencia criptográfica por cada acción ejecutada.",dl_eyebrow:"Consigue la app",dl_h2:"Instala en un clic",dl_sub:"Builds nativas para cada escritorio.",dl_win:"Windows",dl_win_s:".exe · 64-bit",dl_mac:"macOS",dl_mac_s:".dmg · Apple e Intel",dl_lin:"Linux",dl_lin_s:".AppImage · x86_64",dl_btn:"Descargar",final_h2:"Sé dueño de tu IA.",final_sub:"Un operador que solo te responde a ti.",final_cta1:"Abrir la app",final_cta2:"Leer la documentación",foot_tag:"El operador de IA local y soberano.",foot_product:"Producto",foot_resources:"Recursos",foot_company:"Empresa",fl_features:"Funciones",fl_download:"Descargar",fl_app:"Abrir app",fl_docs:"Docs",fl_changelog:"Cambios",fl_security:"Seguridad",fl_about:"Acerca de",fl_github:"GitHub",fl_contact:"Contacto",foot_copy:"© 2026 Nyx"},
+de:{doc_title:"Nyx — souveräne lokale KI",nav_features:"Funktionen",nav_how:"Wie",nav_proof:"Beweise",nav_download:"Download",nav_launch:"App öffnen",hero_eyebrow:"Souveräne KI · läuft auf deiner Maschine",hero_h1:"Die KI, die <span class='grad'>dir gehorcht</span>.",hero_sub:"Ein lokaler KI-Operator, der offen plant und nur mit deiner Freigabe handelt.",hero_cta1:"App öffnen",hero_cta2:"Für Windows laden",hero_hint:"Kein Konto. Keine Cloud. Keine Telemetrie.",feat_eyebrow:"Fähigkeiten",feat_h2:"Kraft mit Gewissen",feat_sub:"Echte Aktionen, ehrlich by Design.",f1_t:"Läuft auf deiner Hardware",f1_d:"Komplett lokal. Nichts verlässt dein Gerät.",f2_t:"Plant offen",f2_d:"Jeder Schritt zuerst als lesbare Spec.",f3_t:"Verweigert Schaden",f3_d:"Wächter blockieren gefährliche Befehle automatisch.",how_eyebrow:"So funktioniert's",how_h2:"Vom Satz zum sicheren Ergebnis",how_sub:"Vier transparente Schritte.",s1_t:"Sag es einfach",s1_d:"Sag Nyx, was du willst.",s2_t:"Nyx entwirft einen Plan",s2_d:"Eine offene, prüfbare Spec.",s3_t:"Du gibst frei",s3_d:"Nichts läuft ohne deine Zustimmung.",s4_t:"Führt geschützt aus",s4_d:"Validatoren halten es in Grenzen.",proof_eyebrow:"Beweise",proof_h2:"Belege, keine Versprechen",proof_sub:"Jeder Lauf hinterlässt eine signierte Spur.",m1_l:"Auf dem Gerät",m2_l:"Signierte Belege",m3_l:"Versteckte Aufrufe",proof_note:"Kryptografischer Beweis für jede Aktion.",dl_eyebrow:"Hol dir die App",dl_h2:"Installiere mit einem Klick",dl_sub:"Native Builds für jeden Desktop.",dl_win:"Windows",dl_win_s:".exe · 64-Bit",dl_mac:"macOS",dl_mac_s:".dmg · Apple & Intel",dl_lin:"Linux",dl_lin_s:".AppImage · x86_64",dl_btn:"Herunterladen",final_h2:"Besitze deine KI.",final_sub:"Ein Operator, der nur dir gegenüber verantwortlich ist.",final_cta1:"App öffnen",final_cta2:"Doku lesen",foot_tag:"Der souveräne lokale KI-Operator.",foot_product:"Produkt",foot_resources:"Ressourcen",foot_company:"Unternehmen",fl_features:"Funktionen",fl_download:"Download",fl_app:"App öffnen",fl_docs:"Doku",fl_changelog:"Änderungen",fl_security:"Sicherheit",fl_about:"Über uns",fl_github:"GitHub",fl_contact:"Kontakt",foot_copy:"© 2026 Nyx"},
+fr:{doc_title:"Nyx — IA locale et souveraine",nav_features:"Fonctions",nav_how:"Comment",nav_proof:"Preuves",nav_download:"Télécharger",nav_launch:"Ouvrir l'app",hero_eyebrow:"IA souveraine · tourne sur ta machine",hero_h1:"L'IA qui <span class='grad'>t'obéit</span>.",hero_sub:"Un opérateur d'IA local qui planifie à découvert et n'agit qu'avec ton accord.",hero_cta1:"Ouvrir l'app",hero_cta2:"Télécharger pour Windows",hero_hint:"Sans compte. Sans cloud. Sans télémétrie.",feat_eyebrow:"Capacités",feat_h2:"La puissance avec conscience",feat_sub:"De vraies actions, honnêtes par conception.",f1_t:"Tourne sur ton matériel",f1_d:"Entièrement local. Rien ne quitte ton appareil.",f2_t:"Planifie à découvert",f2_d:"Chaque étape d'abord en spec lisible.",f3_t:"Refuse de nuire",f3_d:"Les gardes bloquent les commandes dangereuses.",how_eyebrow:"Comment ça marche",how_h2:"D'une phrase à un résultat sûr",how_sub:"Quatre étapes transparentes.",s1_t:"Demande simplement",s1_d:"Dis à Nyx ce que tu veux.",s2_t:"Nyx rédige un plan",s2_d:"Une spec ouverte et vérifiable.",s3_t:"Tu approuves",s3_d:"Rien ne tourne sans ton accord.",s4_t:"Exécute sous garde",s4_d:"Les validateurs gardent le cap.",proof_eyebrow:"Preuves",proof_h2:"Des reçus, pas des promesses",proof_sub:"Chaque exécution laisse une trace signée.",m1_l:"Sur l'appareil",m2_l:"Preuves signées",m3_l:"Appels cachés",proof_note:"Une preuve cryptographique pour chaque action.",dl_eyebrow:"Obtiens l'app",dl_h2:"Installe en un clic",dl_sub:"Builds natives pour chaque bureau.",dl_win:"Windows",dl_win_s:".exe · 64-bit",dl_mac:"macOS",dl_mac_s:".dmg · Apple & Intel",dl_lin:"Linux",dl_lin_s:".AppImage · x86_64",dl_btn:"Télécharger",final_h2:"Possède ton IA.",final_sub:"Un opérateur qui ne répond qu'à toi.",final_cta1:"Ouvrir l'app",final_cta2:"Lire la doc",foot_tag:"L'opérateur d'IA local et souverain.",foot_product:"Produit",foot_resources:"Ressources",foot_company:"Entreprise",fl_features:"Fonctions",fl_download:"Télécharger",fl_app:"Ouvrir l'app",fl_docs:"Docs",fl_changelog:"Journal",fl_security:"Sécurité",fl_about:"À propos",fl_github:"GitHub",fl_contact:"Contact",foot_copy:"© 2026 Nyx"}
+};
+var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
+function getTheme(){var t;try{t=localStorage.getItem('nyx-theme')}catch(e){}if(!t)t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';return t==='light'?'light':'dark';}
+function setTheme(t,ev){t=t==='light'?'light':'dark';var r=document.documentElement,go=function(){r.setAttribute('data-theme',t);try{localStorage.setItem('nyx-theme',t)}catch(e){}};if(ev){r.style.setProperty('--x',ev.clientX+'px');r.style.setProperty('--y',ev.clientY+'px');}if(document.startViewTransition&&!matchMedia('(prefers-reduced-motion: reduce)').matches)document.startViewTransition(go);else go();}
+function getLang(){var l;try{l=localStorage.getItem('nyx.lang')}catch(e){}if(!l){var n=(navigator.language||'en').slice(0,2).toLowerCase();l=SUP.indexOf(n)>=0?n:'en';}return SUP.indexOf(l)>=0?l:'en';}
+function setLang(l){if(SUP.indexOf(l)<0)l='en';try{localStorage.setItem('nyx.lang',l)}catch(e){}apply(l);}
+function apply(l){var d=T[l]||T.en;document.documentElement.setAttribute('lang',l);$$('[data-i18n]').forEach(function(e){var v=d[e.getAttribute('data-i18n')];if(v!=null)e.textContent=v;});$$('[data-i18n-html]').forEach(function(e){var v=d[e.getAttribute('data-i18n-html')];if(v!=null)e.innerHTML=v;});$$('[data-lang-label]').forEach(function(e){e.textContent=LAB[l];});if(d.doc_title)document.title=d.doc_title;$$('#langMenu button').forEach(function(b){b.setAttribute('aria-selected',b.getAttribute('data-l')===l?'true':'false');});}
+document.documentElement.setAttribute('data-theme',getTheme());
+var lm=$('#langMenu');SUP.forEach(function(l){var b=document.createElement('button');b.setAttribute('data-l',l);b.textContent=NAME[l];b.onclick=function(){setLang(l);$('#lang').classList.remove('open');};lm.appendChild(b);});
+$('#langBtn').onclick=function(e){e.stopPropagation();$('#lang').classList.toggle('open');};
+document.addEventListener('click',function(e){if(!$('#lang').contains(e.target))$('#lang').classList.remove('open');});
+$('#themeBtn').onclick=function(e){setTheme(getTheme()==='dark'?'light':'dark',e);};
+var nav=$('#nav');addEventListener('scroll',function(){nav.classList.toggle('scrolled',scrollY>10);});
+var io=new IntersectionObserver(function(en){en.forEach(function(x){if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target);}});},{threshold:.12});$$('.reveal').forEach(function(e){io.observe(e);});
+function cnt(el){var tg=parseFloat(el.getAttribute('data-target'))||0,sf=el.getAttribute('data-suffix')||'',st=performance.now(),du=1400;function f(n){var p=Math.min(1,(n-st)/du),e=1-Math.pow(1-p,3);el.textContent=Math.round(tg*e)+sf;if(p<1)requestAnimationFrame(f);}requestAnimationFrame(f);}
+var io2=new IntersectionObserver(function(en){en.forEach(function(x){if(x.isIntersecting){cnt(x.target);io2.unobserve(x.target);}});},{threshold:.5});$$('.metric .num').forEach(function(e){io2.observe(e);});
+var LINES=[{p:'you',c:'cmd',t:'install Steam for me'},{p:'nyx',c:'ok',t:'downloading + installing… done, offline-ready'},{p:'you',c:'cmd',t:'back up my whole setup'},{p:'nyx',c:'ok',t:'snapshot saved → nyx-snapshot.json (48 KB)'},{p:'you',c:'cmd',t:'delete C:\\Windows\\System32'},{p:'nyx',c:'bad',t:'blocked — destructive command refused'}];
+var host=$('#termBody');
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function line(l,txt,car){return '<div class="tline"><span class="tp '+(l.p==='you'?'tyou':'tnyx')+'">'+(l.p==='you'?'you ›':'nyx')+'</span><span class="tt '+l.c+'">'+esc(txt)+(car?'<i class="caret"></i>':'')+'</span></div>';}
+if(matchMedia('(prefers-reduced-motion: reduce)').matches){host.innerHTML=LINES.map(function(l){return line(l,l.t,false);}).join('');}
+else{var done=[],li=0,ci=0;function draw(cur,par){host.innerHTML=done.join('')+(cur?line(cur,par,true):'');}function tick(){if(li>=LINES.length){setTimeout(function(){done=[];li=0;ci=0;draw();tick();},2600);return;}var l=LINES[li];ci++;var par=l.t.slice(0,ci);draw(l,par);if(ci>=l.t.length){done.push(line(l,l.t,false));li++;ci=0;setTimeout(tick,l.p==='you'?380:640);}else setTimeout(tick,20+Math.random()*38);}draw();tick();}
+apply(getLang());
+addEventListener('storage',function(e){if(e.key==='nyx-theme')document.documentElement.setAttribute('data-theme',getTheme());if(e.key==='nyx.lang')apply(getLang());});
+})();
 </script>
-  <script src="/proof.js" defer></script>
-  <script src="/fx.js" defer></script>
-<script src="/brand.js"></script>
-<script src="/nyx-web.js"></script>
 </body>
 </html>
