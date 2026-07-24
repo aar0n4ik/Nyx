@@ -29,6 +29,7 @@
   },
   "main": "electron/main.cjs",
   "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
     "electron": "^33.2.0",
     "electron-builder": "^25.1.8"
   },
