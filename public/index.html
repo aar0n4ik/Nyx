@@ -267,7 +267,7 @@
     (function tick(){
       i++;
       const shown=line.t.slice(0,line.t.length*(i/raw.length));
-      el.innerHTML=prefix+line.t.replace(/(.*)/,m=>m).slice(0)&&prefix+revealHTML(line.t,i,raw.length)+'<span class="cursor"></span>';
+      el.innerHTML=prefix+revealHTML(line.t,i,raw.length)+'<span class="cursor"></span>';
       if(i<raw.length){setTimeout(tick,line.d)}
       else{el.innerHTML=prefix+line.t+'\n';li++;setTimeout(type,420)}
     })();

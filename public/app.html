@@ -155,8 +155,8 @@
   $('#themeBtn').addEventListener('click',e=>{
     const next=root.getAttribute('data-theme')==='dark'?'light':'dark';
     root.style.setProperty('--x',e.clientX+'px');root.style.setProperty('--y',e.clientY+'px');
-    const set=()=>{root.setAttribute('data-theme',next);try{localStorage.setItem('nyx-theme',next)}catch(_){}};NOTION_TWS[ ]NOTION_TWS
-    (document.startViewTransition && !reduce)?document.startViewTransition(set):set();
+    const set=()=>{root.setAttribute('data-theme',next);try{localStorage.setItem('nyx-theme',next)}catch(_){}};
+          (document.startViewTransition && !reduce)?document.startViewTransition(set):set();
   });
 
   // Live status pills
