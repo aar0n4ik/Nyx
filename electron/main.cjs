@@ -15,7 +15,6 @@ async function startServer() {
   try { await import(pathToFileURL(path.join(ROOT, "server.js")).href) }
   catch (e) { console.error("Nyx backend failed to start:", e) }
 }
-
 function waitForServer(done, tries) {
   if (tries === undefined) tries = 80
   const req = http.get({ host: "127.0.0.1", port: PORT, path: "/" }, (res) => { res.resume(); req.destroy(); done() })
@@ -24,7 +23,6 @@ function waitForServer(done, tries) {
     else done()
   })
 }
-
 function getJSON(p) {
   return new Promise((resolve) => {
     const req = http.get({ host: "127.0.0.1", port: PORT, path: p }, (res) => {
@@ -35,18 +33,25 @@ function getJSON(p) {
     req.on("error", () => resolve(null))
   })
 }
-
 function createWindow(startPath) {
   const win = new BrowserWindow({
     width: 1240, height: 820, minWidth: 940, minHeight: 640,
     backgroundColor: "#050506", autoHideMenuBar: true, title: "Nyx", show: false,
+    icon: path.join(ROOT, "build", "icon.png"),
     webPreferences: { contextIsolation: true, nodeIntegration: false },
   })
   win.once("ready-to-show", () => win.show())
   win.loadURL("http://127.0.0.1:" + PORT + (startPath || "/app"))
   win.webContents.setWindowOpenHandler((d) => { shell.openExternal(d.url); return { action: "deny" } })
 }
-
+function checkUpdates() {
+  if (!app.isPackaged) return
+  try {
+    const { autoUpdater } = require("electron-updater")
+    autoUpdater.autoDownload = true
+    autoUpdater.checkForUpdatesAndNotify().catch(() => {})
+  } catch (e) {}
+}
 app.whenReady().then(async () => {
   await startServer()
   waitForServer(async () => {
@@ -56,10 +61,10 @@ app.whenReady().then(async () => {
       if (st && st.ready === false) start = "/setup"
     } catch (e) {}
     createWindow(start)
+    checkUpdates()
   })
   app.on("activate", () => { if (BrowserWindow.getAllWindows().length === 0) createWindow("/app") })
 })
-
 app.on("window-all-closed", () => {
   if (process.platform === "darwin") { return }
   app.quit()

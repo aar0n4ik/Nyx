@@ -2,7 +2,7 @@
 
 ## 1. Verdict: is "no internet" a problem?
 
-No — it is our advantage. The hackathon is "Unleash Edge AI". Judges expect the
+No — it is our advantage. The project is "Unleash Edge AI". Judges expect the
 brain (LLM), the data, and the execution to live **on the device**. We close the
 question technically:
 

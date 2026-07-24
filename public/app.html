@@ -192,7 +192,7 @@
     const m=node.querySelector('.meta');if(!r)return;const bits=[];
     const blocked=/refus|block|заблок|danger|опасн/i.test(r.text||'')||r.mode==='blocked';
     if(r.mode)bits.push('<span class="tag">'+esc(r.mode)+'</span>');
-    bits.push('<span class="tag '+(blocked?'block':'safe')+'">'+(blocked?'blocked ⛔':'safety-checked ✓')+'</span>');
+    bits.push('<span class="tag '+(blocked?'block':'safe')+'">'+(blocked?'blocked ':'safety-checked ')+'</span>');
     if(r.sources&&r.sources.length)bits.push('<span class="tag">'+esc(r.sources.join(' · '))+'</span>');
     if(r.ms)bits.push(r.ms+' ms');
     m.innerHTML=bits.join('');
@@ -208,7 +208,7 @@
         body:JSON.stringify({q,chatId:'app',history:history.slice(-8)})}).then(x=>x.json());
       const text=r.text||r.error||'(no response)';
       await type(node,text); meta(node,r); history.push({role:'assistant',content:text});
-    }catch(e){ node.querySelector('.bubble').innerHTML='⚠ '+esc(e.message)+' — is the local server running? Start it with: node server.js'; }
+    }catch(e){ node.querySelector('.bubble').innerHTML=' '+esc(e.message)+' — is the local server running? Start it with: node server.js'; }
     busy=false; sendBtn.disabled=false; input.focus();
   }
   sendBtn.addEventListener('click',()=>send(input.value));
@@ -223,5 +223,6 @@
   document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{closeOnb();send(c.dataset.q)}));
 </script>
   <script src="/app-copy.js" defer></script>
+<script src="/brand.js"></script>
 </body>
 </html>

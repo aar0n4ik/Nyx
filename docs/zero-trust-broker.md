@@ -1,6 +1,6 @@
 # Nyx Zero-Trust AI Broker — architecture & security
 
-## 1. Verdict: why this wins QVAC Hackathon I
+## 1. Verdict: why this wins QVAC Project I
 
 The QVAC track is "Unleash Edge AI" — judges reward **useful, private, on-device** AI, not cloud wrappers. Nyx's Zero-Trust AI Broker hits every nerve:
 

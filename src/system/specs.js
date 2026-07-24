@@ -109,10 +109,10 @@ export function bitfinexLatency(host = "api.bitfinex.com", port = 443, timeout =
 // Pre-trade risk advisory based on specs + latency.
 export function preTradeRisk(specs, latency) {
 	const warnings = []
-	if (latency?.ms == null) warnings.push("⚠️ Нет связи с Bitfinex — ордер может не пройти.")
-	else if (latency.ms > 400) warnings.push(`⚠️ Высокая задержка до биржи (${latency.ms} мс) — риск проскальзывания.`)
-	if (specs?.cpuLoadPct != null && specs.cpuLoadPct > 85) warnings.push(`⚠️ Высокая загрузка CPU (${specs.cpuLoadPct}%) — возможны лаги.`)
-	if (specs?.ramUsedPct != null && specs.ramUsedPct > 90) warnings.push(`⚠️ Почти вся RAM занята (${specs.ramUsedPct}%).`)
-	if (specs?.tempC && specs.tempC > 85) warnings.push(`🔥 Перегрев CPU (${specs.tempC}°C) — отложите вход.`)
+	if (latency?.ms == null) warnings.push(" Нет связи с Bitfinex — ордер может не пройти.")
+	else if (latency.ms > 400) warnings.push(` Высокая задержка до биржи (${latency.ms} мс) — риск проскальзывания.`)
+	if (specs?.cpuLoadPct != null && specs.cpuLoadPct > 85) warnings.push(` Высокая загрузка CPU (${specs.cpuLoadPct}%) — возможны лаги.`)
+	if (specs?.ramUsedPct != null && specs.ramUsedPct > 90) warnings.push(` Почти вся RAM занята (${specs.ramUsedPct}%).`)
+	if (specs?.tempC && specs.tempC > 85) warnings.push(` Перегрев CPU (${specs.tempC}°C) — отложите вход.`)
 	return { ok: warnings.length === 0, warnings }
 }

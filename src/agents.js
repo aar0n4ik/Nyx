@@ -281,14 +281,14 @@ export async function answer(query, { onToken, lang: forcedLang, history: convoH
 		}
 		if (plan && plan.script && plan.verdict && plan.verdict.safe) {
 			const r = RISK_WORD[lang] || RISK_WORD.en
-			const warn = plan.warnings && plan.warnings.length ? "\n\n⚠️ " + plan.warnings.join("\n⚠️ ") : ""
+			const warn = plan.warnings && plan.warnings.length ? "\n\n " + plan.warnings.join("\n ") : ""
 			const text = `${PROPOSE_HEAD[lang] || PROPOSE_HEAD.en}\n\n\`\`\`${plan.shell}\n${plan.script}\n\`\`\`\n${r}: ${plan.verdict.risk}.${warn}\n\n${CONFIRM_HINT[lang] || CONFIRM_HINT.en}`
 			onToken?.(text)
 			recordInference({ model: "nyx-action-proposal", prompt: query, output: plan.script })
 			return { text, lang, sources: [], injection: guard, mode: "action-proposal", proposal: { script: plan.script, shell: plan.shell, risk: plan.verdict.risk, source: plan.source, playbookId: plan.playbookId || null, explanation: plan.explanation || "", warnings: plan.warnings || [] }, ms: Date.now() - started }
 		}
 		if (plan && plan.blocked && plan.script && plan.script.trim()) {
-			const text = (lang === "ru" ? "⛔ Команда заблокирована защитой безопасности: " : lang === "uk" ? "⛔ Команду заблоковано захистом безпеки: " : "⛔ Blocked by the safety guard: ") + ((plan.verdict && plan.verdict.reasons) || []).join("; ")
+			const text = (lang === "ru" ? " Команда заблокирована защитой безопасности: " : lang === "uk" ? " Команду заблоковано захистом безпеки: " : " Blocked by the safety guard: ") + ((plan.verdict && plan.verdict.reasons) || []).join("; ")
 			onToken?.(text)
 			recordInference({ model: "nyx-action-blocked", prompt: query, output: "blocked" })
 			return { text, lang, sources: [], injection: guard, mode: "action-blocked", ms: Date.now() - started }

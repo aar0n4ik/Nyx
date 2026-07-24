@@ -1,5 +1,5 @@
 // On-device LLM engine — QVAC SDK ONLY.
-// Per the QVAC Hackathon rules, ALL AI inference runs through the QVAC SDK
+// Per the QVAC Project rules, ALL AI inference runs through the QVAC SDK
 // (@qvac/sdk), 100% on-device, with zero cloud calls. There is intentionally NO
 // cloud provider and NO third-party local engine in this build: the only
 // inference path is QVAC. If the QVAC model isn't downloaded yet, a

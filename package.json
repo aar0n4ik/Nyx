@@ -22,7 +22,8 @@
   },
   "dependencies": {
     "@qvac/sdk": "^0.13.5",
-    "zod": "^4.4.3"
+    "zod": "^4.4.3",
+    "electron-updater": "^6.3.9"
   },
   "optionalDependencies": {
     "systeminformation": "^5.22.0"
@@ -45,7 +46,8 @@
       "target": [
         "nsis",
         "portable"
-      ]
+      ],
+      "icon": "build/icon.png"
     },
     "nsis": {
       "oneClick": false,
@@ -59,13 +61,22 @@
       "target": [
         "dmg"
       ],
-      "category": "public.app-category.productivity"
+      "category": "public.app-category.productivity",
+      "icon": "build/icon.png"
     },
     "linux": {
       "target": [
         "AppImage"
       ],
-      "category": "Utility"
-    }
+      "category": "Utility",
+      "icon": "build/icon.png"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "aar0n4ik",
+        "repo": "Nyx"
+      }
+    ]
   }
 }

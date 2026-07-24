@@ -233,7 +233,7 @@ export function modelStatus() {
 }
 
 // --- On-device embeddings for RAG (QVAC SDK, no cloud) ----------------------
-// The hackathon requires the QVAC SDK for ALL inference AND RAG. We embed text
+// The project requires the QVAC SDK for ALL inference AND RAG. We embed text
 // with a real QVAC embedding model when the installed SDK exposes one (cached
 // after first load). If no embedding model is available, we fall back to a
 // deterministic, fully-local hashing embedding so retrieval still works offline

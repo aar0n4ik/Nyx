@@ -1,7 +1,7 @@
 {
   "project": "Nyx — On-Device AI Operator",
   "track": "General Purpose",
-  "format": "Disclosure of every remote API call (QVAC Hackathon submission requirement).",
+  "format": "Disclosure of every remote API call (QVAC Project submission requirement).",
   "ai_inference": {
     "provider": "@qvac/sdk",
     "location": "100% on-device",

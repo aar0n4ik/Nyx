@@ -20,7 +20,7 @@ import { PLAYBOOKS, matchPlaybook } from "./src/agent/playbooks.js"
 
 const PORT = process.env.NYX_PORT || 3000
 
-// First-run convenience so Nyx is runnable out-of-the-box for judges: generate
+// First-run convenience so Nyx is runnable out-of-the-box: generate
 // PoLI signing keys and build the local RAG index if missing. Idempotent, fully
 // offline, best-effort — it never blocks startup.
 ensureLocalSetup()

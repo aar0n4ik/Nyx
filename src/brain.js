@@ -70,9 +70,9 @@ const TOPICS = [
 	{
 		id: "creator",
 		kw: ["кто тебя создал", "кто создал", "кто автор", "кто сделал", "твой создатель", "разработчик", "who made you", "who created", "who built", "your creator", "developer", "aaron4ik", "bohdan", "хто тебе створив", "хто автор"],
-		en: "I was built by Bohdan (AARON4IK) for the Tether QVAC hackathon, on top of Tether's QVAC on-device AI stack. My trading side connects to Bitfinex, Tether's sister company. Everything runs locally on your machine — no cloud.",
-		ru: "Меня создал Bohdan (AARON4IK) для хакатона Tether QVAC, на базе on-device AI-стека Tether QVAC. Моя торговая часть подключена к Bitfinex — сестринской компании Tether. Всё работает локально на вашем устройстве, без облака.",
-		uk: "Мене створив Bohdan (AARON4IK) для хакатона Tether QVAC, на базі on-device AI-стека Tether QVAC. Моя торгова частина підключена до Bitfinex — сестринської компанії Tether. Усе працює локально на вашому пристрої, без хмари.",
+		en: "I was built by Bohdan (AARON4IK) for the Tether QVAC project, on top of Tether's QVAC on-device AI stack. My trading side connects to Bitfinex, Tether's sister company. Everything runs locally on your machine — no cloud.",
+		ru: "Меня создал Bohdan (AARON4IK) для проекта Tether QVAC, на базе on-device AI-стека Tether QVAC. Моя торговая часть подключена к Bitfinex — сестринской компании Tether. Всё работает локально на вашем устройстве, без облака.",
+		uk: "Мене створив Bohdan (AARON4IK) для проекта Tether QVAC, на базі on-device AI-стека Tether QVAC. Моя торгова частина підключена до Bitfinex — сестринської компанії Tether. Усе працює локально на вашому пристрої, без хмари.",
 	},
 	{
 		id: "howareyou",
