@@ -22,6 +22,13 @@
       big.width = 96; big.height = 96
       mark.parentNode.replaceChild(big, mark)
     }
+    var tt = document.querySelector(".theme-toggle")
+    if (tt && !document.querySelector(".nyx-acc")) {
+      var a = document.createElement("a")
+      a.href = "/account"; a.textContent = "Профиль"; a.className = "nyx-acc"
+      a.style.cssText = "font-size:13px;color:var(--muted);text-decoration:none;margin-right:10px;align-self:center"
+      tt.parentNode.insertBefore(a, tt)
+    }
   }
   function run() { addFav(); brand() }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run); else run()

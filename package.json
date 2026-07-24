@@ -1,6 +1,6 @@
 {
   "name": "nyx",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "type": "module",
   "description": "Verifiable, on-device edge-AI copilot built on the QVAC SDK, with a Zero-Trust Bitfinex (USD₮) trading assistant",
   "license": "Apache-2.0",
@@ -30,9 +30,9 @@
   },
   "main": "electron/main.cjs",
   "devDependencies": {
-    "@resvg/resvg-js": "^2.6.2",
     "electron": "^33.2.0",
-    "electron-builder": "^25.1.8"
+    "electron-builder": "^25.1.8",
+    "@resvg/resvg-js": "^2.6.2"
   },
   "build": {
     "appId": "app.nyx.desktop",
@@ -77,6 +77,11 @@
         "owner": "aar0n4ik",
         "repo": "Nyx"
       }
+    ],
+    "files": [
+      "**/*",
+      "!dist/**",
+      "!.github/**"
     ]
   }
 }

@@ -143,3 +143,28 @@ This is a project I care about deeply — built to show that real, useful,
 ## License
 
 Apache-2.0 — see [LICENSE](LICENSE) and [NOTICE](NOTICE).
+
+
+## Desktop app & tester program
+
+Nyx ships as a real desktop app (Electron), not a browser tab.
+
+### Install (testers)
+- Download the installer for your OS from the GitHub Releases page.
+- Windows: run the .exe (NSIS). macOS: open the .dmg. Linux: run the .AppImage.
+- On first launch Nyx opens a branded setup that picks the best on-device model for your hardware and downloads it. After that it runs fully offline.
+- Auto-update is built in: new releases install themselves.
+
+### Build locally
+```bash
+npm install
+npm run desktop   # run the app in dev
+npm run dist      # build an installer for the current OS into dist/
+```
+
+### Tester accounts and honest rating
+- Open /account inside the app to create a local tester profile.
+- Real usage is stored in a tamper-evident, hash-chained log signed by a per-device Ed25519 key. No servers.
+- Export a signed attestation and verify it with: node scripts/verify-attestation.mjs attestation.json
+- The score reflects effort (actions, active days, streak, feature breadth), is capped so clicking cannot inflate it, and drops to zero if the chain is broken.
+
