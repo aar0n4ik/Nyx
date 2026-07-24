@@ -245,6 +245,24 @@ createServer(async (req, res) => {
         return json(res, 200, { error: String((e && e.message) || e) })
       }
     }
+    // --- First-run setup / onboarding (branded installer + model download) ---
+    if (req.method === "GET" && (path === "/setup" || path === "/setup.html")) {
+      return existsSync("public/setup.html") ? sendFile(res, "public/setup.html") : json(res, 404, { error: "setup missing" })
+    }
+    if (req.method === "GET" && path === "/api/setup/status") {
+      const S = await import("./src/setup/installer.js")
+      return json(res, 200, await S.status())
+    }
+    if (req.method === "POST" && path === "/api/setup/download") {
+      const body = await readBody(req)
+      const S = await import("./src/setup/installer.js")
+      return json(res, 200, await S.startDownload(body && body.model))
+    }
+    if (req.method === "GET" && path === "/api/setup/progress") {
+      const S = await import("./src/setup/installer.js")
+      return json(res, 200, S.progress())
+    }
+
     json(res, 404, { error: "not found" })
 	} catch (e) {
 		json(res, 500, { error: String(e?.message || e) })

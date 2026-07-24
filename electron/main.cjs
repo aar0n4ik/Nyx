@@ -25,21 +25,39 @@ function waitForServer(done, tries) {
   })
 }
 
-function createWindow() {
+function getJSON(p) {
+  return new Promise((resolve) => {
+    const req = http.get({ host: "127.0.0.1", port: PORT, path: p }, (res) => {
+      let d = ""
+      res.on("data", (c) => (d += c))
+      res.on("end", () => { try { resolve(JSON.parse(d)) } catch { resolve(null) } })
+    })
+    req.on("error", () => resolve(null))
+  })
+}
+
+function createWindow(startPath) {
   const win = new BrowserWindow({
     width: 1240, height: 820, minWidth: 940, minHeight: 640,
-    backgroundColor: "#0a0a0f", autoHideMenuBar: true, title: "Nyx", show: false,
+    backgroundColor: "#050506", autoHideMenuBar: true, title: "Nyx", show: false,
     webPreferences: { contextIsolation: true, nodeIntegration: false },
   })
   win.once("ready-to-show", () => win.show())
-  win.loadURL("http://127.0.0.1:" + PORT + "/app")
+  win.loadURL("http://127.0.0.1:" + PORT + (startPath || "/app"))
   win.webContents.setWindowOpenHandler((d) => { shell.openExternal(d.url); return { action: "deny" } })
 }
 
 app.whenReady().then(async () => {
   await startServer()
-  waitForServer(createWindow)
-  app.on("activate", () => { if (BrowserWindow.getAllWindows().length === 0) waitForServer(createWindow) })
+  waitForServer(async () => {
+    let start = "/app"
+    try {
+      const st = await getJSON("/api/model/status")
+      if (st && st.ready === false) start = "/setup"
+    } catch (e) {}
+    createWindow(start)
+  })
+  app.on("activate", () => { if (BrowserWindow.getAllWindows().length === 0) createWindow("/app") })
 })
 
 app.on("window-all-closed", () => {
