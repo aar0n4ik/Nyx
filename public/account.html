@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Nyx — Тестировщик</title>
+<style>
+  :root { --bg:#050506; --panel:#0d0d10; --line:#1c1c22; --text:#e9e9ee; --muted:#8a8a95; --accent:#7c5cff; --accent2:#19e3b1; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:15px/1.5 -apple-system,Segoe UI,Roboto,sans-serif; }
+  .wrap { max-width:760px; margin:0 auto; padding:28px 20px 60px; }
+  .brand { display:flex; align-items:center; gap:10px; font-weight:700; font-size:18px; margin-bottom:24px; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:22px; margin-bottom:18px; }
+  h1 { font-size:22px; margin:0 0 6px; }
+  .muted { color:var(--muted); }
+  .score { font-size:52px; font-weight:800; background:linear-gradient(120deg,var(--accent),var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .level { font-size:16px; font-weight:600; color:var(--accent2); }
+  .row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line); }
+  .row:last-child { border-bottom:0; }
+  input { background:#111; border:1px solid var(--line); color:var(--text); border-radius:10px; padding:11px 13px; width:100%; font-size:15px; }
+  .btn { display:inline-block; border:0; border-radius:10px; padding:11px 16px; font-size:14px; font-weight:600; cursor:pointer; margin:6px 6px 0 0; }
+  .btn.primary { background:linear-gradient(120deg,var(--accent),var(--accent2)); color:#07070a; }
+  .btn.ghost { background:transparent; color:var(--text); border:1px solid var(--line); }
+  .ok { color:var(--accent2); } .bad { color:#ff6b6b; }
+  code { background:#111; padding:2px 6px; border-radius:6px; font-size:12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">Nyx</div>
+  <div class="card">
+    <h1>Профиль тестировщика</h1>
+    <p class="muted">Локальный аккаунт на этом устройстве. Данные подписаны ключом устройства и связаны в защищённую от подмены цепочку. Серверов нет.</p>
+    <div id="create" style="display:none">
+      <input id="handle" placeholder="Ваше имя или ник" />
+      <div><button class="btn primary" id="createBtn">Создать аккаунт</button></div>
+    </div>
+    <div id="profile" style="display:none">
+      <div class="row"><span class="muted">Аккаунт</span><span><code id="acid"></code></span></div>
+      <div class="row"><span class="muted">Тестировщик</span><span id="handleView"></span></div>
+      <div class="row"><span class="muted">Создан</span><span id="created"></span></div>
+    </div>
+  </div>
+  <div class="card" id="ratingCard" style="display:none">
+    <div class="score" id="score">0</div>
+    <div class="level" id="level">New</div>
+    <div style="margin-top:14px">
+      <div class="row"><span class="muted">Действий записано</span><span id="total">0</span></div>
+      <div class="row"><span class="muted">Активных дней</span><span id="days">0</span></div>
+      <div class="row"><span class="muted">Серия дней</span><span id="streak">0</span></div>
+      <div class="row"><span class="muted">Целостность цепочки</span><span id="chain"></span></div>
+    </div>
+    <div style="margin-top:16px">
+      <button class="btn ghost" id="eventBtn">Записать тест-событие</button>
+      <button class="btn ghost" id="verifyBtn">Проверить цепочку</button>
+      <button class="btn primary" id="exportBtn">Экспорт аттестации</button>
+    </div>
+    <p class="muted" style="margin-top:14px; font-size:13px">Аттестация — подписанный JSON. Проверяется командой <code>node scripts/verify-attestation.mjs файл.json</code> без вашего приватного ключа. Доказывает реальное использование на устройстве, не личность.</p>
+  </div>
+  <div id="msg" class="muted"></div>
+  <script src="/brand.js"></script>
+  <script src="/account.js"></script>
+</div>
+</body>
+</html>

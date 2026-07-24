@@ -136,7 +136,7 @@ createServer(async (req, res) => {
 			const { script, shell, confirm } = await readBody(req)
 			if (!script) return json(res, 400, { error: "script обязателен" })
 			const execResult = await runScript(script, { shell, confirm: !!confirm })
-      if (execResult && execResult.executed && execResult.code === 0) import("./src/core/metrics.js").then((mm) => mm.track && mm.track("task_done")).catch(() => {})
+      if (execResult && execResult.executed && execResult.code === 0) import("./src/core/metrics.js").then((mm) => mm.track && mm.track("task_done")).catch(() => {}); import("./src/accounts/ledger.js").then((m) => m.record("task", {})).catch(() => {})
       return json(res, 200, execResult)
 		}
 		if (req.method === "GET" && path === "/api/agent/cache") {
@@ -155,7 +155,7 @@ createServer(async (req, res) => {
 			}
 			// 2) Otherwise the free-form AI answers (local brain / LLM).
 			const result = await answer(q || "", { lang, history })
-			return json(res, 200, result)
+			import("./src/accounts/ledger.js").then((m) => m.record("chat", {})).catch(() => {}); return json(res, 200, result)
 		}
 		if (req.method === "POST" && path === "/api/chat/reset") {
 			const { chatId } = await readBody(req); brokerReset(chatId || "default"); return json(res, 200, { ok: true })
@@ -263,6 +263,42 @@ createServer(async (req, res) => {
       return json(res, 200, S.progress())
     }
 
+    // --- Local tester accounts + honest, tamper-evident rating (no server) ---
+    if (req.method === "GET" && path === "/account") {
+      return existsSync("public/account.html") ? sendFile(res, "public/account.html") : json(res, 404, { error: "account page missing" })
+    }
+    if (req.method === "GET" && path === "/api/account") {
+      const A = await import("./src/accounts/accounts.js")
+      return json(res, 200, A.getProfile() || { profile: null })
+    }
+    if (req.method === "POST" && path === "/api/account/create") {
+      const body = await readBody(req)
+      const A = await import("./src/accounts/accounts.js")
+      return json(res, 200, A.createProfile(body && body.handle))
+    }
+    if (req.method === "POST" && path === "/api/account/event") {
+      const body = await readBody(req)
+      const L = await import("./src/accounts/ledger.js")
+      return json(res, 200, L.record((body && body.type) || "action", (body && body.meta) || {}))
+    }
+    if (req.method === "GET" && path === "/api/account/rating") {
+      const R = await import("./src/accounts/rating.js")
+      return json(res, 200, R.rating())
+    }
+    if (req.method === "GET" && path === "/api/account/verify") {
+      const L = await import("./src/accounts/ledger.js")
+      return json(res, 200, L.verifyChain())
+    }
+    if (req.method === "GET" && path === "/api/account/attestation") {
+      const AT = await import("./src/accounts/attestation.js")
+      const doc = AT.build()
+      try {
+        const nfs = await import("node:fs")
+        nfs.mkdirSync("evidence", { recursive: true })
+        nfs.writeFileSync("evidence/tester-attestation.json", JSON.stringify(doc, null, 2))
+      } catch (e) {}
+      return json(res, 200, doc)
+    }
     json(res, 404, { error: "not found" })
 	} catch (e) {
 		json(res, 500, { error: String(e?.message || e) })
