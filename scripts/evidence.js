@@ -1,4 +1,4 @@
-// One-command evidence bundle for judges. Offline-safe.
+// One-command evidence bundle for reviewers. Offline-safe.
 // Generates the real hardware proof, flushes the NetGuard egress report, writes
 // the model attestation (if a model was set up), and verifies the PoLI chain.
 // Run:  npm run evidence

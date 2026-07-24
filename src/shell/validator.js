@@ -83,7 +83,7 @@ export function validateScript(script, { shell, lang = "en" } = {}) {
   if (script.length > 8000) reasons.push(rsn("toolong", lang))
 
   let destructive = false
-  for (const d of DESTRUCTIVE) if (d.re.test(script)) { reasons.push("⛔ " + rsn(d.code, lang)); destructive = true }
+  for (const d of DESTRUCTIVE) if (d.re.test(script)) { reasons.push(" " + rsn(d.code, lang)); destructive = true }
 
   const needsElevation = ELEVATION.some((re) => re.test(script))
   const touchesNetwork = NETWORK.some((re) => re.test(script))
@@ -95,7 +95,7 @@ export function validateScript(script, { shell, lang = "en" } = {}) {
   if (destructive) {
     risk = "destructive"
   } else if (needsElevation || systemConfig) {
-    risk = "elevated"; reasons.push("⚠️ " + rsn(needsElevation ? "elevation" : "sysconfig", lang))
+    risk = "elevated"; reasons.push(" " + rsn(needsElevation ? "elevation" : "sysconfig", lang))
   } else if (touchesNetwork) {
     risk = "medium"; reasons.push("ℹ️ " + rsn("network", lang))
   } else if (writes) {

@@ -77,7 +77,7 @@ export async function maybeMarketAnswer(query, lang = "en") {
 	if (!/(price|цен|цін|market|рынок|ринок|ticker|btc|eth|sol|битк|курс|precio|kurs|prix)/.test(q)) return null
 	const sym = (q.match(/\b(btc|eth|sol|xrp|ltc|ada|dot|link)\b/) || [])[1]
 	const data = sym ? [await ticker(sym)] : await market()
-	const flag = data[0]?.live ? "🟢 live" : "⚪ cached"
+	const flag = data[0]?.live ? " live" : "⚪ cached"
 	const lines = data.map((d) => `${d.symbol}: $${Number(d.last).toLocaleString()} (${d.dailyChangePct >= 0 ? "+" : ""}${d.dailyChangePct}%)`)
 	const head = {
 		en: `Bitfinex market (${flag}, settled in USD₮):`,

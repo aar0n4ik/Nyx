@@ -32,20 +32,20 @@ const I18N = {
     echoSpecs: "📋 Show full device specifications", echoUpdate: "🔄 Update Windows",
     updateStarted: "Windows update scan started.", opened: "⚙️  Opened: ", unavailable: "unavailable", failed: "failed",
     src: "Source: ",
-    serverHint: "⚠️ No connection to the local Nyx server. Run: npm start — then open http://localhost:3000/app",
-    wTitle: "🖥️ Device specifications", wCpuLoad: "CPU load", wCores: "cores", wRamUse: "RAM",
+    serverHint: " No connection to the local Nyx server. Run: npm start — then open http://localhost:3000/app",
+    wTitle: " Device specifications", wCpuLoad: "CPU load", wCores: "cores", wRamUse: "RAM",
     wCpu: "CPU", wGpu: "GPU", wRam: "RAM", wFree: "free", wDisks: "Disks", wBoard: "Motherboard", wBios: "BIOS", wDx: "DirectX", wOs: "OS", wArch: "Architecture", wUptime: "Uptime", wLatency: "Bitfinex latency", h: "h",
     btnSettings: "⚙️  Open Windows system settings", btnUpdates: "🔄 Check for updates",
-    bAuto: "✨ Automatically", bManual: "🧮 Manually (calculator)", yes: "✅ Yes", cancel: "✕ Cancel",
+    bAuto: " Automatically", bManual: "🧮 Manually (calculator)", yes: " Yes", cancel: "✕ Cancel",
     exec: "▶ Execute", execCancel: "Okay — cancelled, nothing was executed.",
     sendAuto: "Automatically, do it for me", sendManual: "I want to enter manually", sendYes: "yes", sendCancel: "cancel",
-    blocked: "⛔ Blocked by validator: ",
+    blocked: " Blocked by validator: ",
     dryRun: "⚙️ Autonomous execution is disabled (NYX_ALLOW_EXEC=0). By default Nyx runs confirmed actions itself; set NYX_ALLOW_EXEC=1 to re-enable.",
-    doneAdmin: "✅ Done — executed with administrator rights (exit 0)", done0: "✅ Done (exit 0)", doneCmd: ". Command executed.",
-    uacDeclined: "\n\n💡 You declined the Windows (UAC) prompt. Press Execute again and confirm the dialog — then I'll do it myself.",
-    timeoutHint: "\n\n💡 The command didn't finish in time (the UAC prompt may have waited too long). Try again.",
-    privHint: "\n\n💡 Administrator rights were missing. Press Execute again — a Windows (UAC) prompt will appear; confirm it and I'll run the command myself.",
-    failTitle: "❌ Failed", timeoutWord: " (timeout)", codeWord: " (exit ", noOutput: "(no output)",
+    doneAdmin: " Done — executed with administrator rights (exit 0)", done0: " Done (exit 0)", doneCmd: ". Command executed.",
+    uacDeclined: "\n\n You declined the Windows (UAC) prompt. Press Execute again and confirm the dialog — then I'll do it myself.",
+    timeoutHint: "\n\n The command didn't finish in time (the UAC prompt may have waited too long). Try again.",
+    privHint: "\n\n Administrator rights were missing. Press Execute again — a Windows (UAC) prompt will appear; confirm it and I'll run the command myself.",
+    failTitle: " Failed", timeoutWord: " (timeout)", codeWord: " (exit ", noOutput: "(no output)",
     mbActive: (n) => `Offline model active on-device: <b>${n}</b> — answers come from the QVAC SDK, no cloud.`,
     mbNoSdk: "QVAC SDK not installed — the local Nyx brain is answering. To enable the full on-device model: <code style=\"background:#fff;padding:1px 6px;border-radius:6px\">npm run model</code>, then restart.",
     mbNotDl: "Model not downloaded yet — Nyx is answering with its local brain. Download once (needs internet): <code style=\"background:#fff;padding:1px 6px;border-radius:6px\">npm run model</code>, then restart.",
@@ -64,20 +64,20 @@ const I18N = {
     echoSpecs: "📋 Показать полные характеристики устройства", echoUpdate: "🔄 Обновить Windows",
     updateStarted: "Запущен поиск обновлений Windows.", opened: "⚙️  Открыл: ", unavailable: "недоступно", failed: "не удалось",
     src: "Источник: ",
-    serverHint: "⚠️ Нет связи с локальным сервером Nyx. Запустите: npm start — и откройте http://localhost:3000/app",
-    wTitle: "🖥️ Характеристики устройства", wCpuLoad: "Загрузка CPU", wCores: "ядер", wRamUse: "RAM",
+    serverHint: " Нет связи с локальным сервером Nyx. Запустите: npm start — и откройте http://localhost:3000/app",
+    wTitle: " Характеристики устройства", wCpuLoad: "Загрузка CPU", wCores: "ядер", wRamUse: "RAM",
     wCpu: "Процессор", wGpu: "GPU", wRam: "ОЗУ", wFree: "свободно", wDisks: "Диски", wBoard: "Мат. плата", wBios: "BIOS", wDx: "DirectX", wOs: "ОС", wArch: "Архитектура", wUptime: "Uptime", wLatency: "Задержка до Bitfinex", h: "ч",
     btnSettings: "⚙️  Открыть системные настройки Windows", btnUpdates: "🔄 Проверить обновления",
-    bAuto: "✨ Автоматически", bManual: "🧮 Вручную (калькулятор)", yes: "✅ Да", cancel: "✕ Отмена",
+    bAuto: " Автоматически", bManual: "🧮 Вручную (калькулятор)", yes: " Да", cancel: "✕ Отмена",
     exec: "▶ Выполнить", execCancel: "Окей — отменил, ничего не выполнял.",
     sendAuto: "Автоматически, поставь за меня", sendManual: "Хочу зайти вручную", sendYes: "да", sendCancel: "отмена",
-    blocked: "⛔ Заблокировано валидатором: ",
+    blocked: " Заблокировано валидатором: ",
     dryRun: "⚙️ Автономное выполнение отключено (NYX_ALLOW_EXEC=0). По умолчанию Nyx выполняет подтверждённые действия сам; задай NYX_ALLOW_EXEC=1, чтобы снова включить.",
-    doneAdmin: "✅ Готово — выполнил с правами администратора (код 0)", done0: "✅ Готово (код 0)", doneCmd: ". Команда выполнена.",
-    uacDeclined: "\n\n💡 Ты отклонил запрос Windows (UAC). Нажми «Выполнить» ещё раз и подтверди окно — тогда я всё сделаю сам.",
-    timeoutHint: "\n\n💡 Команда не успела завершиться (возможно, ждали подтверждения UAC слишком долго). Попробуй ещё раз.",
-    privHint: "\n\n💡 Не хвати��о прав администратора. Нажми «Выполнить» ещё раз — появится ��апрос Windows (UAC), подтверди его, и я выполню команду сам.",
-    failTitle: "❌ Не удалось", timeoutWord: " (таймаут)", codeWord: " (код ", noOutput: "(нет вывода)",
+    doneAdmin: " Готово — выполнил с правами администратора (код 0)", done0: " Готово (код 0)", doneCmd: ". Команда выполнена.",
+    uacDeclined: "\n\n Ты отклонил запрос Windows (UAC). Нажми «Выполнить» ещё раз и подтверди окно — тогда я всё сделаю сам.",
+    timeoutHint: "\n\n Команда не успела завершиться (возможно, ждали подтверждения UAC слишком долго). Попробуй ещё раз.",
+    privHint: "\n\n Не хвати��о прав администратора. Нажми «Выполнить» ещё раз — появится ��апрос Windows (UAC), подтверди его, и я выполню команду сам.",
+    failTitle: " Не удалось", timeoutWord: " (таймаут)", codeWord: " (код ", noOutput: "(нет вывода)",
     mbActive: (n) => `Офлайн-модель активна на устройстве: <b>${n}</b> — ответы генерирует QVAC SDK, без облака.`,
     mbNoSdk: "QVAC SDK не установлен — сейчас отвечает локальный мозг Nyx. Чтобы включить полноценную модель на устройстве: <code style=\"background:#fff;padding:1px 6px;border-radius:6px\">npm run model</code>, затем перезапусти.",
     mbNotDl: "Модель ещё не скачана — Nyx отвечает локальным мозгом. Скачай один раз (нужен интернет): <code style=\"background:#fff;padding:1px 6px;border-radius:6px\">npm run model</code>, затем перезапусти.",
@@ -96,20 +96,20 @@ const I18N = {
     echoSpecs: "📋 Показати повні характеристики пристрою", echoUpdate: "🔄 Оновити Windows",
     updateStarted: "Запущено пошук оновлень Windows.", opened: "⚙️  Відкрив: ", unavailable: "недоступно", failed: "не вдалося",
     src: "Джерело: ",
-    serverHint: "⚠️ Немає звʼязку з локальним сервером Nyx. Запустіть: npm start — і відкрийте http://localhost:3000/app",
-    wTitle: "🖥️ Характеристики пристрою", wCpuLoad: "Завантаження CPU", wCores: "ядер", wRamUse: "RAM",
+    serverHint: " Немає звʼязку з локальним сервером Nyx. Запустіть: npm start — і відкрийте http://localhost:3000/app",
+    wTitle: " Характеристики пристрою", wCpuLoad: "Завантаження CPU", wCores: "ядер", wRamUse: "RAM",
     wCpu: "Процесор", wGpu: "GPU", wRam: "ОЗП", wFree: "вільно", wDisks: "Диски", wBoard: "Мат. плата", wBios: "BIOS", wDx: "DirectX", wOs: "ОС", wArch: "Архітектура", wUptime: "Uptime", wLatency: "Затримка до Bitfinex", h: "г",
     btnSettings: "⚙️  Відкрити системні налаштування Windows", btnUpdates: "🔄 Перевірити оновлення",
-    bAuto: "✨ Автоматично", bManual: "🧮 Вручну (калькулятор)", yes: "✅ Так", cancel: "✕ Скасувати",
+    bAuto: " Автоматично", bManual: "🧮 Вручну (калькулятор)", yes: " Так", cancel: "✕ Скасувати",
     exec: "▶ Виконати", execCancel: "Гаразд — скасував, нічого не виконував.",
     sendAuto: "Автоматично, зроби за мене", sendManual: "Хочу ввести вручну", sendYes: "так", sendCancel: "скасування",
-    blocked: "⛔ Заблоковано валідатором: ",
+    blocked: " Заблоковано валідатором: ",
     dryRun: "⚙️ Автономне виконання вимкнено (NYX_ALLOW_EXEC=0). За замовчуванням Nyx виконує підтверджені дії сам; задай NYX_ALLOW_EXEC=1, щоб знову увімкнути.",
-    doneAdmin: "✅ Готово — виконав з правами адміністратора (код 0)", done0: "✅ Готово (код 0)", doneCmd: ". Команду виконано.",
-    uacDeclined: "\n\n💡 Ти відхилив запит Windows (UAC). Натисни «Виконати» ще раз і підтверди вікно — тоді я все зроблю сам.",
-    timeoutHint: "\n\n💡 Команда не встигла завершитися. Спробуй ще раз.",
-    privHint: "\n\n💡 Не вистачило прав адміністратора. Натисни «Виконати» ще раз — зʼявиться запит Windows (UAC), підтверди його.",
-    failTitle: "❌ Не вдалося", timeoutWord: " (таймаут)", codeWord: " (код ", noOutput: "(немає виводу)",
+    doneAdmin: " Готово — виконав з правами адміністратора (код 0)", done0: " Готово (код 0)", doneCmd: ". Команду виконано.",
+    uacDeclined: "\n\n Ти відхилив запит Windows (UAC). Натисни «Виконати» ще раз і підтверди вікно — тоді я все зроблю сам.",
+    timeoutHint: "\n\n Команда не встигла завершитися. Спробуй ще раз.",
+    privHint: "\n\n Не вистачило прав адміністратора. Натисни «Виконати» ще раз — зʼявиться запит Windows (UAC), підтверди його.",
+    failTitle: " Не вдалося", timeoutWord: " (таймаут)", codeWord: " (код ", noOutput: "(немає виводу)",
     mbActive: (n) => `Офлайн-модель активна на пристрої: <b>${n}</b> — відповіді генерує QVAC SDK, без хмари.`,
     mbNoSdk: "QVAC SDK не встановлено — зараз відповідає локальний мозок Nyx. Щоб увімкнути повноцінну модель: <code style=\"background:#fff;padding:1px 6px;border-radius:6px\">npm run model</code>, потім перезапусти.",
     mbNotDl: "Модель ще не завантажено — Nyx відповідає локальним мозком. Завантаж один раз (потрібен інтернет): <code style=\"background:#fff;padding:1px 6px;border-radius:6px\">npm run model</code>, потім перезапусти.",
@@ -128,20 +128,20 @@ const I18N = {
     echoSpecs: "📋 Mostrar especificaciones completas", echoUpdate: "🔄 Actualizar Windows",
     updateStarted: "Búsqueda de actualizaciones de Windows iniciada.", opened: "⚙️  Abierto: ", unavailable: "no disponible", failed: "falló",
     src: "Fuente: ",
-    serverHint: "⚠️ Sin conexión con el servidor local de Nyx. Ejecuta: npm start — y abre http://localhost:3000/app",
-    wTitle: "🖥️ Especificaciones del dispositivo", wCpuLoad: "Carga de CPU", wCores: "núcleos", wRamUse: "RAM",
+    serverHint: " Sin conexión con el servidor local de Nyx. Ejecuta: npm start — y abre http://localhost:3000/app",
+    wTitle: " Especificaciones del dispositivo", wCpuLoad: "Carga de CPU", wCores: "núcleos", wRamUse: "RAM",
     wCpu: "CPU", wGpu: "GPU", wRam: "RAM", wFree: "libre", wDisks: "Discos", wBoard: "Placa base", wBios: "BIOS", wDx: "DirectX", wOs: "SO", wArch: "Arquitectura", wUptime: "Tiempo activo", wLatency: "Latencia Bitfinex", h: "h",
     btnSettings: "⚙️  Abrir configuración de Windows", btnUpdates: "🔄 Buscar actualizaciones",
-    bAuto: "✨ Automáticamente", bManual: "🧮 Manual (calculadora)", yes: "✅ Sí", cancel: "✕ Cancelar",
+    bAuto: " Automáticamente", bManual: "🧮 Manual (calculadora)", yes: " Sí", cancel: "✕ Cancelar",
     exec: "▶ Ejecutar", execCancel: "De acuerdo — cancelado, no se ejecutó nada.",
     sendAuto: "Automáticamente, hazlo por mí", sendManual: "Quiero hacerlo manualmente", sendYes: "sí", sendCancel: "cancelar",
-    blocked: "⛔ Bloqueado por el validador: ",
+    blocked: " Bloqueado por el validador: ",
     dryRun: "⚙️ La ejecución autónoma está desactivada (NYX_ALLOW_EXEC=0). Por defecto Nyx ejecuta por sí mismo las acciones confirmadas; define NYX_ALLOW_EXEC=1 para reactivarla.",
-    doneAdmin: "✅ Listo — ejecutado con permisos de administrador (código 0)", done0: "✅ Listo (código 0)", doneCmd: ". Comando ejecutado.",
-    uacDeclined: "\n\n💡 Rechazaste el aviso de Windows (UAC). Pulsa Ejecutar otra vez y confirma el cuadro — entonces lo haré yo mismo.",
-    timeoutHint: "\n\n💡 El comando no terminó a tiempo. Inténtalo de nuevo.",
-    privHint: "\n\n💡 Faltaban permisos de administrador. Pulsa Ejecutar otra vez — aparecerá el aviso de Windows (UAC); confírmalo.",
-    failTitle: "❌ Falló", timeoutWord: " (tiempo agotado)", codeWord: " (código ", noOutput: "(sin salida)",
+    doneAdmin: " Listo — ejecutado con permisos de administrador (código 0)", done0: " Listo (código 0)", doneCmd: ". Comando ejecutado.",
+    uacDeclined: "\n\n Rechazaste el aviso de Windows (UAC). Pulsa Ejecutar otra vez y confirma el cuadro — entonces lo haré yo mismo.",
+    timeoutHint: "\n\n El comando no terminó a tiempo. Inténtalo de nuevo.",
+    privHint: "\n\n Faltaban permisos de administrador. Pulsa Ejecutar otra vez — aparecerá el aviso de Windows (UAC); confírmalo.",
+    failTitle: " Falló", timeoutWord: " (tiempo agotado)", codeWord: " (código ", noOutput: "(sin salida)",
     mbActive: (n) => `Modelo offline activo en el dispositivo: <b>${n}</b> — las respuestas las genera el QVAC SDK, sin nube.`,
     mbNoSdk: "QVAC SDK no instalado — ahora responde el cerebro local de Nyx. Para activar el modelo completo: <code style=\"background:#fff;padding:1px 6px;border-radius:6px\">npm run model</code>, luego reinicia.",
     mbNotDl: "Modelo aún no descargado — Nyx responde con su cerebro local. Descárgalo una vez (necesita internet): <code style=\"background:#fff;padding:1px 6px;border-radius:6px\">npm run model</code>, luego reinicia.",
@@ -160,20 +160,20 @@ const I18N = {
     echoSpecs: "📋 Vollständige Gerätespezifikationen anzeigen", echoUpdate: "🔄 Windows aktualisieren",
     updateStarted: "Windows-Update-Suche gestartet.", opened: "⚙️  Geöffnet: ", unavailable: "nicht verfügbar", failed: "fehlgeschlagen",
     src: "Quelle: ",
-    serverHint: "⚠️ Keine Verbindung zum lokalen Nyx-Server. Starte: npm start — und öffne http://localhost:3000/app",
-    wTitle: "🖥️ Gerätespezifikationen", wCpuLoad: "CPU-Last", wCores: "Kerne", wRamUse: "RAM",
+    serverHint: " Keine Verbindung zum lokalen Nyx-Server. Starte: npm start — und öffne http://localhost:3000/app",
+    wTitle: " Gerätespezifikationen", wCpuLoad: "CPU-Last", wCores: "Kerne", wRamUse: "RAM",
     wCpu: "CPU", wGpu: "GPU", wRam: "RAM", wFree: "frei", wDisks: "Laufwerke", wBoard: "Mainboard", wBios: "BIOS", wDx: "DirectX", wOs: "OS", wArch: "Architektur", wUptime: "Laufzeit", wLatency: "Bitfinex-Latenz", h: "h",
     btnSettings: "⚙️  Windows-Einstellungen öffnen", btnUpdates: "🔄 Nach Updates suchen",
-    bAuto: "✨ Automatisch", bManual: "🧮 Manuell (Rechner)", yes: "✅ Ja", cancel: "✕ Abbrechen",
+    bAuto: " Automatisch", bManual: "🧮 Manuell (Rechner)", yes: " Ja", cancel: "✕ Abbrechen",
     exec: "▶ Ausführen", execCancel: "Okay — abgebrochen, nichts wurde ausgeführt.",
     sendAuto: "Automatisch, mach es für mich", sendManual: "Ich möchte manuell einsteigen", sendYes: "ja", sendCancel: "abbrechen",
-    blocked: "⛔ Vom Validator blockiert: ",
+    blocked: " Vom Validator blockiert: ",
     dryRun: "⚙️ Autonome Ausführung ist deaktiviert (NYX_ALLOW_EXEC=0). Standardmäßig führt Nyx bestätigte Aktionen selbst aus; setze NYX_ALLOW_EXEC=1, um sie wieder zu aktivieren.",
-    doneAdmin: "✅ Fertig — mit Administratorrechten ausgeführt (Code 0)", done0: "✅ Fertig (Code 0)", doneCmd: ". Befehl ausgeführt.",
-    uacDeclined: "\n\n💡 Du hast die Windows-Abfrage (UAC) abgelehnt. Drücke erneut Ausführen und bestätige den Dialog — dann erledige ich es selbst.",
-    timeoutHint: "\n\n💡 Der Befehl wurde nicht rechtzeitig fertig. Versuch es erneut.",
-    privHint: "\n\n💡 Administratorrechte fehlten. Drücke erneut Ausführen — die Windows-Abfrage (UAC) erscheint; bestätige sie.",
-    failTitle: "❌ Fehlgeschlagen", timeoutWord: " (Timeout)", codeWord: " (Code ", noOutput: "(keine Ausgabe)",
+    doneAdmin: " Fertig — mit Administratorrechten ausgeführt (Code 0)", done0: " Fertig (Code 0)", doneCmd: ". Befehl ausgeführt.",
+    uacDeclined: "\n\n Du hast die Windows-Abfrage (UAC) abgelehnt. Drücke erneut Ausführen und bestätige den Dialog — dann erledige ich es selbst.",
+    timeoutHint: "\n\n Der Befehl wurde nicht rechtzeitig fertig. Versuch es erneut.",
+    privHint: "\n\n Administratorrechte fehlten. Drücke erneut Ausführen — die Windows-Abfrage (UAC) erscheint; bestätige sie.",
+    failTitle: " Fehlgeschlagen", timeoutWord: " (Timeout)", codeWord: " (Code ", noOutput: "(keine Ausgabe)",
     mbActive: (n) => `Offline-Modell aktiv auf dem Gerät: <b>${n}</b> — Antworten kommen vom QVAC SDK, ohne Cloud.`,
     mbNoSdk: "QVAC SDK nicht installiert — aktuell antwortet das lokale Nyx-Gehirn. Zum Aktivieren des vollen Modells: <code style=\"background:#fff;padding:1px 6px;border-radius:6px\">npm run model</code>, dann neu starten.",
     mbNotDl: "Modell noch nicht heruntergeladen — Nyx antwortet mit seinem lokalen Gehirn. Einmal laden (Internet nötig): <code style=\"background:#fff;padding:1px 6px;border-radius:6px\">npm run model</code>, dann neu starten.",
@@ -192,20 +192,20 @@ const I18N = {
     echoSpecs: "📋 Afficher les spécifications complètes", echoUpdate: "🔄 Mettre à jour Windows",
     updateStarted: "Recherche de mises à jour Windows lancée.", opened: "⚙️  Ouvert : ", unavailable: "indisponible", failed: "échec",
     src: "Source : ",
-    serverHint: "⚠️ Pas de connexion au serveur local Nyx. Lancez : npm start — puis ouvrez http://localhost:3000/app",
-    wTitle: "🖥️ Spécifications de l'appareil", wCpuLoad: "Charge CPU", wCores: "cœurs", wRamUse: "RAM",
+    serverHint: " Pas de connexion au serveur local Nyx. Lancez : npm start — puis ouvrez http://localhost:3000/app",
+    wTitle: " Spécifications de l'appareil", wCpuLoad: "Charge CPU", wCores: "cœurs", wRamUse: "RAM",
     wCpu: "CPU", wGpu: "GPU", wRam: "RAM", wFree: "libre", wDisks: "Disques", wBoard: "Carte mère", wBios: "BIOS", wDx: "DirectX", wOs: "OS", wArch: "Architecture", wUptime: "Disponibilité", wLatency: "Latence Bitfinex", h: "h",
     btnSettings: "⚙️  Ouvrir les paramètres Windows", btnUpdates: "🔄 Vérifier les mises à jour",
-    bAuto: "✨ Automatiquement", bManual: "🧮 Manuel (calculatrice)", yes: "✅ Oui", cancel: "✕ Annuler",
+    bAuto: " Automatiquement", bManual: "🧮 Manuel (calculatrice)", yes: " Oui", cancel: "✕ Annuler",
     exec: "▶ Exécuter", execCancel: "D'accord — annulé, rien n'a été exécuté.",
     sendAuto: "Automatiquement, fais-le pour moi", sendManual: "Je veux entrer manuellement", sendYes: "oui", sendCancel: "annuler",
-    blocked: "⛔ Bloqué par le validateur : ",
+    blocked: " Bloqué par le validateur : ",
     dryRun: "⚙️ L'exécution autonome est désactivée (NYX_ALLOW_EXEC=0). Par défaut, Nyx exécute lui-même les actions confirmées ; définissez NYX_ALLOW_EXEC=1 pour la réactiver.",
-    doneAdmin: "✅ Terminé — exécuté avec les droits administrateur (code 0)", done0: "✅ Terminé (code 0)", doneCmd: ". Commande exécutée.",
-    uacDeclined: "\n\n💡 Vous avez refusé l'invite Windows (UAC). Appuyez encore sur Exécuter et confirmez la boîte — je m'en occupe alors moi-même.",
-    timeoutHint: "\n\n💡 La commande n'a pas fini à temps. Réessayez.",
-    privHint: "\n\n💡 Droits administrateur manquants. Appuyez encore sur Exécuter — l'invite Windows (UAC) apparaîtra ; confirmez-la.",
-    failTitle: "❌ Échec", timeoutWord: " (délai dépassé)", codeWord: " (code ", noOutput: "(aucune sortie)",
+    doneAdmin: " Terminé — exécuté avec les droits administrateur (code 0)", done0: " Terminé (code 0)", doneCmd: ". Commande exécutée.",
+    uacDeclined: "\n\n Vous avez refusé l'invite Windows (UAC). Appuyez encore sur Exécuter et confirmez la boîte — je m'en occupe alors moi-même.",
+    timeoutHint: "\n\n La commande n'a pas fini à temps. Réessayez.",
+    privHint: "\n\n Droits administrateur manquants. Appuyez encore sur Exécuter — l'invite Windows (UAC) apparaîtra ; confirmez-la.",
+    failTitle: " Échec", timeoutWord: " (délai dépassé)", codeWord: " (code ", noOutput: "(aucune sortie)",
     mbActive: (n) => `Modèle hors ligne actif sur l'appareil : <b>${n}</b> — les réponses viennent du QVAC SDK, sans cloud.`,
     mbNoSdk: "QVAC SDK non installé — le cerveau local de Nyx répond. Pour activer le modèle complet : <code style=\"background:#fff;padding:1px 6px;border-radius:6px\">npm run model</code>, puis redémarrez.",
     mbNotDl: "Modèle pas encore téléchargé — Nyx répond avec son cerveau local. Téléchargez une fois (internet requis) : <code style=\"background:#fff;padding:1px 6px;border-radius:6px\">npm run model</code>, puis redémarrez.",
@@ -243,10 +243,10 @@ function neuroName(text) {
     const pair = sym ? sym[1].toUpperCase() + "/USD₮" : "Bitfinex"
     return { icon: "📈", title: t("nOrder") + pair }
   }
-  if (/(характерист|желез|cpu|gpu|ram|диск|specs|диагнос|устройств|spec|diagnos|gerät|appareil|dispositiv)/i.test(tt)) return { icon: "🖥️", title: t("nDiag") }
+  if (/(характерист|желез|cpu|gpu|ram|диск|specs|диагнос|устройств|spec|diagnos|gerät|appareil|dispositiv)/i.test(tt)) return { icon: "", title: t("nDiag") }
   if (/(windows|обнов|онов|update|систем|aktualis|mise à jour|actualiz)/i.test(tt)) return { icon: "🔄", title: t("nUpdate") }
   if (/(цен|price|рын|market|курс|mercado|marché|markt)/i.test(tt)) return { icon: "💱", title: t("nMarket") }
-  if (/(безопас|security|proof|приват|шифр|sicherheit|sécurit|seguridad|безпек)/i.test(tt)) return { icon: "🔒", title: t("nSecurity") }
+  if (/(безопас|security|proof|приват|шифр|sicherheit|sécurit|seguridad|безпек)/i.test(tt)) return { icon: "", title: t("nSecurity") }
   if (/(qvac|модел|llm|сдк|sdk|model|modèle|modell|modelo)/i.test(tt)) return { icon: "🧩", title: t("nModel") }
   let title = text.trim().split(/\s+/).slice(0, 5).join(" ")
   if (title.length > 34) title = title.slice(0, 34) + "…"
@@ -365,12 +365,12 @@ async function runUpdate() {
   pushMsg("user", { text: t("echoUpdate") }); maybeName(c, "windows update")
   const tp = showTyping()
   try { const r = await fetch("/api/system/update", { method: "POST", headers: { "content-type": "application/json" }, body: "{}" }).then((x) => x.json()); tp.remove()
-    pushMsg("bot", { text: r.ok ? (r.note || t("updateStarted")) : ("⚠️ " + (r.error || t("failed"))), mode: "system" }) }
+    pushMsg("bot", { text: r.ok ? (r.note || t("updateStarted")) : (" " + (r.error || t("failed"))), mode: "system" }) }
   catch { tp.remove(); pushMsg("bot", { text: serverHint() }) }
 }
 async function openSettings(pane) {
   try { const r = await fetch("/api/system/open-settings", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ pane }) }).then((x) => x.json())
-    pushMsg("bot", { text: r.ok ? (t("opened") + r.opened) : ("⚠️ " + (r.error || t("unavailable"))), mode: "system" }) }
+    pushMsg("bot", { text: r.ok ? (t("opened") + r.opened) : (" " + (r.error || t("unavailable"))), mode: "system" }) }
   catch { pushMsg("bot", { text: serverHint() }) }
 }
 const serverHint = () => t("serverHint")
@@ -489,7 +489,7 @@ async function checkModel() {
       bar.innerHTML = `<b>●</b><span>${t("mbActive")(esc(name))}</span>`
     } else if (r && !r.sdkInstalled) {
       bar.style.cssText = baseWarn
-      bar.innerHTML = `<b>⚠️</b><span>${t("mbNoSdk")}</span>` + recheckBtn
+      bar.innerHTML = `<b></b><span>${t("mbNoSdk")}</span>` + recheckBtn
     } else {
       bar.style.cssText = baseWarn
       bar.innerHTML = `<b>⬇️</b><span>${t("mbNotDl")}</span>` + recheckBtn

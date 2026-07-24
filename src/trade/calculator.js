@@ -76,7 +76,7 @@ export function gradeTrade(calc) {
 		else notes.push("Poor R:R (< 1:1) — reconsider.")
 	}
 	if (calc.neededLeverage && calc.neededLeverage > calc.maxSafeLeverage)
-		notes.push(`⚠️ Leverage ${calc.neededLeverage}x exceeds safe bound ${calc.maxSafeLeverage}x for this stop.`)
+		notes.push(` Leverage ${calc.neededLeverage}x exceeds safe bound ${calc.maxSafeLeverage}x for this stop.`)
 	if (calc.stopPct < 0.3) notes.push("Very tight stop — watch for noise/slippage.")
 	const score = Math.max(0, Math.min(100, Math.round((calc.riskReward || 0) * 25 + (calc.neededLeverage && calc.neededLeverage <= calc.maxSafeLeverage ? 25 : 0))))
 	return { score, notes }

@@ -149,11 +149,11 @@ function pack(lang) {
 		keysBad: (r) => `Ключи не прошли проверку (${r}). Проверьте права ключа и пришлите ещё раз.`,
 		askTradeParams: "Укажите инструмент, направление и цену (или «по рынку»). Напр.: BTC/USD₮ лонг вход 65000.",
 		draft: (o) => `Я правильно сформировал параметры ордера?\n• Инструмент: ${o.symbol}\n• Тип: ${o.type}\n• Объём: ${o.amount}\n${o.price ? "• Цена: " + o.price + "\n" : ""}Подтвердите, что всё сделано верно («да» / «отмена»).`,
-		confirmFinal: (m, o) => `⚠️ Вы абсолютно уверены, что хотите осуществить эту сделку на аккаунте ${m} с параметрами ${o.symbol} ${o.amount} ${o.type}${o.price ? " @ " + o.price : ""} прямо сейчас? Ответьте «да» для отправки или «отмена».`,
+		confirmFinal: (m, o) => ` Вы абсолютно уверены, что хотите осуществить эту сделку на аккаунте ${m} с параметрами ${o.symbol} ${o.amount} ${o.type}${o.price ? " @ " + o.price : ""} прямо сейчас? Ответьте «да» для отправки или «отмена».`,
 		calc: (c, g) => `Расчёт сделки (${c.side}):\n• Объём: ${c.units} (≈ ${c.notionalUsd} USD₮)\n• Стоп: ${c.stopPct}% от входа\n• Риск: ${c.riskUsd} USD₮\n• Нужное плечо: ${c.neededLeverage ?? "—"}x (безопасный потолок ${c.maxSafeLeverage}x)\n• R:R: ${c.riskReward ?? "—"}\n• Комиссии: ${c.feesUsdt} USD₮ (WDK ${c.wdkFee})\n• Чистая прибыль по цели: ${c.netRewardUsdt ?? "—"} USD₮\n• Оценка: ${g.score}/100. ${g.notes.join(" ")}`,
 		result: (r) => r.dryRun
-			? `✅ Ордер собран и проверен в режиме DRY-RUN (без реальной отправки). ${r.note}\nПараметры: ${JSON.stringify(r.order)}`
-			: (r.submitted ? `✅ Ордер отправлен на Bitfinex.` : `❌ Биржа отклонила ордер (статус ${r.status}).`),
+			? ` Ордер собран и проверен в режиме DRY-RUN (без реальной отправки). ${r.note}\nПараметры: ${JSON.stringify(r.order)}`
+			: (r.submitted ? ` Ордер отправлен на Bitfinex.` : ` Биржа отклонила ордер (статус ${r.status}).`),
 	}
 	const en = {
 		cancelled: "Okay, cancelled. Tell me when you're ready.",
@@ -166,11 +166,11 @@ function pack(lang) {
 		keysBad: (r) => `Keys failed verification (${r}). Check the key permissions and resend.`,
 		askTradeParams: "Tell me symbol, side and price (or 'market'). e.g. BTC/USD₮ long entry 65000.",
 		draft: (o) => `Did I build the order correctly?\n• Symbol: ${o.symbol}\n• Type: ${o.type}\n• Amount: ${o.amount}\n${o.price ? "• Price: " + o.price + "\n" : ""}Confirm it's all correct ("yes" / "cancel").`,
-		confirmFinal: (m, o) => `⚠️ Are you absolutely sure you want to execute this trade on account ${m} with ${o.symbol} ${o.amount} ${o.type}${o.price ? " @ " + o.price : ""} right now? Reply "yes" to send or "cancel".`,
+		confirmFinal: (m, o) => ` Are you absolutely sure you want to execute this trade on account ${m} with ${o.symbol} ${o.amount} ${o.type}${o.price ? " @ " + o.price : ""} right now? Reply "yes" to send or "cancel".`,
 		calc: (c, g) => `Trade math (${c.side}):\n• Size: ${c.units} (≈ ${c.notionalUsd} USD₮)\n• Stop: ${c.stopPct}% from entry\n• Risk: ${c.riskUsd} USD₮\n• Needed leverage: ${c.neededLeverage ?? "—"}x (safe cap ${c.maxSafeLeverage}x)\n• R:R: ${c.riskReward ?? "—"}\n• Fees: ${c.feesUsdt} USD₮ (WDK ${c.wdkFee})\n• Net reward at target: ${c.netRewardUsdt ?? "—"} USD₮\n• Score: ${g.score}/100. ${g.notes.join(" ")}`,
 		result: (r) => r.dryRun
-			? `✅ Order built and checked in DRY-RUN (not actually sent). ${r.note}\nParams: ${JSON.stringify(r.order)}`
-			: (r.submitted ? `✅ Order submitted to Bitfinex.` : `❌ Exchange rejected the order (status ${r.status}).`),
+			? ` Order built and checked in DRY-RUN (not actually sent). ${r.note}\nParams: ${JSON.stringify(r.order)}`
+			: (r.submitted ? ` Order submitted to Bitfinex.` : ` Exchange rejected the order (status ${r.status}).`),
 	}
 	return lang === "en" || lang === "es" || lang === "de" || lang === "fr" ? en : ru
 }

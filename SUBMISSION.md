@@ -41,7 +41,7 @@
 - [ ] Demo video recorded and linked
 - [ ] Repo pushed to GitHub (public)
 
-## Honest notes for judges
+## Honest notes for reviewers
 
 - There is **no cloud inference path at all** — 100% of AI runs on-device through
   the QVAC SDK. The only network skill is the **public** Bitfinex market API
