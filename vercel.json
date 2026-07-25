@@ -7,8 +7,17 @@
   "buildCommand": "echo static",
   "framework": null,
   "rewrites": [
-    { "source": "/app", "destination": "/app.html" },
-    { "source": "/setup", "destination": "/setup.html" },
-    { "source": "/account", "destination": "/account.html" }
+    {
+      "source": "/app",
+      "destination": "/app.html"
+    },
+    {
+      "source": "/setup",
+      "destination": "/setup.html"
+    },
+    {
+      "source": "/account",
+      "destination": "/account.html"
+    }
   ]
 }
