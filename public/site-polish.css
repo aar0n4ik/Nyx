@@ -23,3 +23,9 @@
   linear-gradient(135deg,#7c5cff,#19e3b1) border-box}
 .mcard.featured:hover,.mcard.rec:hover{box-shadow:0 30px 70px -42px color-mix(in srgb,#7c5cff 60%,transparent),var(--shadow)}
 .mbadge{background:linear-gradient(135deg,#7c5cff,#19e3b1)!important;color:#fff!important}
+
+/* NYX_MNOTE_FIX */
+.mnote{display:flex;gap:10px;align-items:flex-start;margin-top:14px;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--bg-elev)}
+.mnote-i{flex:none;font-size:18px;line-height:1.4}
+.mnote p{margin:0;font-weight:400 !important;font-size:14.5px !important;line-height:1.6;color:var(--muted)}
+.mnote p b{font-weight:600 !important;color:var(--text)}

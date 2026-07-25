@@ -8,7 +8,4 @@ j.build.win = j.build.win || {};
 j.build.win.target = ['nsis'];
 j.build.artifactName = 'Nyx-Setup-${version}.${ext}';
 fs.writeFileSync(p, JSON.stringify(j, null, 2) + '\n');
-console.log('version', j.version);
-console.log('win.target', JSON.stringify(j.build.win.target));
-console.log('artifactName', j.build.artifactName);
-console.log('protocols', JSON.stringify(j.build.protocols));
+console.log('version', j.version, '| target', JSON.stringify(j.build.win.target), '| name', j.build.artifactName);

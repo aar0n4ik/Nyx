@@ -44,8 +44,7 @@
     },
     "win": {
       "target": [
-        "nsis",
-        "portable"
+        "nsis"
       ],
       "icon": "build/icon.png"
     },
@@ -85,6 +84,7 @@
           "nyx"
         ]
       }
-    ]
+    ],
+    "artifactName": "Nyx-Setup-${version}.${ext}"
   }
 }
