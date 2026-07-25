@@ -11,11 +11,9 @@
 
   function goDownload(){
     closeModal();
-    setTimeout(function(){
-      var sec=document.getElementById("download");
-      if(sec&&sec.scrollIntoView) sec.scrollIntoView({behavior:"smooth",block:"start"});
-      else location.hash="#download";
-    }, 220);
+    var dl=document.querySelector('[data-i18n="nav_download"]')||document.querySelector('a[href*="download" i]')||document.querySelector(".install");
+    if(dl){ try{ dl.click(); }catch(e){} if(dl.scrollIntoView) dl.scrollIntoView({behavior:"smooth",block:"start"}); }
+    else { location.hash="#download"; }
   }
 
   function showModal(){
