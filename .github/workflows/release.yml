@@ -1,13 +1,10 @@
-name: Release Desktop
-
+name: Release
 on:
   push:
     tags: ["v*"]
   workflow_dispatch: {}
-
 permissions:
   contents: write
-
 jobs:
   windows:
     runs-on: windows-latest
@@ -15,10 +12,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
-      - name: Install dependencies
+          node-version: 20
+      - name: Install deps
         run: npm install
+      - name: Prepare icon
+        run: node scripts/ensure-icon.mjs
       - name: Build & publish Windows installer
+        run: npx electron-builder --win --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run dist:win -- --publish always

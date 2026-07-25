@@ -1,0 +1,25 @@
+/* Nyx site polish — flagship "alive" layer (additive, loads last) */
+@media (prefers-reduced-motion:no-preference){
+  .hero::before{content:"";position:absolute;z-index:-1;top:-16%;left:50%;
+    width:min(1100px,122vw);height:640px;transform:translateX(-50%);pointer-events:none;
+    background:
+      radial-gradient(38% 55% at 32% 42%, color-mix(in srgb,#7c5cff 22%,transparent), transparent 70%),
+      radial-gradient(34% 50% at 70% 55%, color-mix(in srgb,#19e3b1 18%,transparent), transparent 72%);
+    filter:blur(34px);opacity:.5;animation:nyxAurora 18s ease-in-out infinite alternate}
+  [data-theme=light] .hero::before{opacity:.3}
+  @keyframes nyxAurora{
+    0%{transform:translateX(-52%) translateY(0) rotate(0deg)}
+    50%{transform:translateX(-48%) translateY(16px) rotate(4deg)}
+    100%{transform:translateX(-50%) translateY(-10px) rotate(-3deg)}}
+}
+.btn-primary{overflow:hidden}
+.btn-primary::after{content:"";position:absolute;top:0;left:-120%;width:55%;height:100%;
+  background:linear-gradient(100deg,transparent,color-mix(in srgb,var(--bg) 55%,transparent),transparent);
+  transform:skewX(-18deg)}
+.btn-primary:hover::after{animation:nyxSheen .7s ease}
+@keyframes nyxSheen{from{left:-120%}to{left:150%}}
+.mcard.featured,.mcard.rec{border:1px solid transparent!important;background:
+  linear-gradient(var(--bg-elev),var(--bg-elev)) padding-box,
+  linear-gradient(135deg,#7c5cff,#19e3b1) border-box}
+.mcard.featured:hover,.mcard.rec:hover{box-shadow:0 30px 70px -42px color-mix(in srgb,#7c5cff 60%,transparent),var(--shadow)}
+.mbadge{background:linear-gradient(135deg,#7c5cff,#19e3b1)!important;color:#fff!important}
