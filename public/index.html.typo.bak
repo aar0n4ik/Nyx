@@ -590,14 +590,5 @@ buildDemo({dm_q:"My PC's been crawling all week — can you speed it up?",dm_a1:
 
 </script>
 <script src="/models.js"></script><script src="/cards.js"></script><script src="/launch.js"></script><script src="/download.js"></script>
-
-<style id="nyx-typo-fix">
-/* NYX_TYPO_FIX: TurboQuant note + download steps -> обычный шрифт тела, без капса, легче */
-.mnote{align-items:center}
-.mnote p{font-family:inherit !important;font-weight:400 !important;text-transform:none !important;letter-spacing:normal !important}
-.mnote b{font-weight:600 !important;text-transform:none !important}
-.istep h3{font-family:inherit !important;font-weight:600 !important;text-transform:none !important;letter-spacing:normal !important}
-.istep p{font-family:inherit !important;text-transform:none !important}
-</style>
 </body>
 </html>
