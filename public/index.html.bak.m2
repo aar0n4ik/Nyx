@@ -271,7 +271,7 @@ img,svg{display:block}
 @media(max-width:820px){.flow,.steps{grid-template-columns:1fr 1fr}.stepc,.istep{border:1px solid var(--line)}}
 @media(max-width:520px){.flow,.steps{grid-template-columns:1fr}}
 </style>
-<style id="nyx-verify-css">.nyx-verify{margin-top:8px;border:1px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden;max-width:340px}.nyx-verify-chip{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:8px 12px;font:600 13px/1 "Space Grotesk",sans-serif;color:var(--text);user-select:none}.nyx-verify-chip::-webkit-details-marker{display:none}.nyx-verify .vok{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#16321f;color:#4ade80;font-size:12px}.nyx-verify[open] .nyx-verify-chip{border-bottom:1px solid var(--line)}.nyx-verify-card{padding:10px 12px;display:flex;flex-direction:column;gap:9px}.nyx-verify-card .vrow{display:flex;justify-content:space-between;gap:14px;font-size:12.5px}.nyx-verify-card .vrow b{color:var(--faint);font-weight:600;white-space:nowrap}.nyx-verify-card .vrow span{color:var(--muted);text-align:right}.nyx-verify-card code{font:12px "JetBrains Mono",monospace;color:var(--text)}</style><style id="nyx-cards-css">.mtier{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.mbadge{font:600 10px/1 "Space Grotesk",sans-serif;letter-spacing:.04em;text-transform:uppercase;color:#4ade80;background:#16321f;padding:3px 7px;border-radius:999px}.malt{margin-top:12px;padding-top:10px;border-top:1px solid var(--line);font-size:11.5px;color:var(--faint)}</style><style id="nyx-modal-css">.nyx-modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.6);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:9999;opacity:0;transition:opacity .18s}.nyx-modal-ov.show{opacity:1}.nyx-modal{background:var(--panel,#12141a);border:1px solid var(--line,#242833);border-radius:16px;padding:26px 24px;max-width:380px;width:calc(100% - 40px);text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.55);transform:translateY(10px);transition:transform .18s}.nyx-modal-ov.show .nyx-modal{transform:none}.nyx-modal .ico{width:48px;height:48px;margin:0 auto 14px;border-radius:13px;display:flex;align-items:center;justify-content:center;background:#1c1f29;font-size:22px}.nyx-modal h3{margin:0 0 8px;font:600 20px/1.2 "Space Grotesk",sans-serif;color:var(--text,#fff)}.nyx-modal p{margin:0 0 18px;font-size:14px;line-height:1.55;color:var(--muted,#9aa0ab)}.nyx-modal .row{display:flex;gap:10px;justify-content:center}.nyx-modal button{cursor:pointer;border-radius:10px;padding:10px 16px;font:600 14px/1 "Space Grotesk",sans-serif;border:1px solid var(--line,#242833);background:transparent;color:var(--text,#fff)}.nyx-modal .primary{background:var(--blue,#7c5cff);border-color:transparent;color:#fff}</style></head>
+</head>
 <body>
 <div class="bg-grid"></div>
 <div class="bg-glow"></div>
@@ -313,8 +313,7 @@ img,svg{display:block}
 <main id="top">
 <section class="hero"><div class="wrap"><div class="hero-grid">
   <div class="hero-copy">
-    <h1 class="disp" data-i18n="hero_h1" style="white-space:pre-line">Your Local
-PC Copilot</h1>
+    <h1 class="disp" data-i18n="hero_h1">Your Local PC Copilot</h1>
     <p class="lead" data-i18n="hero_sub">A local-first assistant that runs entirely on your machine, shows its plan before it moves, and acts only once you approve.</p>
     <div class="cta-row">
       <a class="btn btn-primary" href="/app"><span data-i18n="hero_cta1">Launch the app</span><span class="arw">→</span></a>
@@ -542,7 +541,7 @@ var LAB={en:"EN",ru:"RU",uk:"UK",es:"ES",de:"DE",fr:"FR"};
 var T={
 en:{
  nav_features:"Features",nav_how:"How it works",nav_proof:"Proof",nav_download:"Download",nav_launch:"Launch app",
- hero_h1:"Your Local\nPC Copilot",
+ hero_h1:"Your Local PC Copilot",
  hero_sub:"A local-first assistant that runs entirely on your machine, shows its plan before it moves, and acts only once you approve.",
  hero_cta1:"Launch the app",hero_cta2:"Download for Windows",
  hero_t1:"No account",hero_t2:"No cloud",hero_t3:"No telemetry",
@@ -811,7 +810,7 @@ function buildDemo(d){
       at(1750,function(){youMsg(d.dm_approve)});
       var tb2;at(2100,function(){tb2=typingBubble()});
       at(3100,function(){if(tb2)tb2.remove();var b2=nyxWrap();
-        b2.innerHTML='<div class="done"><span class="ok">'+CK+'</span><span>'+esc(d.dm_a2)+'</span></div><toggle class="nyx-verify"><summary class="nyx-verify-chip"><span class="vok">✓</span> Verified<div class="nyx-verify-card"><div class="vrow"><b>What ran</b><span>Trimmed 14 startup apps, cleared 8.4 GB, closed 3 tasks</span></div><div class="vrow"><b>What changed</b><span>Startup list, temp cache, background processes</span></div><div class="vrow"><b>Reversible</b><span>Yes — one-click undo</span></div><div class="vrow"><b>Signed</b><span><code>a1f9…c7e2</code> · Ed25519</span></div></div></toggle>';
+        b2.innerHTML='<div class="done"><span class="ok">'+CK+'</span><span>'+esc(d.dm_a2)+'</span></div><div class="done" style="margin-top:6px"><span>'+esc(d.dm_receipt.split('\u2192')[0])+'\u2192 </span><code>./evidence</code></div>';
       });
       at(6800,function(){buildDemo(d)});
     });
@@ -1215,5 +1214,5 @@ NYXI.fr = {
 try{var h=document.documentElement;h.setAttribute("lang",h.getAttribute("lang")||"en");}catch(e){}
 
 </script>
-<script src="/models.js"></script><script src="/cards.js"></script><script src="/launch.js"></script><script src="/download.js"></script></body>
+</body>
 </html>

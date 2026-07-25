@@ -226,6 +226,31 @@ createServer(async (req, res) => {
       return json(res, 200, S.progress())
     }
 
+    if (req.method === "GET" && path === "/api/setup/location") {
+      const S = await import("./src/setup/installer.js")
+      return json(res, 200, S.getLocation())
+    }
+    if (req.method === "POST" && path === "/api/setup/location") {
+      const body = await readBody(req)
+      const S = await import("./src/setup/installer.js")
+      return json(res, 200, S.setLocation(body && body.path))
+    }
+    if (req.method === "POST" && path === "/api/setup/browse") {
+      try {
+        const el = await import("electron")
+        const dialog = el.dialog || (el.default && el.default.dialog)
+        if (!dialog) return json(res, 200, { electron: false })
+        const BW = el.BrowserWindow || (el.default && el.default.BrowserWindow)
+        const win = (BW && BW.getFocusedWindow && BW.getFocusedWindow()) || null
+        const opt = { title: "Куда скачивать модели", properties: ["openDirectory", "createDirectory"] }
+        const r = win ? await dialog.showOpenDialog(win, opt) : await dialog.showOpenDialog(opt)
+        if (r.canceled || !r.filePaths || !r.filePaths.length) return json(res, 200, { electron: true, canceled: true })
+        return json(res, 200, { electron: true, path: r.filePaths[0] })
+      } catch (e) {
+        return json(res, 200, { electron: false, error: String((e && e.message) || e) })
+      }
+    }
+
     // --- Local tester accounts + honest, tamper-evident rating (no server) ---
     if (req.method === "GET" && path === "/account") {
       return existsSync("public/account.html") ? sendFile(res, "public/account.html") : json(res, 404, { error: "account page missing" })

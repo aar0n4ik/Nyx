@@ -15,18 +15,18 @@
     "hwproof": "node scripts/hwproof.js",
     "evidence": "node scripts/evidence.js",
     "desktop": "electron .",
-    "dist": "electron-builder",
-    "dist:win": "electron-builder --win",
-    "dist:mac": "electron-builder --mac",
-    "dist:linux": "electron-builder --linux"
+    "dist": "node scripts/ensure-icon.mjs && electron-builder",
+    "dist:win": "node scripts/ensure-icon.mjs && electron-builder --win",
+    "dist:mac": "node scripts/ensure-icon.mjs && electron-builder --mac",
+    "dist:linux": "node scripts/ensure-icon.mjs && electron-builder --linux"
   },
   "dependencies": {
-    "@qvac/sdk": "^0.13.5",
     "zod": "^4.4.3",
     "electron-updater": "^6.3.9"
   },
   "optionalDependencies": {
-    "systeminformation": "^5.22.0"
+    "systeminformation": "^5.22.0",
+    "@qvac/sdk": "^0.13.5"
   },
   "main": "electron/main.cjs",
   "devDependencies": {
@@ -76,6 +76,14 @@
         "provider": "github",
         "owner": "aar0n4ik",
         "repo": "Nyx"
+      }
+    ],
+    "protocols": [
+      {
+        "name": "Nyx Protocol",
+        "schemes": [
+          "nyx"
+        ]
       }
     ]
   }

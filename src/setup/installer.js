@@ -3,22 +3,44 @@
 // report honest progress from real bytes on disk. No fake progress, no cloud.
 import { collectSpecs } from "../system/specs.js"
 import { modelStatus } from "../qvac.js"
-import { existsSync, readdirSync, statSync } from "node:fs"
+import { existsSync, readdirSync, statSync, readFileSync, writeFileSync, mkdirSync } from "node:fs"
 import { homedir } from "node:os"
 import { join } from "node:path"
 
 let sdk = null
 try { sdk = await import("@qvac/sdk") } catch { sdk = null }
 
-// Ordered by capability. Recommendation picks by available RAM so weak PCs are
-// never handed a model they cannot run.
 const CATALOG = [
-  { key: "qwen3-4b",   label: "Qwen3 4B Instruct",     approxGB: 2.6, ramMinGB: 8, re: [/QWEN_?3.*4B.*INST/i, /QWEN.*4B/i],          note: "Лучший баланс, сильный русский" },
-  { key: "llama32-3b", label: "Llama 3.2 3B Instruct", approxGB: 2.0, ramMinGB: 6, re: [/LLAMA_?3[._]?2_?3B.*INST/i],               note: "Легче и быстрее" },
-  { key: "llama32-1b", label: "Llama 3.2 1B Instruct", approxGB: 0.9, ramMinGB: 3, re: [/LLAMA_?3[._]?2_?1B.*INST/i],               note: "Для слабых ПК" },
+  { key: "qwen3-4b", label: "Qwen3 4B Instruct", approxGB: 2.6, ramMinGB: 8, re: [/QWEN_?3.*4B.*INST/i, /QWEN.*4B/i], note: "Лучший баланс, сильный русский" },
+  { key: "llama32-3b", label: "Llama 3.2 3B Instruct", approxGB: 2.0, ramMinGB: 6, re: [/LLAMA_?3[._]?2_?3B.*INST/i], note: "Легче и быстрее" },
+  { key: "llama32-1b", label: "Llama 3.2 1B Instruct", approxGB: 0.9, ramMinGB: 3, re: [/LLAMA_?3[._]?2_?1B.*INST/i], note: "Для слабых ПК" },
 ]
 
-function cacheDir() { return process.env.NYX_QVAC_CACHE || join(homedir(), ".qvac", "models") }
+const DEFAULT_DIR = join(homedir(), ".qvac", "models")
+const LOC_FILE = join(homedir(), ".qvac", "nyx-location.json")
+
+function readSavedDir() {
+  try { if (existsSync(LOC_FILE)) { const j = JSON.parse(readFileSync(LOC_FILE, "utf8")); if (j && j.cacheDir) return String(j.cacheDir) } } catch (e) {}
+  return null
+}
+function cacheDir() { return process.env.NYX_QVAC_CACHE || readSavedDir() || DEFAULT_DIR }
+
+export function getLocation() {
+  const saved = readSavedDir()
+  const dir = cacheDir()
+  return { cacheDir: dir, default: DEFAULT_DIR, home: homedir(), saved: !!saved, custom: dir !== DEFAULT_DIR }
+}
+export function setLocation(dir) {
+  if (!dir || typeof dir !== "string" || !dir.trim()) return { ok: false, error: "Путь не указан" }
+  const clean = dir.trim()
+  try {
+    mkdirSync(clean, { recursive: true })
+    mkdirSync(join(homedir(), ".qvac"), { recursive: true })
+    writeFileSync(LOC_FILE, JSON.stringify({ cacheDir: clean, savedAt: Date.now() }, null, 2))
+    process.env.NYX_QVAC_CACHE = clean
+    return { ok: true, cacheDir: clean }
+  } catch (e) { return { ok: false, error: String((e && e.message) || e) } }
+}
 
 function cacheBytes() {
   const dir = cacheDir()
@@ -74,7 +96,7 @@ export async function status() {
     sdkInstalled: ms.sdkInstalled,
     cached: ms.cached,
     cachedModels: ms.cachedModels,
-    cacheDir: ms.cacheDir,
+    cacheDir: cacheDir(),
     hardware: {
       cpu: specs.cpu || null,
       cores: specs.cores || null,
@@ -86,6 +108,7 @@ export async function status() {
     },
     recommended: { key: rec.key, label: rec.label, approxGB: rec.approxGB, note: rec.note },
     catalog: CATALOG.map((c) => ({ key: c.key, label: c.label, approxGB: c.approxGB, ramMinGB: c.ramMinGB, note: c.note })),
+    location: getLocation(),
     download: progress(),
   }
 }

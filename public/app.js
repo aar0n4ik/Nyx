@@ -21,7 +21,7 @@ let LANG = readLang()
 const I18N = {
   en: {
     newChat: "New chat", copilot: "Nyx Copilot", site: "← Site",
-    placeholder: "Ask anything — in any language…",
+    placeholder: "Ask Nyx"Ask anything — in any language…",
     hint: "Nyx runs locally. Everything stays encrypted on your device",
     footL: "On-device AI · nothing leaves your machine", footR: "© 2026 Nyx — Bohdan (AARON4IK)",
     emptyTitle: "How can I help?",
@@ -53,7 +53,7 @@ const I18N = {
   },
   ru: {
     newChat: "Новый чат", copilot: "Nyx Copilot", site: "← На сайт",
-    placeholder: "Спросите что угодно — на любом языке…",
+    placeholder: "Ask Nyx"Спросите что угодно — на любом языке…",
     hint: "Nyx работает локально. Всё шифруется на вашем устройстве",
     footL: "ИИ на устройстве · ничего не покидает ваш ПК", footR: "© 2026 Nyx — Bohdan (AARON4IK)",
     emptyTitle: "Чем помочь?",
@@ -85,7 +85,7 @@ const I18N = {
   },
   uk: {
     newChat: "Новий чат", copilot: "Nyx Copilot", site: "← На сайт",
-    placeholder: "Спитайте будь-що — будь-якою мовою…",
+    placeholder: "Ask Nyx"Спитайте будь-що — будь-якою мовою…",
     hint: "Nyx працює локально. Усе шифрується на вашому пристрої",
     footL: "ШІ на пристрої · ніщо не залишає ваш ПК", footR: "© 2026 Nyx — Bohdan (AARON4IK)",
     emptyTitle: "Чим допомогти?",
@@ -117,7 +117,7 @@ const I18N = {
   },
   es: {
     newChat: "Nuevo chat", copilot: "Nyx Copilot", site: "← Sitio",
-    placeholder: "Pregunta lo que sea — en cualquier idioma…",
+    placeholder: "Ask Nyx"Pregunta lo que sea — en cualquier idioma…",
     hint: "Nyx funciona localmente. Todo se cifra en tu dispositivo",
     footL: "IA en el dispositivo · nada sale de tu máquina", footR: "© 2026 Nyx — Bohdan (AARON4IK)",
     emptyTitle: "¿En qué puedo ayudar?",
@@ -149,7 +149,7 @@ const I18N = {
   },
   de: {
     newChat: "Neuer Chat", copilot: "Nyx Copilot", site: "← Seite",
-    placeholder: "Frag alles — in jeder Sprache…",
+    placeholder: "Ask Nyx"Frag alles — in jeder Sprache…",
     hint: "Nyx läuft lokal. Alles wird auf dem Gerät verschlüsselt",
     footL: "KI auf dem Gerät · nichts verlässt deinen Rechner", footR: "© 2026 Nyx — Bohdan (AARON4IK)",
     emptyTitle: "Wie kann ich helfen?",
@@ -181,7 +181,7 @@ const I18N = {
   },
   fr: {
     newChat: "Nouveau chat", copilot: "Nyx Copilot", site: "← Site",
-    placeholder: "Demandez n'importe quoi — dans n'importe quelle langue…",
+    placeholder: "Ask Nyx"Demandez n'importe quoi — dans n'importe quelle langue…",
     hint: "Nyx fonctionne localement. Tout est chiffré sur votre appareil",
     footL: "IA locale · rien ne quitte votre machine", footR: "© 2026 Nyx — Bohdan (AARON4IK)",
     emptyTitle: "Comment puis-je aider ?",
@@ -388,7 +388,7 @@ async function sendText(text) {
     // Per-chat isolated memory: send only THIS chat's prior turns (no cross-chat leak).
     const hist = c.msgs.slice(0, -1).filter((m) => m.text && !m.widget).map((m) => ({ role: m.role === "user" ? "user" : "assistant", content: cleanOut(m.text) })).slice(-8)
     // Tell the backend which language to answer in (the one chosen on the site).
-    const body = { q: text, chatId: c.id, history: hist, lang: LANG }
+    const body = { q: text, chatId: c.id, history: hist }
     const r = await fetch("/api/chat", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) }).then((x) => x.json())
     tp.remove()
     const msg = { role: "bot", text: cleanOut(r.text || r.error || "…"), sources: r.sources, mode: r.mode }
@@ -495,3 +495,25 @@ async function checkModel() {
 checkModel()
 setInterval(checkModel, 20000)
 window.addEventListener("focus", checkModel)
+
+// ---------- rename chat (double-click the title in the sidebar) ----------
+(function(){
+  var box=document.getElementById("chats"); if(!box) return;
+  box.addEventListener("dblclick",function(e){
+    if(e.target.classList && e.target.classList.contains("del")) return;
+    var it=e.target.closest(".chat-item"); if(!it) return;
+    var tt=it.querySelector(".tt"); if(!tt) return;
+    var idx=Array.prototype.indexOf.call(box.children,it); if(idx<0) return;
+    var c=DB.chats[idx]; if(!c) return;
+    tt.setAttribute("contenteditable","true"); tt.focus();
+    var s=window.getSelection(), rg=document.createRange(); rg.selectNodeContents(tt); s.removeAllRanges(); s.addRange(rg);
+    function commit(){
+      tt.removeAttribute("contenteditable");
+      var v=(tt.textContent||"").trim().slice(0,60);
+      c.title=v||c.title; c.named=true; save(); render(); renderThread();
+      tt.removeEventListener("blur",commit); tt.removeEventListener("keydown",key);
+    }
+    function key(ev){ if(ev.key==="Enter"){ev.preventDefault();tt.blur();} else if(ev.key==="Escape"){tt.textContent=c.title;tt.blur();} }
+    tt.addEventListener("blur",commit); tt.addEventListener("keydown",key);
+  });
+})();

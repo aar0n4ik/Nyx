@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Nyx</title>
+<script>(function(){try{document.documentElement.setAttribute('data-theme',localStorage.getItem('nyx-theme')||'dark')}catch(e){}})();</script>
+<style>
+  :root{--bg:#050506;--panel:#0d0d12;--panel2:#0a0a0e;--line:#1c1c24;--text:#f2f2f5;--muted:#93939f;
+    --accent:#7c5cff;--accent2:#19e3b1;--glow:rgba(124,92,255,.45);--user:#1a1730;--radius:16px;color-scheme:dark}
+  [data-theme="light"]{--bg:#f6f7fb;--panel:#fff;--panel2:#f0f1f7;--line:#e4e6ef;--text:#0d0e14;--muted:#57596a;
+    --accent:#6a4bff;--accent2:#079e7a;--glow:rgba(106,75,255,.25);--user:#ece9ff;color-scheme:light}
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:
+      radial-gradient(60% 50% at 85% -10%,var(--glow),transparent 60%),
+      radial-gradient(50% 40% at 0% 110%,color-mix(in srgb,var(--accent2) 22%,transparent),transparent 60%),var(--bg);
+    color:var(--text);font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;display:flex;flex-direction:column;transition:background-color .4s,color .4s}
+  a{color:inherit}
+  header{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--line);
+    backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg) 70%,transparent)}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:700}
+  .brand svg{width:24px;height:24px}
+  .pills{display:flex;gap:8px;margin-left:8px;flex-wrap:wrap}
+  .pill{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);
+    border:1px solid var(--line);background:var(--panel);padding:5px 11px;border-radius:999px}
+  .pill b{color:var(--text);font-weight:600}
+  .dot{width:7px;height:7px;border-radius:50%;background:#666;transition:.3s}
+  .dot.on{background:var(--accent2);box-shadow:0 0 8px var(--accent2)}
+  .dot.warn{background:#febc2e;box-shadow:0 0 8px #febc2e}
+  .spacer{flex:1}
+  .theme-toggle{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--panel);
+    color:var(--accent2);cursor:pointer;display:grid;place-items:center;transition:.3s}
+  .theme-toggle:hover{border-color:var(--accent);color:var(--accent);transform:rotate(15deg)}
+  .tt{width:20px;height:20px}
+  .tt .sun{transform-origin:center;transition:transform .5s cubic-bezier(.5,1.25,.75,1.25)}
+  .tt .sun-beams{transform-origin:center;transition:transform .5s cubic-bezier(.5,1.5,.75,1.25),opacity .4s}
+  .tt .moon>circle{transition:transform .25s cubic-bezier(0,0,0,1)}
+  [data-theme="dark"] .tt .sun{transform:scale(1.75)}
+  [data-theme="dark"] .tt .sun-beams{opacity:0;transform:rotate(-.25turn)}
+  [data-theme="dark"] .tt .moon>circle{transform:translateX(-7px)}
+  ::view-transition-new(root){animation:vt .5s cubic-bezier(.4,0,.2,1)}
+  @keyframes vt{from{clip-path:circle(0 at var(--x,90%) var(--y,3%))}to{clip-path:circle(160% at var(--x,90%) var(--y,3%))}}
+
+  main{flex:1;display:flex;flex-direction:column;max-width:860px;width:100%;margin:0 auto;padding:0 16px;min-height:0}
+  #thread{flex:1;overflow-y:auto;padding:26px 4px;display:flex;flex-direction:column;gap:18px}
+  .msg{display:flex;gap:12px;max-width:100%;animation:rise .4s ease}
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .msg .av{width:30px;height:30px;border-radius:9px;flex:none;display:grid;place-items:center;font-size:13px;font-weight:700}
+  .msg.user{flex-direction:row-reverse}
+  .msg.user .av{background:var(--user);color:var(--accent)}
+  .msg.nyx .av{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+  .bubble{padding:13px 16px;border-radius:14px;line-height:1.55;font-size:15px;border:1px solid var(--line);
+    background:var(--panel);white-space:pre-wrap;word-break:break-word}
+  .msg.user .bubble{background:var(--user);border-color:transparent}
+  .meta{font-size:11.5px;color:var(--muted);margin-top:7px;display:flex;gap:10px;flex-wrap:wrap}
+  .tag{border:1px solid var(--line);border-radius:6px;padding:1px 7px}
+  .tag.safe{color:var(--accent2);border-color:color-mix(in srgb,var(--accent2) 40%,var(--line))}
+  .tag.block{color:#ff6b6b;border-color:#ff6b6b55}
+  .cursor{display:inline-block;width:8px;height:1.05em;background:var(--accent2);vertical-align:-2px;animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  .composer{padding:14px 4px 22px}
+  .box{display:flex;gap:10px;align-items:flex-end;background:var(--panel);border:1px solid var(--line);
+    border-radius:16px;padding:10px 10px 10px 16px;transition:border-color .2s}
+  .box:focus-within{border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 12%,transparent)}
+  textarea{flex:1;border:0;background:transparent;color:var(--text);resize:none;font:15px/1.5 inherit;max-height:160px;outline:none}
+  .send{width:40px;height:40px;border:0;border-radius:11px;background:linear-gradient(180deg,var(--accent),#5b3fe0);
+    color:#fff;cursor:pointer;display:grid;place-items:center;transition:.2s;flex:none}
+  .send:hover{transform:translateY(-1px)}.send:disabled{opacity:.5;cursor:default;transform:none}
+  .hint{text-align:center;color:var(--muted);font-size:11.5px;margin-top:10px}
+
+  /* Onboarding */
+  .onb{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:20px;
+    background:color-mix(in srgb,var(--bg) 78%,transparent);backdrop-filter:blur(8px);animation:rise .35s ease}
+  .onb.hide{display:none}
+  .onb .card{max-width:520px;width:100%;background:linear-gradient(180deg,var(--panel),var(--panel2));
+    border:1px solid var(--line);border-radius:22px;padding:34px;text-align:center;box-shadow:0 40px 120px -40px #000}
+  .onb h2{margin:14px 0 6px;font-size:26px;letter-spacing:-.02em}
+  .onb p{color:var(--muted);margin:0 auto 22px;max-width:40ch}
+  .chips{display:grid;gap:10px;text-align:left}
+  .chip{display:flex;gap:12px;align-items:center;border:1px solid var(--line);background:var(--panel);
+    border-radius:13px;padding:14px 16px;cursor:pointer;transition:.2s}
+  .chip:hover{border-color:var(--accent);transform:translateX(3px);background:color-mix(in srgb,var(--accent) 7%,var(--panel))}
+  .chip .ic{width:34px;height:34px;border-radius:9px;flex:none;display:grid;place-items:center;
+    background:color-mix(in srgb,var(--accent2) 16%,transparent)}
+  .chip .ic svg{width:19px;height:19px;stroke:var(--accent2);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .chip b{display:block;font-size:15px}.chip span{color:var(--muted);font-size:13px}
+  .skip{margin-top:18px;background:none;border:0;color:var(--muted);cursor:pointer;font-size:13px}
+  .skip:hover{color:var(--text)}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}::view-transition-new(root){animation:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><svg viewBox="0 0 32 32"><path d="M7 25V7l18 18V7" stroke="var(--accent)" stroke-width="2" fill="none"/></svg>Nyx</div>
+  <div class="pills">
+    <span class="pill"><span class="dot" id="dModel"></span>Model:&nbsp;<b id="tModel">…</b></span>
+    <span class="pill"><span class="dot" id="dNet"></span><b id="tNet">…</b></span>
+    <span class="pill"><span class="dot on"></span>Safety:&nbsp;<b>deny-by-default</b></span>
+  </div>
+  <div class="spacer"></div>
+  <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme" title="Light / Dark">
+    <svg class="tt" viewBox="0 0 24 24" aria-hidden="true">
+      <mask class="moon" id="mm"><rect width="100%" height="100%" fill="white"/><circle cx="24" cy="10" r="6" fill="black"/></mask>
+      <circle class="sun" cx="12" cy="12" r="6" mask="url(#mm)" fill="currentColor"/>
+      <g class="sun-beams" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.2" y1="4.2" x2="5.6" y2="5.6"/>
+        <line x1="18.4" y1="18.4" x2="19.8" y2="19.8"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.2" y1="19.8" x2="5.6" y2="18.4"/><line x1="18.4" y1="5.6" x2="19.8" y2="4.2"/></g>
+    </svg>
+  </button>
+</header>
+
+<main>
+  <div id="thread"></div>
+  <div class="composer">
+    <div class="box">
+      <textarea id="input" rows="1" placeholder="Ask Nyx anything — in your own words…"></textarea>
+      <button class="send" id="send" aria-label="Send"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></button>
+    </div>
+    <div class="hint">Runs on your device · Offline-first · Every action is safety-checked before it runs</div>
+  </div>
+</main>
+
+<div class="onb" id="onb">
+  <div class="card">
+    <svg width="44" height="44" viewBox="0 0 32 32"><path d="M7 25V7l18 18V7" stroke="var(--accent)" stroke-width="2" fill="none"/></svg>
+    <h2>Meet Nyx</h2>
+    <p>Your private, offline mind for this computer. Try one — you'll see it work in seconds.</p>
+    <div class="chips">
+      <div class="chip" data-q="Install Steam for me">
+        <span class="ic"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg></span>
+        <span><b>Install something</b><span>“Install Steam for me” — Nyx handles the download & setup.</span></span>
+      </div>
+      <div class="chip" data-q="Back up my whole setup into one file">
+        <span class="ic"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM9 8h6M9 12h6M9 16h4"/></svg></span>
+        <span><b>Back up your setup</b><span>“Save my apps & settings to one file” — restore anywhere.</span></span>
+      </div>
+      <div class="chip" data-q="Delete everything in C:\Windows\System32">
+        <span class="ic"><svg viewBox="0 0 24 24"><path d="M12 4l9 4v6c0 5-4 8-9 10-5-2-9-5-9-10V8zM9 12l2 2 4-4"/></svg></span>
+        <span><b>Try something dangerous</b><span>Ask it to wreck your PC — watch Nyx refuse.</span></span>
+      </div>
+    </div>
+    <button class="skip" id="skip">Skip — I'll type my own</button>
+  </div>
+</div>
+
+<script>
+  const root=document.documentElement, $=s=>document.querySelector(s);
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Theme toggle (shares 'nyx-theme' with the site)
+  $('#themeBtn').addEventListener('click',e=>{
+    const next=root.getAttribute('data-theme')==='dark'?'light':'dark';
+    root.style.setProperty('--x',e.clientX+'px');root.style.setProperty('--y',e.clientY+'px');
+    const set=()=>{root.setAttribute('data-theme',next);try{localStorage.setItem('nyx-theme',next)}catch(_){}};
+          (document.startViewTransition && !reduce)?document.startViewTransition(set):set();
+  });
+
+  // Live status pills
+  async function jget(u){try{const r=await fetch(u);return await r.json()}catch(e){return null}}
+  (async()=>{
+    const m=await jget('/api/model/status');
+    const md=$('#dModel'),mt=$('#tModel');
+    if(m){const ready=m.ready??m.loaded??m.available??false;const label=m.label||m.model||m.name||(m.hasSDK?'On-device':'Local');
+      mt.textContent=ready?label:(m.hasSDK?label+' (loading)':'fallback');md.className='dot '+(ready?'on':'warn')}
+    else{mt.textContent='local';md.className='dot warn'}
+    const n=await jget('/api/llm/status');
+    const nd=$('#dNet'),nt=$('#tNet');
+    if(n){const online=n.online??(n.provider&&n.provider!=='fallback');nt.textContent=online?'Online':'Offline-ready';nd.className='dot on'}
+    else{nt.textContent='Offline-ready';nd.className='dot on'}
+  })();
+
+  // Chat
+  const thread=$('#thread'),input=$('#input'),sendBtn=$('#send');
+  const history=[];
+  function bubble(role,html){
+    const w=document.createElement('div');w.className='msg '+role;
+    w.innerHTML='<div class="av">'+(role==='user'?'You':'N')+'</div><div><div class="bubble"></div><div class="meta"></div></div>';
+    w.querySelector('.bubble').innerHTML=html; thread.appendChild(w); thread.scrollTop=thread.scrollHeight; return w;
+  }
+  function esc(s){return (s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+  async function type(node,text){
+    const b=node.querySelector('.bubble');const t=esc(text);let i=0;
+    if(reduce){b.innerHTML=t;return}
+    return new Promise(res=>{(function tick(){i+=Math.max(1,Math.round(t.length/90));b.innerHTML=t.slice(0,i)+'<span class="cursor"></span>';
+      thread.scrollTop=thread.scrollHeight; if(i<t.length)setTimeout(tick,12);else{b.innerHTML=t;res()}})()});
+  }
+  function meta(node,r){
+    const m=node.querySelector('.meta');if(!r)return;const bits=[];
+    const blocked=/refus|block|заблок|danger|опасн/i.test(r.text||'')||r.mode==='blocked';
+    if(r.mode)bits.push('<span class="tag">'+esc(r.mode)+'</span>');
+    bits.push('<span class="tag '+(blocked?'block':'safe')+'">'+(blocked?'blocked ':'safety-checked ')+'</span>');
+    if(r.sources&&r.sources.length)bits.push('<span class="tag">'+esc(r.sources.join(' · '))+'</span>');
+    if(r.ms)bits.push(r.ms+' ms');
+    m.innerHTML=bits.join('');
+  }
+  let busy=false;
+  async function send(q){
+    q=(q||'').trim(); if(!q||busy)return; busy=true; sendBtn.disabled=true;
+    bubble('user',esc(q)); input.value=''; input.style.height='auto';
+    history.push({role:'user',content:q});
+    const node=bubble('nyx','<span class="cursor"></span>');
+    try{
+      const r=await fetch('/api/chat',{method:'POST',headers:{'content-type':'application/json'},
+        body:JSON.stringify({q,chatId:'app',history:history.slice(-8)})}).then(x=>x.json());
+      const text=r.text||r.error||'(no response)';
+      await type(node,text); meta(node,r); history.push({role:'assistant',content:text});
+    }catch(e){ node.querySelector('.bubble').innerHTML=' '+esc(e.message)+' — is the local server running? Start it with: node server.js'; }
+    busy=false; sendBtn.disabled=false; input.focus();
+  }
+  sendBtn.addEventListener('click',()=>send(input.value));
+  input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send(input.value)}});
+  input.addEventListener('input',()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,160)+'px'});
+
+  // Onboarding
+  const onb=$('#onb');
+  function closeOnb(){onb.classList.add('hide');try{localStorage.setItem('nyx-onboarded','1')}catch(_){}}
+  try{if(localStorage.getItem('nyx-onboarded'))onb.classList.add('hide')}catch(_){}
+  $('#skip').addEventListener('click',()=>{closeOnb();input.focus()});
+  document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{closeOnb();send(c.dataset.q)}));
+</script>
+  <script src="/app-copy.js" defer></script>
+<script src="/brand.js"></script>
+<script src="/app-controls.js"></script>
+</body>
+</html>
+<script>
+document.getElementById('toolsBtn')?.addEventListener('click',()=>{
+  if(window.nyxTools?.openTools) window.nyxTools.openTools()
+  else alert('Инструменты доступны в десктоп-приложении Nyx для Windows.')
+})
+</script>
