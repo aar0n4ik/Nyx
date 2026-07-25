@@ -25,7 +25,7 @@ export const LANG_NAME = {
 
 // Tier 2 system prompt: maximum cognitive & agentic freedom + a hard language lock.
 // No rigid scripts, no canned FAQ, no fixed step-machine — the model thinks freely
-// and decides on its own when to invoke system / Bitfinex tools.
+// and decides on its own when to invoke system tools.
 export function systemPrompt(lang, context) {
 	const name = LANG_NAME[lang] || "English"
 	const base = `You are Nyx, an on-device AI assistant built on Tether QVAC, running with zero cloud calls. \

@@ -1,5 +1,5 @@
-// Nyx Copilot UI — multi-chat state, neuro-naming, quick actions, PC widgets,
-// and the Zero-Trust trade dialogue. All state is local (localStorage).
+// Nyx Copilot UI — multi-chat state, neuro-naming, quick actions, PC widgets.
+// All state is local (localStorage).
 // The whole UI follows the language chosen on the main site (localStorage 'nyx.lang'),
 // so the chat is NEVER half-English/half-Russian — it speaks ONE language end to end.
 const $ = (s) => document.querySelector(s)
@@ -22,19 +22,19 @@ const I18N = {
   en: {
     newChat: "New chat", copilot: "Nyx Copilot", site: "← Site",
     placeholder: "Ask anything — in any language…",
-    hint: "Nyx runs locally. Keys are encrypted on-device · Trades only after double confirmation",
-    footL: "Zero-Trust trading requires double confirmation", footR: "© 2026 Nyx — Bohdan (AARON4IK)",
+    hint: "Nyx runs locally. Everything stays encrypted on your device",
+    footL: "On-device AI · nothing leaves your machine", footR: "© 2026 Nyx — Bohdan (AARON4IK)",
     emptyTitle: "How can I help?",
-    emptyDesc: "On-device AI operator for your PC and Bitfinex trading. Write in any language — I reply in yours.",
-    qSpecsT: "Scan Device Specifications", qSpecsS: "Collect live CPU, RAM, GPU, disks & Bitfinex latency",
+    emptyDesc: "On-device AI operator for your PC. Write in any language — I reply in yours.",
+    qSpecsT: "Scan Device Specifications", qSpecsS: "Collect live CPU, RAM, GPU & disks",
     qUpdateT: "Trigger Windows Update", qUpdateS: "Run the Windows update scan playbook",
-    nDiag: "Device diagnostics", nUpdate: "Windows update", nOrder: "Order ", nMarket: "USD₮ market", nSecurity: "Nyx security", nModel: "QVAC / model", nNew: "New chat",
+    nDiag: "Device diagnostics", nUpdate: "Windows update", nSecurity: "Nyx security", nModel: "QVAC / model", nNew: "New chat",
     echoSpecs: "📋 Show full device specifications", echoUpdate: "🔄 Update Windows",
     updateStarted: "Windows update scan started.", opened: "⚙️  Opened: ", unavailable: "unavailable", failed: "failed",
     src: "Source: ",
     serverHint: " No connection to the local Nyx server. Run: npm start — then open http://localhost:3000/app",
     wTitle: " Device specifications", wCpuLoad: "CPU load", wCores: "cores", wRamUse: "RAM",
-    wCpu: "CPU", wGpu: "GPU", wRam: "RAM", wFree: "free", wDisks: "Disks", wBoard: "Motherboard", wBios: "BIOS", wDx: "DirectX", wOs: "OS", wArch: "Architecture", wUptime: "Uptime", wLatency: "Bitfinex latency", h: "h",
+    wCpu: "CPU", wGpu: "GPU", wRam: "RAM", wFree: "free", wDisks: "Disks", wBoard: "Motherboard", wBios: "BIOS", wDx: "DirectX", wOs: "OS", wArch: "Architecture", wUptime: "Uptime", h: "h",
     btnSettings: "⚙️  Open Windows system settings", btnUpdates: "🔄 Check for updates",
     bAuto: " Automatically", bManual: "🧮 Manually (calculator)", yes: " Yes", cancel: "✕ Cancel",
     exec: "▶ Execute", execCancel: "Okay — cancelled, nothing was executed.",
@@ -54,19 +54,19 @@ const I18N = {
   ru: {
     newChat: "Новый чат", copilot: "Nyx Copilot", site: "← На сайт",
     placeholder: "Спросите что угодно — на любом языке…",
-    hint: "Nyx работает локально. Ключи шифруются на устройстве · Сделки — только после двойного подтверждения",
-    footL: "Zero-Trust трейдинг требует двойного подтверждения", footR: "© 2026 Nyx — Bohdan (AARON4IK)",
+    hint: "Nyx работает локально. Всё шифруется на вашем устройстве",
+    footL: "ИИ на устройстве · ничего не покидает ваш ПК", footR: "© 2026 Nyx — Bohdan (AARON4IK)",
     emptyTitle: "Чем помочь?",
-    emptyDesc: "ИИ-оператор на устройстве для вашего ПК и трейдинга на Bitfinex. Пишите на любом языке — отвечу на нём же.",
-    qSpecsT: "Сканировать характеристики", qSpecsS: "Собрать живые данные CPU, RAM, GPU, диски и задержку Bitfinex",
+    emptyDesc: "ИИ-оператор на устройстве для вашего ПК. Пишите на любом языке — отвечу на нём же.",
+    qSpecsT: "Сканировать характеристики", qSpecsS: "Собрать живые данные CPU, RAM, GPU и диски",
     qUpdateT: "Обновить Windows", qUpdateS: "Запустить проверку обновлений Windows",
-    nDiag: "Диагностика устройства", nUpdate: "Обновление Windows", nOrder: "Ордер ", nMarket: "Рынок USD₮", nSecurity: "Безопасность Nyx", nModel: "QVAC / модель", nNew: "Новый чат",
+    nDiag: "Диагностика устройства", nUpdate: "Обновление Windows", nSecurity: "Безопасность Nyx", nModel: "QVAC / модель", nNew: "Новый чат",
     echoSpecs: "📋 Показать полные характеристики устройства", echoUpdate: "🔄 Обновить Windows",
     updateStarted: "Запущен поиск обновлений Windows.", opened: "⚙️  Открыл: ", unavailable: "недоступно", failed: "не удалось",
     src: "Источник: ",
     serverHint: " Нет связи с локальным сервером Nyx. Запустите: npm start — и откройте http://localhost:3000/app",
     wTitle: " Характеристики устройства", wCpuLoad: "Загрузка CPU", wCores: "ядер", wRamUse: "RAM",
-    wCpu: "Процессор", wGpu: "GPU", wRam: "ОЗУ", wFree: "свободно", wDisks: "Диски", wBoard: "Мат. плата", wBios: "BIOS", wDx: "DirectX", wOs: "ОС", wArch: "Архитектура", wUptime: "Uptime", wLatency: "Задержка до Bitfinex", h: "ч",
+    wCpu: "Процессор", wGpu: "GPU", wRam: "ОЗУ", wFree: "свободно", wDisks: "Диски", wBoard: "Мат. плата", wBios: "BIOS", wDx: "DirectX", wOs: "ОС", wArch: "Архитектура", wUptime: "Uptime", h: "ч",
     btnSettings: "⚙️  Открыть системные настройки Windows", btnUpdates: "🔄 Проверить обновления",
     bAuto: " Автоматически", bManual: "🧮 Вручную (калькулятор)", yes: " Да", cancel: "✕ Отмена",
     exec: "▶ Выполнить", execCancel: "Окей — отменил, ничего не выполнял.",
@@ -86,19 +86,19 @@ const I18N = {
   uk: {
     newChat: "Новий чат", copilot: "Nyx Copilot", site: "← На сайт",
     placeholder: "Спитайте будь-що — будь-якою мовою…",
-    hint: "Nyx працює локально. Ключі шифруються на пристрої · Угоди — лише після подвійного підтвердження",
-    footL: "Zero-Trust трейдинг вимагає подвійного підтвердження", footR: "© 2026 Nyx — Bohdan (AARON4IK)",
+    hint: "Nyx працює локально. Усе шифрується на вашому пристрої",
+    footL: "ШІ на пристрої · ніщо не залишає ваш ПК", footR: "© 2026 Nyx — Bohdan (AARON4IK)",
     emptyTitle: "Чим допомогти?",
-    emptyDesc: "ШІ-оператор на пристрої для вашого ПК та трейдингу на Bitfinex. Пишіть будь-якою мовою — відповім нею ж.",
-    qSpecsT: "Сканувати характеристики", qSpecsS: "Зібрати живі дані CPU, RAM, GPU, диски та затримку Bitfinex",
+    emptyDesc: "ШІ-оператор на пристрої для вашого ПК. Пишіть будь-якою мовою — відповім нею ж.",
+    qSpecsT: "Сканувати характеристики", qSpecsS: "Зібрати живі дані CPU, RAM, GPU та диски",
     qUpdateT: "Оновити Windows", qUpdateS: "Запустити перевірку оновлень Windows",
-    nDiag: "Діагностика пристрою", nUpdate: "Оновлення Windows", nOrder: "Ордер ", nMarket: "Ринок USD₮", nSecurity: "Безпека Nyx", nModel: "QVAC / модель", nNew: "Новий чат",
+    nDiag: "Діагностика пристрою", nUpdate: "Оновлення Windows", nSecurity: "Безпека Nyx", nModel: "QVAC / модель", nNew: "Новий чат",
     echoSpecs: "📋 Показати повні характеристики пристрою", echoUpdate: "🔄 Оновити Windows",
     updateStarted: "Запущено пошук оновлень Windows.", opened: "⚙️  Відкрив: ", unavailable: "недоступно", failed: "не вдалося",
     src: "Джерело: ",
     serverHint: " Немає звʼязку з локальним сервером Nyx. Запустіть: npm start — і відкрийте http://localhost:3000/app",
     wTitle: " Характеристики пристрою", wCpuLoad: "Завантаження CPU", wCores: "ядер", wRamUse: "RAM",
-    wCpu: "Процесор", wGpu: "GPU", wRam: "ОЗП", wFree: "вільно", wDisks: "Диски", wBoard: "Мат. плата", wBios: "BIOS", wDx: "DirectX", wOs: "ОС", wArch: "Архітектура", wUptime: "Uptime", wLatency: "Затримка до Bitfinex", h: "г",
+    wCpu: "Процесор", wGpu: "GPU", wRam: "ОЗП", wFree: "вільно", wDisks: "Диски", wBoard: "Мат. плата", wBios: "BIOS", wDx: "DirectX", wOs: "ОС", wArch: "Архітектура", wUptime: "Uptime", h: "г",
     btnSettings: "⚙️  Відкрити системні налаштування Windows", btnUpdates: "🔄 Перевірити оновлення",
     bAuto: " Автоматично", bManual: "🧮 Вручну (калькулятор)", yes: " Так", cancel: "✕ Скасувати",
     exec: "▶ Виконати", execCancel: "Гаразд — скасував, нічого не виконував.",
@@ -118,19 +118,19 @@ const I18N = {
   es: {
     newChat: "Nuevo chat", copilot: "Nyx Copilot", site: "← Sitio",
     placeholder: "Pregunta lo que sea — en cualquier idioma…",
-    hint: "Nyx funciona localmente. Las claves se cifran en el dispositivo · Operaciones solo tras doble confirmación",
-    footL: "El trading Zero-Trust requiere doble confirmación", footR: "© 2026 Nyx — Bohdan (AARON4IK)",
+    hint: "Nyx funciona localmente. Todo se cifra en tu dispositivo",
+    footL: "IA en el dispositivo · nada sale de tu máquina", footR: "© 2026 Nyx — Bohdan (AARON4IK)",
     emptyTitle: "¿En qué puedo ayudar?",
-    emptyDesc: "Operador de IA en el dispositivo para tu PC y el trading en Bitfinex. Escribe en cualquier idioma — respondo en el tuyo.",
-    qSpecsT: "Escanear especificaciones", qSpecsS: "Recoger CPU, RAM, GPU, discos y latencia de Bitfinex en vivo",
+    emptyDesc: "Operador de IA en el dispositivo para tu PC. Escribe en cualquier idioma — respondo en el tuyo.",
+    qSpecsT: "Escanear especificaciones", qSpecsS: "Recoger CPU, RAM, GPU y discos en vivo",
     qUpdateT: "Actualizar Windows", qUpdateS: "Ejecutar la búsqueda de actualizaciones de Windows",
-    nDiag: "Diagnóstico del dispositivo", nUpdate: "Actualización de Windows", nOrder: "Orden ", nMarket: "Mercado USD₮", nSecurity: "Seguridad de Nyx", nModel: "QVAC / modelo", nNew: "Nuevo chat",
+    nDiag: "Diagnóstico del dispositivo", nUpdate: "Actualización de Windows", nSecurity: "Seguridad de Nyx", nModel: "QVAC / modelo", nNew: "Nuevo chat",
     echoSpecs: "📋 Mostrar especificaciones completas", echoUpdate: "🔄 Actualizar Windows",
     updateStarted: "Búsqueda de actualizaciones de Windows iniciada.", opened: "⚙️  Abierto: ", unavailable: "no disponible", failed: "falló",
     src: "Fuente: ",
     serverHint: " Sin conexión con el servidor local de Nyx. Ejecuta: npm start — y abre http://localhost:3000/app",
     wTitle: " Especificaciones del dispositivo", wCpuLoad: "Carga de CPU", wCores: "núcleos", wRamUse: "RAM",
-    wCpu: "CPU", wGpu: "GPU", wRam: "RAM", wFree: "libre", wDisks: "Discos", wBoard: "Placa base", wBios: "BIOS", wDx: "DirectX", wOs: "SO", wArch: "Arquitectura", wUptime: "Tiempo activo", wLatency: "Latencia Bitfinex", h: "h",
+    wCpu: "CPU", wGpu: "GPU", wRam: "RAM", wFree: "libre", wDisks: "Discos", wBoard: "Placa base", wBios: "BIOS", wDx: "DirectX", wOs: "SO", wArch: "Arquitectura", wUptime: "Tiempo activo", h: "h",
     btnSettings: "⚙️  Abrir configuración de Windows", btnUpdates: "🔄 Buscar actualizaciones",
     bAuto: " Automáticamente", bManual: "🧮 Manual (calculadora)", yes: " Sí", cancel: "✕ Cancelar",
     exec: "▶ Ejecutar", execCancel: "De acuerdo — cancelado, no se ejecutó nada.",
@@ -150,19 +150,19 @@ const I18N = {
   de: {
     newChat: "Neuer Chat", copilot: "Nyx Copilot", site: "← Seite",
     placeholder: "Frag alles — in jeder Sprache…",
-    hint: "Nyx läuft lokal. Schlüssel werden auf dem Gerät verschlüsselt · Trades nur nach doppelter Bestätigung",
-    footL: "Zero-Trust-Trading erfordert doppelte Bestätigung", footR: "© 2026 Nyx — Bohdan (AARON4IK)",
+    hint: "Nyx läuft lokal. Alles wird auf dem Gerät verschlüsselt",
+    footL: "KI auf dem Gerät · nichts verlässt deinen Rechner", footR: "© 2026 Nyx — Bohdan (AARON4IK)",
     emptyTitle: "Wie kann ich helfen?",
-    emptyDesc: "On-Device-KI-Operator für deinen PC und das Bitfinex-Trading. Schreib in jeder Sprache — ich antworte in deiner.",
-    qSpecsT: "Gerätespezifikationen scannen", qSpecsS: "CPU, RAM, GPU, Laufwerke & Bitfinex-Latenz live erfassen",
+    emptyDesc: "On-Device-KI-Operator für deinen PC. Schreib in jeder Sprache — ich antworte in deiner.",
+    qSpecsT: "Gerätespezifikationen scannen", qSpecsS: "CPU, RAM, GPU & Laufwerke live erfassen",
     qUpdateT: "Windows aktualisieren", qUpdateS: "Windows-Update-Suche ausführen",
-    nDiag: "Gerätediagnose", nUpdate: "Windows-Update", nOrder: "Order ", nMarket: "USD₮-Markt", nSecurity: "Nyx-Sicherheit", nModel: "QVAC / Modell", nNew: "Neuer Chat",
+    nDiag: "Gerätediagnose", nUpdate: "Windows-Update", nSecurity: "Nyx-Sicherheit", nModel: "QVAC / Modell", nNew: "Neuer Chat",
     echoSpecs: "📋 Vollständige Gerätespezifikationen anzeigen", echoUpdate: "🔄 Windows aktualisieren",
     updateStarted: "Windows-Update-Suche gestartet.", opened: "⚙️  Geöffnet: ", unavailable: "nicht verfügbar", failed: "fehlgeschlagen",
     src: "Quelle: ",
     serverHint: " Keine Verbindung zum lokalen Nyx-Server. Starte: npm start — und öffne http://localhost:3000/app",
     wTitle: " Gerätespezifikationen", wCpuLoad: "CPU-Last", wCores: "Kerne", wRamUse: "RAM",
-    wCpu: "CPU", wGpu: "GPU", wRam: "RAM", wFree: "frei", wDisks: "Laufwerke", wBoard: "Mainboard", wBios: "BIOS", wDx: "DirectX", wOs: "OS", wArch: "Architektur", wUptime: "Laufzeit", wLatency: "Bitfinex-Latenz", h: "h",
+    wCpu: "CPU", wGpu: "GPU", wRam: "RAM", wFree: "frei", wDisks: "Laufwerke", wBoard: "Mainboard", wBios: "BIOS", wDx: "DirectX", wOs: "OS", wArch: "Architektur", wUptime: "Laufzeit", h: "h",
     btnSettings: "⚙️  Windows-Einstellungen öffnen", btnUpdates: "🔄 Nach Updates suchen",
     bAuto: " Automatisch", bManual: "🧮 Manuell (Rechner)", yes: " Ja", cancel: "✕ Abbrechen",
     exec: "▶ Ausführen", execCancel: "Okay — abgebrochen, nichts wurde ausgeführt.",
@@ -182,19 +182,19 @@ const I18N = {
   fr: {
     newChat: "Nouveau chat", copilot: "Nyx Copilot", site: "← Site",
     placeholder: "Demandez n'importe quoi — dans n'importe quelle langue…",
-    hint: "Nyx fonctionne localement. Les clés sont chiffrées sur l'appareil · Trades seulement après double confirmation",
-    footL: "Le trading Zero-Trust exige une double confirmation", footR: "© 2026 Nyx — Bohdan (AARON4IK)",
+    hint: "Nyx fonctionne localement. Tout est chiffré sur votre appareil",
+    footL: "IA locale · rien ne quitte votre machine", footR: "© 2026 Nyx — Bohdan (AARON4IK)",
     emptyTitle: "Comment puis-je aider ?",
-    emptyDesc: "Opérateur IA local pour votre PC et le trading Bitfinex. Écrivez dans n'importe quelle langue — je réponds dans la vôtre.",
-    qSpecsT: "Scanner les spécifications", qSpecsS: "Collecter CPU, RAM, GPU, disques & latence Bitfinex en direct",
+    emptyDesc: "Opérateur IA local pour votre PC. Écrivez dans n'importe quelle langue — je réponds dans la vôtre.",
+    qSpecsT: "Scanner les spécifications", qSpecsS: "Collecter CPU, RAM, GPU & disques en direct",
     qUpdateT: "Mettre à jour Windows", qUpdateS: "Lancer la recherche de mises à jour Windows",
-    nDiag: "Diagnostic de l'appareil", nUpdate: "Mise à jour Windows", nOrder: "Ordre ", nMarket: "Marché USD₮", nSecurity: "Sécurité Nyx", nModel: "QVAC / modèle", nNew: "Nouveau chat",
+    nDiag: "Diagnostic de l'appareil", nUpdate: "Mise à jour Windows", nSecurity: "Sécurité Nyx", nModel: "QVAC / modèle", nNew: "Nouveau chat",
     echoSpecs: "📋 Afficher les spécifications complètes", echoUpdate: "🔄 Mettre à jour Windows",
     updateStarted: "Recherche de mises à jour Windows lancée.", opened: "⚙️  Ouvert : ", unavailable: "indisponible", failed: "échec",
     src: "Source : ",
     serverHint: " Pas de connexion au serveur local Nyx. Lancez : npm start — puis ouvrez http://localhost:3000/app",
     wTitle: " Spécifications de l'appareil", wCpuLoad: "Charge CPU", wCores: "cœurs", wRamUse: "RAM",
-    wCpu: "CPU", wGpu: "GPU", wRam: "RAM", wFree: "libre", wDisks: "Disques", wBoard: "Carte mère", wBios: "BIOS", wDx: "DirectX", wOs: "OS", wArch: "Architecture", wUptime: "Disponibilité", wLatency: "Latence Bitfinex", h: "h",
+    wCpu: "CPU", wGpu: "GPU", wRam: "RAM", wFree: "libre", wDisks: "Disques", wBoard: "Carte mère", wBios: "BIOS", wDx: "DirectX", wOs: "OS", wArch: "Architecture", wUptime: "Disponibilité", h: "h",
     btnSettings: "⚙️  Ouvrir les paramètres Windows", btnUpdates: "🔄 Vérifier les mises à jour",
     bAuto: " Automatiquement", bManual: "🧮 Manuel (calculatrice)", yes: " Oui", cancel: "✕ Annuler",
     exec: "▶ Exécuter", execCancel: "D'accord — annulé, rien n'a été exécuté.",
@@ -228,7 +228,7 @@ const uid = () => Math.random().toString(36).slice(2, 9)
 function newChat() {
   const c = { id: uid(), title: t("nNew"), icon: "💬", msgs: [], named: false }
   DB.chats.unshift(c); DB.active = c.id; save()
-  // Context isolation: a brand-new chat id + wipe any server-side trade state for it.
+  // Context isolation: a brand-new chat id for isolated per-chat memory.
   fetch("/api/chat/reset", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ chatId: c.id }) }).catch(() => {})
   render(); renderThread()
 }
@@ -239,13 +239,8 @@ const active = () => DB.chats.find((c) => c.id === DB.active)
 function neuroName(text) {
   const tt = text.toLowerCase()
   const sym = text.match(/\b([A-Z]{3,5})\s*[\/\-]?\s*(USDT|USD₮|USD)\b/i)
-  if (/(сделк|ордер|трейд|trade|order|лонг|шорт|long|short|bitfinex|orden|ordre)/i.test(tt)) {
-    const pair = sym ? sym[1].toUpperCase() + "/USD₮" : "Bitfinex"
-    return { icon: "📈", title: t("nOrder") + pair }
-  }
   if (/(характерист|желез|cpu|gpu|ram|диск|specs|диагнос|устройств|spec|diagnos|gerät|appareil|dispositiv)/i.test(tt)) return { icon: "", title: t("nDiag") }
   if (/(windows|обнов|онов|update|систем|aktualis|mise à jour|actualiz)/i.test(tt)) return { icon: "🔄", title: t("nUpdate") }
-  if (/(цен|price|рын|market|курс|mercado|marché|markt)/i.test(tt)) return { icon: "💱", title: t("nMarket") }
   if (/(безопас|security|proof|приват|шифр|sicherheit|sécurit|seguridad|безпек)/i.test(tt)) return { icon: "", title: t("nSecurity") }
   if (/(qvac|модел|llm|сдк|sdk|model|modèle|modell|modelo)/i.test(tt)) return { icon: "🧩", title: t("nModel") }
   let title = text.trim().split(/\s+/).slice(0, 5).join(" ")
@@ -332,8 +327,8 @@ function renderWidget(w) {
     R(t("wBoard"), specs.board) + R(t("wBios"), specs.bios) + R(t("wDx"), specs.directX) +
     R(t("wOs"), specs.osBuild) + R(t("wArch"), specs.arch) + R(t("wUptime"), specs.uptimeH ? specs.uptimeH + " " + t("h") : "")
   wrap.appendChild(rows)
-  // Bitfinex connection latency + pre-trade risk (the specs scan actually probes
-  // the exchange, so we display it here to match the button's description).
+  // Optional connection latency (shown only if the backend provides it):
+  // the backend no longer probes any exchange.
   if (latency && (latency.ms != null || latency.ok === false)) {
     const lat = el("div", "wcard"); lat.style.marginTop = "12px"
     const v = latency.ms != null ? latency.ms + " ms" : t("unavailable")
@@ -397,7 +392,7 @@ async function sendText(text) {
     const r = await fetch("/api/chat", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) }).then((x) => x.json())
     tp.remove()
     const msg = { role: "bot", text: cleanOut(r.text || r.error || "…"), sources: r.sources, mode: r.mode }
-    // surface broker quick-replies as buttons
+    // surface backend quick-replies as buttons
     if (r.mode && r.mode.startsWith("broker:choose_mode")) msg.actions = [
       { label: t("bAuto"), kind: "primary", run: () => sendText(t("sendAuto")) },
       { label: t("bManual"), run: () => sendText(t("sendManual")) },
@@ -407,7 +402,7 @@ async function sendText(text) {
       { label: t("cancel"), kind: "danger", run: () => sendText(t("sendCancel")) },
     ]
     // Real PC action: show an Execute button that runs the proposed command
-    // through the Zero-Trust exec endpoint (only after the user confirms).
+    // through the local exec endpoint (only after the user confirms).
     if (r.mode === "action-proposal" && r.proposal && r.proposal.script) msg.actions = [
       { label: t("exec"), kind: "primary", run: () => execProposal(r.proposal) },
       { label: t("cancel"), kind: "danger", run: () => pushMsg("bot", { text: t("execCancel") }) },
@@ -416,7 +411,7 @@ async function sendText(text) {
   } catch { tp.remove(); pushMsg("bot", { text: serverHint() }) }
 }
 
-// Execute a confirmed action proposal through the Zero-Trust exec endpoint.
+// Execute a confirmed action proposal through the local exec endpoint.
 async function execProposal(p) {
   const tp = showTyping()
   try {

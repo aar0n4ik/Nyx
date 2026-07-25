@@ -10,44 +10,16 @@
   },
   "remote_calls": [
     {
-      "name": "Bitfinex public market data",
-      "type": "non-AI, optional",
-      "endpoints": ["https://api-pub.bitfinex.com/v2/ticker/{symbol}"],
-      "auth": "none (public endpoint)",
-      "purpose": "Live USD\u20ae market prices for the trading copilot.",
-      "required": false,
-      "sends_user_data": false
-    },
-    {
-      "name": "Bitfinex authenticated trading",
-      "type": "non-AI, optional, user-initiated",
-      "endpoints": [
-        "https://api.bitfinex.com/v2/auth/r/wallets",
-        "https://api.bitfinex.com/v2/auth/w/order/submit"
-      ],
-      "auth": "user-provided API key/secret, stored locally and AES-256-GCM encrypted; never sent anywhere except Bitfinex",
-      "purpose": "Read-only key verification and order submission. Orders are submitted ONLY when NYX_LIVE_TRADING=1 AND the user passes two explicit confirmations. Default is dry-run.",
-      "required": false,
-      "sends_user_data": false
-    },
-    {
-      "name": "Bitfinex TCP latency probe",
-      "type": "non-AI, optional",
-      "endpoints": ["tcp://api.bitfinex.com:443"],
-      "auth": "none",
-      "purpose": "Measure round-trip latency to the exchange before trading.",
-      "required": false,
-      "sends_user_data": false
-    },
-    {
       "name": "QVAC model weights download (one-time setup)",
       "type": "non-AI model weights fetch, handled by the QVAC SDK",
-      "endpoints": ["resolved internally by @qvac/sdk loadModel() / setup-models.js"],
+      "endpoints": [
+        "resolved internally by @qvac/sdk loadModel() / setup-models.js"
+      ],
       "auth": "none",
       "purpose": "Download the on-device model once; afterwards Nyx runs fully offline against the cached weights.",
       "required": false,
       "sends_user_data": false
     }
   ],
-  "egress_enforcement": "src/netguard.js default-denies every non-loopback socket except the explicit allowlist (Bitfinex hosts). Allowed calls are still recorded in evidence/netguard.json with host + timestamp, so the privacy claim is precise: no egress except the user-approved, allowlisted endpoints, fully logged."
+  "egress_enforcement": "src/netguard.js default-denies every non-loopback socket except the explicit allowlist ("
 }

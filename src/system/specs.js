@@ -1,5 +1,4 @@
-// PC infrastructure module. Collects the trader's hardware/OS profile and the
-// network latency to Bitfinex, then flags pre-trade risks (lag/overheat).
+// PC infrastructure module. Collects the trader's hardware/OS profile.
 // Cross-platform: Node `os` for basics; Windows PowerShell (Get-CimInstance) and
 // Linux /proc for detail. Optional `systeminformation` is used if installed.
 import os from "node:os"
@@ -92,27 +91,4 @@ export async function collectSpecs() {
 	return specs
 }
 
-// TCP-connect latency to Bitfinex (no external ping binary needed).
-export function bitfinexLatency(host = "api.bitfinex.com", port = 443, timeout = 4000) {
-	return new Promise((resolve) => {
-		const t0 = Date.now()
-		const sock = net.connect({ host, port })
-		let doneFlag = false
-		const finish = (ok, err) => { if (doneFlag) return; doneFlag = true; try { sock.destroy() } catch {}; resolve({ host, ms: ok ? Date.now() - t0 : null, ok, err }) }
-		sock.setTimeout(timeout)
-		sock.on("connect", () => finish(true))
-		sock.on("timeout", () => finish(false, "timeout"))
-		sock.on("error", (e) => finish(false, e.message))
-	})
-}
-
 // Pre-trade risk advisory based on specs + latency.
-export function preTradeRisk(specs, latency) {
-	const warnings = []
-	if (latency?.ms == null) warnings.push(" Нет связи с Bitfinex — ордер может не пройти.")
-	else if (latency.ms > 400) warnings.push(` Высокая задержка до биржи (${latency.ms} мс) — риск проскальзывания.`)
-	if (specs?.cpuLoadPct != null && specs.cpuLoadPct > 85) warnings.push(` Высокая загрузка CPU (${specs.cpuLoadPct}%) — возможны лаги.`)
-	if (specs?.ramUsedPct != null && specs.ramUsedPct > 90) warnings.push(` Почти вся RAM занята (${specs.ramUsedPct}%).`)
-	if (specs?.tempC && specs.tempC > 85) warnings.push(` Перегрев CPU (${specs.tempC}°C) — отложите вход.`)
-	return { ok: warnings.length === 0, warnings }
-}
