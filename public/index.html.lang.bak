@@ -1217,6 +1217,6 @@ try{var h=document.documentElement;h.setAttribute("lang",h.getAttribute("lang")|
 
 </script>
 <script src="/models.js"></script><script src="/cards.js"></script><script src="/launch.js"></script><script src="/download.js"></script><script src="/i18n-ru.js"></script>
-  <script src="/nyx-i18n.js" defer></script>
+<script src="/nyx-lang.js"></script>
 </body>
 </html>
