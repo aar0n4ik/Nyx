@@ -17,7 +17,21 @@ jobs:
         run: npm install
       - name: Prepare icon
         run: node scripts/ensure-icon.mjs
-      - name: Build & publish Windows installer
-        run: npx electron-builder --win --publish always
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Windows installer (no auto-publish)
+        run: npx electron-builder --win --publish never
+      - name: Publish clean release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Nyx ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          fail_on_unmatched_files: true
+          files: dist/Nyx-Setup.exe
+          body: |
+            **Nyx for Windows** — local-first, on-device AI copilot. No account, no cloud, no telemetry.
+
+            ### Install
+            1. Download **Nyx-Setup.exe** below.
+            2. Run it. Windows may warn about an unknown publisher — click **More info → Run anyway**.
+            3. Open Nyx, pick a model that fits your PC, start asking.
+
+            Windows 10/11 (64-bit) · ~120 MB installer · 1–5 GB per model (downloaded once, offline after).
