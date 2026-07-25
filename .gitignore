@@ -10,3 +10,4 @@ models.lock
 evidence/poli.pub
 data/solutions.json
 dist/
+public/index.html.bak.i18n

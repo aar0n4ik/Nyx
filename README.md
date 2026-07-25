@@ -1,7 +1,6 @@
 # Nyx — On-Device AI Operator
 
 > A fully local, autonomous AI operator for Windows that **fixes your PC** and
-> **trades on Bitfinex** — powered end-to-end by the **QVAC SDK**, running
 > **Qwen3-4B on-device** with **zero cloud calls**.
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
@@ -32,7 +31,6 @@ problem, then hands it to a validator and to **you** for approval.
 - **NetGuard** — a runtime egress guard that **blocks and logs** every
   non-allowlisted network call from the app process (blocking is **on by
   default**; `NYX_STRICT=0` for log-only). The only allowed egress is loopback
-  and, when you opt into trading, the Bitfinex endpoint. In-process guard +
   audit log — not a kernel firewall.
 - **PoLI** — every inference is appended to a tamper-evident, Ed25519-signed
   hash chain (Proof-of-Local-Inference). It proves the log was **not altered or
@@ -46,7 +44,6 @@ problem, then hands it to a validator and to **you** for approval.
 |---|---|
 | Diagnose & fix PC issues | Model authors a script, grounded by expert playbooks, validated, then executed with your OK and self-corrected on failure |
 | Live device telemetry | Real CPU/RAM/GPU/disk/uptime via OS calls (no fabrication) |
-| Zero-Trust Bitfinex trading | Double-confirmation broker over the public Bitfinex API |
 | Multilingual | Detects and replies in the user's language (RU/UK/EN/ES/DE/FR), UI language syncs across pages |
 | Offline-first | Works with no internet; **there is no cloud-AI path at all** — 100% of inference is on-device via the QVAC SDK |
 
@@ -101,7 +98,6 @@ npm run verify     # -> verifies the Proof-of-Local-Inference chain
 | Artifact | File | Proves |
 |---|---|---|
 | Hardware proof | `evidence/hardware.json` | the device it ran on (repo ships a sanitized sample; `npm run hwproof` writes your real one locally) |
-| Egress report | `evidence/netguard.json` | only allowlisted hosts (loopback + Bitfinex) were contacted; everything else was blocked and logged |
 | Model attestation | `evidence/attestation.json` | which local model + SHA-256 |
 | Inference log | `evidence/poli.jsonl` + `npm run verify` | a tamper-evident, signed chain of every inference (integrity + ordering) |
 
@@ -111,7 +107,6 @@ npm run verify     # -> verifies the Proof-of-Local-Inference chain
 > `evidence/hardware.json` is a sanitized sample, regenerated per machine.
 
 > **Remote APIs (full disclosure):** every outbound endpoint Nyx can ever touch is
-> declared in [`remote-apis.json`](remote-apis.json) — Bitfinex public/auth
 > endpoints and the one-time QVAC model-weights download. There are no
 > undisclosed calls and **no remote AI inference**.
 
@@ -137,7 +132,6 @@ Copy `.env.example` to `.env`. Key switches: `NYX_OFFLINE` (default on),
 `NYX_STRICT` (NetGuard egress blocking — **on by default**; `0` for log-only),
 `NYX_ALLOW_EXEC` (autonomous execution — **off by default / dry-run**; set `1`
 to enable, actions still require confirmation), `NYX_QVAC_MODEL`,
-`NYX_QVAC_EMBED_MODEL`, `NYX_PORT`, `NYX_ALLOW_HOSTS`, `NYX_LIVE_TRADING` (off by
 default). There is **no cloud-AI switch** — inference is QVAC-only by design.
 
 ## Built by

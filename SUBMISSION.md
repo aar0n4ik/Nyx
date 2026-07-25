@@ -26,7 +26,6 @@
 | Criterion | How Nyx addresses it |
 |---|---|
 | **Innovation** | Local model that not only chats but **authors and safely executes** real OS commands; a tamper-evident, signed Proof-of-Local-Inference chain |
-| **Capabilities** (orchestration + tool calling) | Tiered router: instant fast-path, action pipeline (plan->validate->exec->self-correct), Bitfinex broker, RAG — all driven by the local model |
 | **Artifact quality** | Reproducible build, generated hardware/egress/attestation artifacts, signed inference chain |
 | **Performance** | Tier-1 fast paths avoid the LLM entirely; honest TTFT + tokens/sec telemetry per response; runs on constrained devices |
 | **Complexity & UX** | Clean multilingual chat UI, model status bar, one-click device scan, double-confirmation trading |
@@ -45,7 +44,6 @@
 
 - **No cloud inference path exists at all.** 100% of AI runs on-device through
   the QVAC SDK; `src/llm/engine.js` has no cloud provider and returns
-  `CLOUD_ENABLED() === false`. The only network skill is the **public** Bitfinex
   market API (plus the one-time model-weights download); every endpoint is
   declared in `remote-apis.json`, and NetGuard records all egress.
 - **NetGuard scope (honest):** it hooks `net.Socket.prototype.connect`, so it

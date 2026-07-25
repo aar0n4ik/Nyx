@@ -13,10 +13,9 @@
 import net from "node:net"
 import { writeFileSync, mkdirSync } from "node:fs"
 
-// Hosts the trader explicitly opted into. Bitfinex is Tether's iFinex sister co.
+// No remote hosts are baked in — Nyx is fully local.
+// Extra hosts can be added explicitly via NYX_ALLOW_HOSTS (comma-separated).
 const ALLOWLIST = [
-	"api.bitfinex.com",
-	"api-pub.bitfinex.com",
 	...(process.env.NYX_ALLOW_HOSTS || "")
 		.split(",")
 		.map((s) => s.trim())
