@@ -6,7 +6,6 @@
   "installCommand": "echo skip",
   "buildCommand": "echo static",
   "framework": null,
-  "functions": { "api/*.js": { "maxDuration": 10 } },
   "rewrites": [
     { "source": "/app", "destination": "/app.html" },
     { "source": "/setup", "destination": "/setup.html" },
