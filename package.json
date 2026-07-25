@@ -1,6 +1,6 @@
 {
   "name": "nyx",
-  "version": "0.7.4",
+  "version": "0.7.5",
   "type": "module",
   "description": "Verifiable, on-device edge-AI copilot built on the QVAC SDK",
   "license": "Apache-2.0",
@@ -85,6 +85,22 @@
         ]
       }
     ],
-    "artifactName": "Nyx-Setup.${ext}"
+    "artifactName": "Nyx-Setup.${ext}",
+    "files": [
+      "**/*",
+      "!**/*.map",
+      "!**/*.bak",
+      "!evidence/**",
+      "!**/*.md",
+      "!**/node_modules/@qvac/translation-nmtcpp/**",
+      "!**/node_modules/@qvac/vla-ggml/**",
+      "!**/node_modules/@qvac/diffusion-cpp/**",
+      "!**/node_modules/@qvac/transcription-whispercpp/**",
+      "!**/node_modules/@qvac/transcription-parakeet/**",
+      "!**/node_modules/@qvac/tts-ggml/**",
+      "!**/node_modules/@qvac/ocr-onnx/**",
+      "!**/node_modules/@qvac/bci-whispercpp/**",
+      "!**/node_modules/bare-ffmpeg/**"
+    ]
   }
 }
