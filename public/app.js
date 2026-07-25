@@ -21,7 +21,7 @@ let LANG = readLang()
 const I18N = {
   en: {
     newChat: "New chat", copilot: "Nyx Copilot", site: "← Site",
-    placeholder: "Ask Nyx"Ask anything — in any language…",
+    placeholder: "Ask anything — in any language…",
     hint: "Nyx runs locally. Everything stays encrypted on your device",
     footL: "On-device AI · nothing leaves your machine", footR: "© 2026 Nyx — Bohdan (AARON4IK)",
     emptyTitle: "How can I help?",
@@ -53,7 +53,7 @@ const I18N = {
   },
   ru: {
     newChat: "Новый чат", copilot: "Nyx Copilot", site: "← На сайт",
-    placeholder: "Ask Nyx"Спросите что угодно — на любом языке…",
+    placeholder: "Спросите что угодно — на любом языке…",
     hint: "Nyx работает локально. Всё шифруется на вашем устройстве",
     footL: "ИИ на устройстве · ничего не покидает ваш ПК", footR: "© 2026 Nyx — Bohdan (AARON4IK)",
     emptyTitle: "Чем помочь?",
@@ -85,7 +85,7 @@ const I18N = {
   },
   uk: {
     newChat: "Новий чат", copilot: "Nyx Copilot", site: "← На сайт",
-    placeholder: "Ask Nyx"Спитайте будь-що — будь-якою мовою…",
+    placeholder: "Спитайте будь-що — будь-якою мовою…",
     hint: "Nyx працює локально. Усе шифрується на вашому пристрої",
     footL: "ШІ на пристрої · ніщо не залишає ваш ПК", footR: "© 2026 Nyx — Bohdan (AARON4IK)",
     emptyTitle: "Чим допомогти?",
@@ -117,7 +117,7 @@ const I18N = {
   },
   es: {
     newChat: "Nuevo chat", copilot: "Nyx Copilot", site: "← Sitio",
-    placeholder: "Ask Nyx"Pregunta lo que sea — en cualquier idioma…",
+    placeholder: "Pregunta lo que sea — en cualquier idioma…",
     hint: "Nyx funciona localmente. Todo se cifra en tu dispositivo",
     footL: "IA en el dispositivo · nada sale de tu máquina", footR: "© 2026 Nyx — Bohdan (AARON4IK)",
     emptyTitle: "¿En qué puedo ayudar?",
@@ -149,7 +149,7 @@ const I18N = {
   },
   de: {
     newChat: "Neuer Chat", copilot: "Nyx Copilot", site: "← Seite",
-    placeholder: "Ask Nyx"Frag alles — in jeder Sprache…",
+    placeholder: "Frag alles — in jeder Sprache…",
     hint: "Nyx läuft lokal. Alles wird auf dem Gerät verschlüsselt",
     footL: "KI auf dem Gerät · nichts verlässt deinen Rechner", footR: "© 2026 Nyx — Bohdan (AARON4IK)",
     emptyTitle: "Wie kann ich helfen?",
@@ -181,7 +181,7 @@ const I18N = {
   },
   fr: {
     newChat: "Nouveau chat", copilot: "Nyx Copilot", site: "← Site",
-    placeholder: "Ask Nyx"Demandez n'importe quoi — dans n'importe quelle langue…",
+    placeholder: "Demandez n'importe quoi — dans n'importe quelle langue…",
     hint: "Nyx fonctionne localement. Tout est chiffré sur votre appareil",
     footL: "IA locale · rien ne quitte votre machine", footR: "© 2026 Nyx — Bohdan (AARON4IK)",
     emptyTitle: "Comment puis-je aider ?",
