@@ -11,6 +11,7 @@ let sdk = null
 try { sdk = await import("@qvac/sdk") } catch { sdk = null }
 
 const CATALOG = [
+  { key: "qwen3-8b", label: "Qwen3 8B Instruct", approxGB: 5.2, ramMinGB: 16, strict: true, re: [/QWEN_?3.*8B.*INST/i, /QWEN.*8B/i], note: "Максимум качества, для мощных ПК" },
   { key: "qwen3-4b", label: "Qwen3 4B Instruct", approxGB: 2.6, ramMinGB: 8, re: [/QWEN_?3.*4B.*INST/i, /QWEN.*4B/i], note: "Лучший баланс, сильный русский" },
   { key: "llama32-3b", label: "Llama 3.2 3B Instruct", approxGB: 2.0, ramMinGB: 6, re: [/LLAMA_?3[._]?2_?3B.*INST/i], note: "Легче и быстрее" },
   { key: "llama32-1b", label: "Llama 3.2 1B Instruct", approxGB: 0.9, ramMinGB: 3, re: [/LLAMA_?3[._]?2_?1B.*INST/i], note: "Для слабых ПК" },
@@ -63,9 +64,10 @@ function cacheBytes() {
 
 function pickForRam(ramGB) {
   const ram = Number(ramGB) || 0
-  if (ram >= 8) return CATALOG[0]
-  if (ram >= 6) return CATALOG[1]
-  return CATALOG[2]
+  if (ram >= 16) return entryByKey("qwen3-8b") || entryByKey("qwen3-4b")
+  if (ram >= 8) return entryByKey("qwen3-4b")
+  if (ram >= 6) return entryByKey("llama32-3b")
+  return entryByKey("llama32-1b")
 }
 function entryByKey(key) { return CATALOG.find((c) => c.key === key) || null }
 function resolveConst(entry) {
@@ -107,7 +109,7 @@ export async function status() {
       platform: specs.platform || null,
     },
     recommended: { key: rec.key, label: rec.label, approxGB: rec.approxGB, note: rec.note },
-    catalog: CATALOG.map((c) => ({ key: c.key, label: c.label, approxGB: c.approxGB, ramMinGB: c.ramMinGB, note: c.note })),
+    catalog: CATALOG.map((c) => ({ key: c.key, label: c.label, approxGB: c.approxGB, ramMinGB: c.ramMinGB, note: c.note, available: !!resolveConst(c) })),
     location: getLocation(),
     download: progress(),
   }
@@ -127,6 +129,7 @@ export async function startDownload(modelKey) {
   const specs = await collectSpecs().catch(() => ({}))
   const entry = entryByKey(modelKey) || pickForRam(specs.ramGB)
   let constName = resolveConst(entry)
+  if (!constName && entry.strict) { state = { phase: "error", pct: 0, bytes: 0, targetBytes: 0, model: null, note: "", error: entry.label + " недоступна в этой версии QVAC SDK", startedAt: Date.now() }; return { ok: false, ...state } }
   if (!constName) constName = Object.keys(sdk).find((k) => /INST/i.test(k)) || null
   const modelSrc = constName ? (sdk[constName] ?? constName) : entry.key
   const modelType = process.env.NYX_QVAC_MODEL_TYPE || "llamacpp-completion"
