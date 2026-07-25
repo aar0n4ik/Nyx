@@ -1,0 +1,10 @@
+const fs = require('fs');
+const p = 'package.json';
+const j = JSON.parse(fs.readFileSync(p, 'utf8'));
+j.version = '0.7.2';
+j.build = j.build || {};
+if (j.build.protocols === undefined) {
+  j.build.protocols = [{ name: 'Nyx Protocol', schemes: ['nyx'] }];
+}
+fs.writeFileSync(p, JSON.stringify(j, null, 2) + '\n');
+console.log('OK version', j.version, 'protocols', JSON.stringify(j.build.protocols));
