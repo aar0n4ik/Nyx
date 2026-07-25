@@ -185,15 +185,27 @@
   var REV = {}; for (var k in DICT.en) if (DICT.en.hasOwnProperty(k)) REV[norm(DICT.en[k])] = k;
 
   var CAND = "h1,h2,h3,h4,h5,p,span,a,li,button,small,strong,em,div";
+  function tr(lang, src){
+    var s = norm(src);
+    var key = REV[s];
+    if (key && DICT[lang] && DICT[lang][key] != null) return DICT[lang][key];
+    if (window.NYXI && NYXI[lang]) {
+      if (NYXI[lang][src] != null) return NYXI[lang][src];
+      if (NYXI[lang][s]   != null) return NYXI[lang][s];
+    }
+    return null;
+  }
   function tagNodes() {
     var els = document.body.querySelectorAll(CAND);
     for (var i = 0; i < els.length; i++) {
       var el = els[i];
-      if (el.getAttribute("data-nyx-key")) continue;
-      if (el.childElementCount > 1) continue;
+      if (el.getAttribute("data-nyx-src")) continue;
+      if (el.childElementCount > 0) continue;
       if (el.closest("[data-nyx-skip]")) continue;
-      var key = REV[norm(el.textContent)];
-      if (key) el.setAttribute("data-nyx-key", key);
+      var raw = norm(el.textContent);
+      if (!raw) continue;
+      var known = REV[raw] || (window.NYXI && NYXI.en && (NYXI.en[el.textContent] || NYXI.en[raw]));
+      if (known) el.setAttribute("data-nyx-src", el.textContent);
     }
   }
   var menuEl;
@@ -204,14 +216,14 @@
       lis[i].setAttribute("aria-selected", lis[i].getAttribute("data-lang") === lang ? "true" : "false");
   }
   function applyLang(lang) {
-    var t = DICT[lang] || DICT.en;
-    var els = document.body.querySelectorAll("[data-nyx-key]");
+    var els = document.body.querySelectorAll("[data-nyx-src]");
     for (var i = 0; i < els.length; i++) {
-      var v = t[els[i].getAttribute("data-nyx-key")];
-      if (v != null) els[i].textContent = v;
+      var src = els[i].getAttribute("data-nyx-src");
+      var v = tr(lang, src);
+      els[i].textContent = (v != null) ? v : src;
     }
-    var h1 = document.querySelector("h1[data-nyx-key]"); if (h1) h1.classList.add("grad");
-    if (t.doc_title) document.title = t.doc_title;
+    var h1 = document.querySelector("h1"); if (h1) h1.classList.add("grad");
+    if (DICT[lang] && DICT[lang].doc_title) document.title = DICT[lang].doc_title;
     document.documentElement.setAttribute("lang", lang);
     var lbl = document.querySelectorAll("[data-lang-label]");
     for (var j = 0; j < lbl.length; j++) lbl[j].textContent = LABEL[lang];
