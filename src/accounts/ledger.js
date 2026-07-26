@@ -2,8 +2,9 @@ import crypto from "node:crypto"
 import fs from "node:fs"
 import path from "node:path"
 import { sign, verify, keys } from "./accounts.js"
+import { DATA_SUBDIR } from "../paths.js"
 
-const DIR = process.env.NYX_ACCOUNT_DIR || path.join(process.cwd(), "data", "account")
+const DIR = process.env.NYX_ACCOUNT_DIR || path.join(DATA_SUBDIR, "account")
 const LEDGER = path.join(DIR, "ledger.jsonl")
 const GENESIS = "nyx-genesis"
 const MIN_GAP_MS = 400

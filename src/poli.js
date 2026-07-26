@@ -18,8 +18,10 @@
 // signed evidence.
 import { createHash, createPrivateKey, sign } from "node:crypto"
 import { readFileSync, appendFileSync, existsSync, mkdirSync } from "node:fs"
+import path from "node:path"
+import { EVIDENCE_DIR, POLI_KEY } from "./paths.js"
 
-const LOG = "evidence/poli.jsonl"
+const LOG = path.join(EVIDENCE_DIR, "poli.jsonl")
 
 function lastHash() {
 	if (!existsSync(LOG)) return "GENESIS"
@@ -29,7 +31,7 @@ function lastHash() {
 }
 
 export function recordInference({ model, prompt, output, metrics = null }) {
-	mkdirSync("evidence", { recursive: true })
+	mkdirSync(EVIDENCE_DIR, { recursive: true })
 	const prev = lastHash()
 	const entry = {
 		ts: new Date().toISOString(),
@@ -42,8 +44,8 @@ export function recordInference({ model, prompt, output, metrics = null }) {
 	const body = JSON.stringify(entry)
 	const hash = createHash("sha256").update(prev + body).digest("hex")
 	let signature = null
-	if (existsSync(".poli.key")) {
-		const key = createPrivateKey(readFileSync(".poli.key"))
+	if (existsSync(POLI_KEY)) {
+		const key = createPrivateKey(readFileSync(POLI_KEY))
 		signature = sign(null, Buffer.from(hash), key).toString("base64")
 	}
 	appendFileSync(LOG, JSON.stringify({ ...entry, hash, signature }) + "\n")

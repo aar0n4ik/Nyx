@@ -6,6 +6,7 @@ import { modelStatus } from "../qvac.js"
 import { existsSync, readdirSync, statSync, readFileSync, writeFileSync, mkdirSync } from "node:fs"
 import { homedir } from "node:os"
 import { join } from "node:path"
+import { MODELS_DIR } from "../paths.js"
 
 let sdk = null
 try { sdk = await import("@qvac/sdk") } catch { sdk = null }
@@ -17,7 +18,7 @@ const CATALOG = [
   { key: "llama32-1b", label: "Llama 3.2 1B Instruct", approxGB: 0.81, ramMinGB: 3, re: [/LLAMA_?3[._]?2_?1B.*INST/i], note: "Для слабых ПК" },
 ]
 
-const DEFAULT_DIR = join(homedir(), ".qvac", "models")
+const DEFAULT_DIR = MODELS_DIR
 const LOC_FILE = join(homedir(), ".qvac", "nyx-location.json")
 
 function readSavedDir() {
