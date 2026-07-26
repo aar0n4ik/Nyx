@@ -287,37 +287,6 @@ createServer(async (req, res) => {
       } catch (e) {}
       return json(res, 200, doc)
     }
-    // --- Vault: DPAPI (Electron safeStorage) — запечатывание ключа для on-device шифрования ---
-    if (req.method === "GET" && path === "/api/vault/status") {
-      try {
-        const el = await import("electron")
-        const safe = el.safeStorage || (el.default && el.default.safeStorage)
-        const ok = !!(safe && safe.isEncryptionAvailable && safe.isEncryptionAvailable())
-        return json(res, 200, { dpapi: ok })
-      } catch (e) { return json(res, 200, { dpapi: false }) }
-    }
-    if (req.method === "POST" && path === "/api/vault/seal") {
-      try {
-        const { secret } = await readBody(req)
-        if (!secret) return json(res, 400, { error: "secret required" })
-        const el = await import("electron")
-        const safe = el.safeStorage || (el.default && el.default.safeStorage)
-        if (!safe || !safe.isEncryptionAvailable()) return json(res, 200, { dpapi: false })
-        const sealed = safe.encryptString(String(secret)).toString("base64")
-        return json(res, 200, { sealed })
-      } catch (e) { return json(res, 200, { error: String((e && e.message) || e) }) }
-    }
-    if (req.method === "POST" && path === "/api/vault/unseal") {
-      try {
-        const { sealed } = await readBody(req)
-        if (!sealed) return json(res, 400, { error: "sealed required" })
-        const el = await import("electron")
-        const safe = el.safeStorage || (el.default && el.default.safeStorage)
-        if (!safe || !safe.isEncryptionAvailable()) return json(res, 200, { dpapi: false })
-        const secret = safe.decryptString(Buffer.from(String(sealed), "base64"))
-        return json(res, 200, { secret })
-      } catch (e) { return json(res, 200, { error: String((e && e.message) || e) }) }
-    }
     json(res, 404, { error: "not found" })
   } catch (e) {
     json(res, 500, { error: String(e?.message || e) })

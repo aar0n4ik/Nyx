@@ -222,8 +222,8 @@ const QUICK = () => [
 ]
 
 // ---------- store ----------
-let DB = { chats: [], active: null } // real data loaded by Vault in bootVault()
-const save = () => { try { if (window.NyxVault && window.NyxVault.status().hasCrypto) return void window.NyxVault.saveChats(DB) } catch (e) {} localStorage.setItem("nyx.chats", JSON.stringify(DB)) }
+let DB = JSON.parse(localStorage.getItem("nyx.chats") || "null") || { chats: [], active: null }
+const save = () => localStorage.setItem("nyx.chats", JSON.stringify(DB))
 const uid = () => Math.random().toString(36).slice(2, 9)
 function newChat() {
   const c = { id: uid(), title: t("nNew"), icon: "💬", msgs: [], named: false }
@@ -460,18 +460,7 @@ const closeSide = () => { $("#side").classList.remove("open"); $("#scrim").class
 $("#scrim").onclick = closeSide
 
 localizeStatic()
-;(async function bootVault(){
-  try {
-    if (!window.NyxVault) await new Promise(function(res){ var sc=document.createElement("script"); sc.src="/vault.js"; sc.onload=res; sc.onerror=res; document.head.appendChild(sc) })
-    if (window.NyxVault) {
-      var st = await window.NyxVault.boot()
-      if (st.locked) { showUnlockGate(); return }
-      DB = await window.NyxVault.loadChats()
-    }
-  } catch (e) {}
-  if (!DB || !Array.isArray(DB.chats)) DB = { chats: [], active: null }
-  if (!DB.chats.length) newChat(); else { render(); renderThread() }
-})()
+if (!DB.chats.length) newChat(); else { render(); renderThread() }
 
 // If the user changes the language on the main site (another tab), keep the chat in sync.
 window.addEventListener("storage", (e) => {
@@ -528,41 +517,3 @@ window.addEventListener("focus", checkModel)
     tt.addEventListener("blur",commit); tt.addEventListener("keydown",key);
   });
 })();
-
-
-// ---------- Nyx Vault: unlock gate (passphrase) ----------
-var VAULT_I18N = {
-  en: { title: "Locked", desc: "Enter your passphrase to decrypt your chats on this device.", ph: "Passphrase", unlock: "Unlock", wrong: "Wrong passphrase — try again." },
-  ru: { title: "Заблокировано", desc: "Введите пароль, чтобы расшифровать чаты на этом устройстве.", ph: "Пароль", unlock: "Разблокировать", wrong: "Неверный пароль — попробуйте ещё раз." },
-  uk: { title: "Заблоковано", desc: "Введіть пароль, щоб розшифрувати чати на цьому пристрої.", ph: "Пароль", unlock: "Розблокувати", wrong: "Невірний пароль — спробуйте ще раз." },
-};
-function vtx(k){ var m = VAULT_I18N[LANG] || VAULT_I18N.en; return m[k] || VAULT_I18N.en[k]; }
-function showUnlockGate(){
-  if (document.getElementById("nyx-unlock")) return;
-  var ov = document.createElement("div");
-  ov.id = "nyx-unlock";
-  ov.style.cssText = "position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:var(--bg,#0a0a0a);padding:20px";
-  var card = document.createElement("div");
-  card.style.cssText = "max-width:340px;width:100%;text-align:center";
-  card.innerHTML = '<div style="font-size:34px;margin-bottom:10px">🔒</div>'
-    + '<h2 style="margin:0 0 6px;color:var(--text,#f4f4f5);font-size:20px">' + vtx("title") + '</h2>'
-    + '<p style="margin:0 0 16px;color:var(--muted,#a6a6b0);font-size:14px;line-height:1.45">' + vtx("desc") + '</p>'
-    + '<input id="nyx-pass" type="password" autocomplete="current-password" placeholder="' + vtx("ph") + '" style="width:100%;padding:11px 13px;border-radius:11px;border:1px solid var(--line,rgba(255,255,255,.12));background:var(--panel,#1c1d20);color:var(--text,#f4f4f5);font-size:15px;box-sizing:border-box"/>'
-    + '<div id="nyx-pass-err" style="color:var(--bad,#f2726f);font-size:13px;min-height:18px;margin:8px 0"></div>'
-    + '<button id="nyx-unlock-btn" style="width:100%;padding:11px;border-radius:11px;border:0;background:var(--text,#f4f4f5);color:var(--bg,#0a0a0a);font-weight:600;font-size:15px;cursor:pointer">' + vtx("unlock") + '</button>';
-  ov.appendChild(card); document.body.appendChild(ov);
-  var inp = card.querySelector("#nyx-pass"), err = card.querySelector("#nyx-pass-err"), btn = card.querySelector("#nyx-unlock-btn");
-  setTimeout(function(){ inp.focus(); }, 50);
-  async function tryUnlock(){
-    err.textContent = "";
-    try {
-      await window.NyxVault.unlockWithPassphrase(inp.value);
-      DB = await window.NyxVault.loadChats();
-      if (!DB || !Array.isArray(DB.chats)) DB = { chats: [], active: null };
-      ov.remove();
-      if (!DB.chats.length) newChat(); else { render(); renderThread(); }
-    } catch (e) { err.textContent = vtx("wrong"); inp.value = ""; inp.focus(); }
-  }
-  btn.onclick = tryUnlock;
-  inp.addEventListener("keydown", function(e){ if (e.key === "Enter") tryUnlock(); });
-}
