@@ -17,8 +17,6 @@ jobs:
         run: npm install
       - name: Prepare icon
         run: node scripts/ensure-icon.mjs
-      - name: Build sandbox launcher (Nyx.Sandbox.exe)
-        run: dotnet publish native/nyx-sandbox/Nyx.Sandbox.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true -o build/sandbox
       - name: Build & publish (installer + auto-update metadata)
         run: npx electron-builder --win --publish always
         env:

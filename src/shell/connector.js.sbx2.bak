@@ -7,7 +7,6 @@ import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { randomBytes } from "node:crypto"
 import { validateScript } from "./validator.js"
-import { writeFileSync, readFileSync, existsSync } from "node:fs"
 
 // Windows self-elevation. A privileged command (e.g. Set-Date) run from a normal
 // process fails with "A required privilege is not held". Instead of telling the
@@ -73,17 +72,6 @@ function childEnv() {
   return out
 }
 
-function sandboxExe() {
-  if (!isWin) return null
-  const cand = []
-  if (process.env.NYX_SANDBOX_EXE) cand.push(process.env.NYX_SANDBOX_EXE)
-  if (process.resourcesPath) cand.push(join(process.resourcesPath, "Nyx.Sandbox.exe"))
-  cand.push(join(process.cwd(), "build", "sandbox", "Nyx.Sandbox.exe"))
-  for (const p of cand) { try { if (p && existsSync(p)) return p } catch (e) {} }
-  return null
-}
-export function sandboxAvailable() { return sandboxExe() != null }
-
 export async function runScript(script, {
 	shell = defaultShell(),
 	timeoutMs = Number(process.env.NYX_EXEC_TIMEOUT || 15000),
@@ -105,21 +93,10 @@ export async function runScript(script, {
 	// The UAC prompt needs time for the user to consent — don't kill the wait early.
 	const effTimeout = elevated ? Math.max(timeoutMs, Number(process.env.NYX_ELEVATE_TIMEOUT || 120000)) : timeoutMs
 	const [cmd, args] = shellCmd(shell, effScript)
-  let resultFile = null
-  let spawnCmd = cmd, spawnArgs = args
-  const sbx = (isWin && !elevated && verdict.readOnly === true && verdict.risk === "low") ? sandboxExe() : null
-  if (sbx) {
-    const spec = { exe: cmd, args, cwd: cwd || tmpdir(), integrity: "low", timeoutMs: effTimeout, maxMemoryMB: Number(process.env.NYX_SBX_MEM_MB || 1024), maxProcesses: Number(process.env.NYX_SBX_PROCS || 32), cpuSeconds: Number(process.env.NYX_SBX_CPU || 60) }
-    const tag = randomBytes(6).toString("hex")
-    const specFile = join(tmpdir(), "nyx_sbx_" + tag + ".json")
-    resultFile = join(tmpdir(), "nyx_sbxres_" + tag + ".json")
-    try { writeFileSync(specFile, JSON.stringify(spec)); spawnCmd = sbx; spawnArgs = ["--spec", specFile, "--result", resultFile] }
-    catch (e) { resultFile = null; spawnCmd = cmd; spawnArgs = args }
-  }
 	return await new Promise((resolve) => {
 		const started = Date.now()
 		let stdout = "", stderr = "", killed = false, child
-		try { child = spawn(spawnCmd, spawnArgs, { windowsHide: true, cwd: cwd || tmpdir(), env: childEnv() }) }
+		try { child = spawn(cmd, args, { windowsHide: true, cwd: cwd || tmpdir(), env: childEnv() }) }
 		catch (e) { return resolve({ executed: false, error: String(e.message), verdict }) }
 		const timer = setTimeout(() => { killed = true; try { child.kill("SIGKILL") } catch {} }, effTimeout)
 		child.stdout.setEncoding?.("utf8")
@@ -128,11 +105,9 @@ export async function runScript(script, {
 		child.stderr.on("data", (d) => { if (stderr.length < maxOutput) stderr += Buffer.isBuffer(d) ? d.toString("utf8") : d })
 		child.on("error", (e) => { clearTimeout(timer); resolve({ executed: false, error: String(e.message), verdict }) })
 		child.on("close", (code) => {
-        let sandbox = false, sbxCode = code, sbxTimedOut = killed
-        if (resultFile) { try { const r = JSON.parse(readFileSync(resultFile, "utf8")); if (typeof r.code === "number" && r.error == null) sbxCode = r.code; sandbox = r.sandbox === true; if (r.timedOut === true) sbxTimedOut = true } catch (e) {} }
 			clearTimeout(timer)
 			resolve({
-				executed: true, code: sbxCode, killed, timedOut: sbxTimedOut, durationMs: Date.now() - started, elevated, sandbox,
+				executed: true, code, killed, timedOut: killed, durationMs: Date.now() - started, elevated,
 				stdout: stdout.slice(0, maxOutput), stderr: stderr.slice(0, maxOutput),
 				truncated: stdout.length >= maxOutput || stderr.length >= maxOutput, verdict,
 			})
