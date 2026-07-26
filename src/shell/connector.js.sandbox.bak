@@ -56,22 +56,6 @@ function shellCmd(shell, script) {
  *  - any risk above "low" additionally requires confirm:true.
  * Otherwise returns a dry-run verdict (the plan), never executing.
  */
-// Sandbox L1 — env whitelist: дочерний процесс НЕ наследует всё окружение
-// родителя (токены, API-ключи, секреты сессии). Пропускаем только минимальный набор.
-const SAFE_ENV_KEYS = [
-  "SystemRoot", "windir", "ComSpec", "PATHEXT", "NUMBER_OF_PROCESSORS", "PROCESSOR_ARCHITECTURE",
-  "TEMP", "TMP", "USERPROFILE", "HOMEDRIVE", "HOMEPATH", "APPDATA", "LOCALAPPDATA",
-  "SystemDrive", "PUBLIC", "ProgramData", "ProgramFiles", "ProgramFiles(x86)", "CommonProgramFiles",
-  "PATH", "Path", "LANG", "LC_ALL", "TZ", "HOME", "USER", "LOGNAME", "SHELL",
-]
-function childEnv() {
-  const src = process.env
-  const out = Object.create(null)
-  for (const k of SAFE_ENV_KEYS) if (src[k] != null) out[k] = src[k]
-  out.NYX_SANDBOX = "1"
-  return out
-}
-
 export async function runScript(script, {
 	shell = defaultShell(),
 	timeoutMs = Number(process.env.NYX_EXEC_TIMEOUT || 15000),
@@ -96,7 +80,7 @@ export async function runScript(script, {
 	return await new Promise((resolve) => {
 		const started = Date.now()
 		let stdout = "", stderr = "", killed = false, child
-		try { child = spawn(cmd, args, { windowsHide: true, cwd: cwd || tmpdir(), env: childEnv() }) }
+		try { child = spawn(cmd, args, { windowsHide: true, cwd, env: { ...process.env } }) }
 		catch (e) { return resolve({ executed: false, error: String(e.message), verdict }) }
 		const timer = setTimeout(() => { killed = true; try { child.kill("SIGKILL") } catch {} }, effTimeout)
 		child.stdout.setEncoding?.("utf8")
