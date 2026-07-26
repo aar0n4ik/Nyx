@@ -217,10 +217,10 @@ const t = (k) => { const v = T()[k]; return v == null ? (I18N.en[k] ?? "") : v }
 
 // Exactly two high-utility action nodes (localized).
 const QUICK = () => [
-  { ic: "📋", t: t("qSpecsT"), s: t("qSpecsS"), action: "specs" },
-  { ic: "🔄", t: t("qUpdateT"), s: t("qUpdateS"), action: "update" },
-  { ic: "📸", t: snx("qSnapT"), s: snx("qSnapS"), action: "snapshot" },
-  { ic: "♻️", t: snx("qRestoreT"), s: snx("qRestoreS"), action: "restore" },
+  { ic: "", t: t("qSpecsT"), s: t("qSpecsS"), action: "specs" },
+  { ic: "", t: t("qUpdateT"), s: t("qUpdateS"), action: "update" },
+  { ic: "", t: snx("qSnapT"), s: snx("qSnapS"), action: "snapshot" },
+  { ic: "", t: snx("qRestoreT"), s: snx("qRestoreS"), action: "restore" },
 ]
 
 // ---------- store ----------
@@ -228,7 +228,7 @@ let DB = { chats: [], active: null } // real data loaded by Vault in bootVault()
 const save = () => { try { if (window.NyxVault && window.NyxVault.status().hasCrypto) return void window.NyxVault.saveChats(DB) } catch (e) {} localStorage.setItem("nyx.chats", JSON.stringify(DB)) }
 const uid = () => Math.random().toString(36).slice(2, 9)
 function newChat() {
-  const c = { id: uid(), title: t("nNew"), icon: "💬", msgs: [], named: false }
+  const c = { id: uid(), title: t("nNew"), icon: "", msgs: [], named: false }
   DB.chats.unshift(c); DB.active = c.id; save()
   // Context isolation: a brand-new chat id for isolated per-chat memory.
   fetch("/api/chat/reset", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ chatId: c.id }) }).catch(() => {})
@@ -239,15 +239,19 @@ const active = () => DB.chats.find((c) => c.id === DB.active)
 // neuro-naming: derive a clean title + icon from the first user message.
 // Detection matches keywords across languages; the resulting TITLE is localized.
 function neuroName(text) {
-  const tt = text.toLowerCase()
-  const sym = text.match(/\b([A-Z]{3,5})\s*[\/\-]?\s*(USDT|USD₮|USD)\b/i)
+  const raw = String(text || "").replace(/\s+/g, " ").trim()
+  const tt = raw.toLowerCase()
   if (/(характерист|желез|cpu|gpu|ram|диск|specs|диагнос|устройств|spec|diagnos|gerät|appareil|dispositiv)/i.test(tt)) return { icon: "", title: t("nDiag") }
-  if (/(windows|обнов|онов|update|систем|aktualis|mise à jour|actualiz)/i.test(tt)) return { icon: "🔄", title: t("nUpdate") }
+  if (/(windows|обнов|онов|update|систем|aktualis|mise à jour|actualiz)/i.test(tt)) return { icon: "", title: t("nUpdate") }
   if (/(безопас|security|proof|приват|шифр|sicherheit|sécurit|seguridad|безпек)/i.test(tt)) return { icon: "", title: t("nSecurity") }
-  if (/(qvac|модел|llm|сдк|sdk|model|modèle|modell|modelo)/i.test(tt)) return { icon: "🧩", title: t("nModel") }
-  let title = text.trim().split(/\s+/).slice(0, 5).join(" ")
-  if (title.length > 34) title = title.slice(0, 34) + "…"
-  return { icon: "💬", title: title || t("nNew") }
+  if (/(qvac|модел|llm|сдк|sdk|model|modèle|modell|modelo)/i.test(tt)) return { icon: "", title: t("nModel") }
+  let clause = (raw.split(/[.!?\n]/)[0] || raw).trim()
+  clause = clause.replace(/^(привет|здравствуй(те)?|хай|слушай|скажи|подскажи|пожалуйста|плиз|эй|ок|окей|hello|hi|hey|please|por favor|bonjour|salut|hola|bitte|olá)[\s,!:—-]+/i, "")
+  const words = clause.split(/\s+/).filter(Boolean)
+  let title = words.slice(0, 6).join(" ")
+  if (words.length > 6 || title.length > 42) title = title.slice(0, 42).replace(/[\s,;:.—-]+$/, "") + "…"
+  title = title.charAt(0).toUpperCase() + title.slice(1)
+  return { icon: "", title: title || t("nNew") }
 }
 
 // ---------- sidebar ----------
@@ -278,7 +282,7 @@ function renderThread() {
 }
 function emptyState() {
   const wrap = el("div", "empty")
-  wrap.appendChild(el("div", "hi", "✦"))
+  wrap.appendChild(el("div", "hi", '<svg viewBox="0 0 100 100" width="56" height="56" fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="square"><path d="M33 71V29L67 71V29"/></svg>'))
   wrap.appendChild(el("h1", null, esc(t("emptyTitle"))))
   wrap.appendChild(el("p", null, esc(t("emptyDesc"))))
   const q = el("div", "quick")
@@ -293,7 +297,7 @@ function emptyState() {
 }
 function bubble(m) {
   const row = el("div", "msg " + (m.role === "user" ? "you" : "bot"))
-  row.appendChild(el("div", "av", m.role === "user" ? "👤" : "✦"))
+  row.appendChild(el("div", "av", m.role === "user" ? '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>' : '<svg viewBox="0 0 100 100" width="18" height="18" fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="square"><path d="M33 71V29L67 71V29"/></svg>'))
   const b = el("div", "bubble")
   if (m.widget) { b.appendChild(renderWidget(m.widget)) } else { b.innerHTML = linkify(m.text) }
   if (m.sources?.length) b.appendChild(el("span", "src", t("src") + m.sources.map(esc).join(", ")))
@@ -375,7 +379,7 @@ const serverHint = () => t("serverHint")
 // ---------- chat send ----------
 function pushMsg(role, payload) { const c = active(); if (!c) return; c.msgs.push({ role, ...payload }); save(); renderThread() }
 function maybeName(c, basis) { if (!c.named) { const n = neuroName(basis); c.title = n.title; c.icon = n.icon; c.named = true; save(); render(); $("#title").textContent = c.title } }
-function showTyping() { const thread = $("#thread"); const row = el("div", "msg bot"); row.appendChild(el("div", "av", "✦")); const tp = el("div", "typing", "<i></i><i></i><i></i>"); row.appendChild(tp); thread.appendChild(row); scrollDown(); return row }
+function showTyping() { const thread = $("#thread"); const row = el("div", "msg bot"); row.appendChild(el("div", "av", '<svg viewBox="0 0 100 100" width="18" height="18" fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="square"><path d="M33 71V29L67 71V29"/></svg>')); const tp = el("div", "typing", "<i></i><i></i><i></i>"); row.appendChild(tp); thread.appendChild(row); scrollDown(); return row }
 function scrollDown() { const s = $("#scroll"); s.scrollTop = s.scrollHeight }
 
 // Output cleansing: strip backend state markers / role tags before render.

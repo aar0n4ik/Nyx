@@ -1,4 +1,4 @@
-const { app, BrowserWindow, shell } = require("electron")
+const { app, BrowserWindow, shell, ipcMain } = require("electron")
 const path = require("node:path")
 const http = require("node:http")
 const { pathToFileURL } = require("node:url")
@@ -88,7 +88,7 @@ function createWindow(startPath) {
     titleBarStyle: "hidden",
     titleBarOverlay: { color: "#0d0d12", symbolColor: "#f4f4f7", height: 38 },
     icon: path.join(ROOT, "build", "icon.png"),
-    webPreferences: { contextIsolation: true, nodeIntegration: false },
+    webPreferences: { contextIsolation: true, nodeIntegration: false, preload: path.join(__dirname, "preload.cjs") },
   })
   mainWindow = win
   win.once("ready-to-show", () => win.show())
@@ -111,6 +111,15 @@ function createWindow(startPath) {
   })
   win.on("closed", () => { if (mainWindow === win) mainWindow = null })
 }
+// Keep the native window caption buttons in sync with the in-app theme (#6).
+const NYX_BARS = { dark: { color: "#0d0d12", symbolColor: "#f4f4f7" }, light: { color: "#ffffff", symbolColor: "#101014" } }
+ipcMain.on("nyx:set-theme", (event, theme) => {
+  const bar = NYX_BARS[theme === "light" ? "light" : "dark"]
+  const w = BrowserWindow.fromWebContents(event.sender)
+  if (w && !w.isDestroyed() && typeof w.setTitleBarOverlay === "function") {
+    try { w.setTitleBarOverlay({ color: bar.color, symbolColor: bar.symbolColor, height: 38 }) } catch (e) {}
+  }
+})
 function checkUpdates() {
   if (!app.isPackaged) return
   try {

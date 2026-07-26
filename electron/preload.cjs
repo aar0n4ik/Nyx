@@ -13,3 +13,7 @@ contextBridge.exposeInMainWorld('nyxTools', {
   openTools: () => ipcRenderer.invoke('nyx:open-tools'),
   platform: process.platform,
 })
+
+contextBridge.exposeInMainWorld('nyxWin', {
+  setTheme: (theme) => { try { ipcRenderer.send('nyx:set-theme', theme) } catch (e) {} },
+})

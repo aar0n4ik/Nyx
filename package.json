@@ -1,6 +1,6 @@
 {
   "name": "nyx",
-  "version": "0.7.8",
+  "version": "0.7.9",
   "type": "module",
   "description": "Verifiable, on-device edge-AI copilot built on the QVAC SDK",
   "license": "Apache-2.0",

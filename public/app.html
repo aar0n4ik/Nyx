@@ -5,53 +5,42 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Nyx — Copilot</title>
 <script>(function(){try{document.documentElement.setAttribute('data-theme',localStorage.getItem('nyx-theme')||'dark')}catch(e){}})();</script>
+<link rel="icon" type="image/svg+xml" href="/logo.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/app.css">
 <style>
 .side .brand{font-family:"Space Grotesk",Inter,sans-serif}
-.topbar{gap:10px}
-.badge{gap:7px}
-.badge b{color:var(--ink)}
 .badge.dl{cursor:pointer}
-.badge.dl:hover{border-color:var(--blue);color:var(--blue-deep)}
-.bdot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
-.bdot.on{background:var(--ok);box-shadow:0 0 0 3px rgba(22,163,74,.16)}
-.bdot.warn{background:var(--warn);box-shadow:0 0 0 3px rgba(245,158,11,.16)}
-.bdot.off{background:var(--muted)}
-.theme-toggle{width:38px;height:38px;flex:0 0 38px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--blue-deep);cursor:pointer;display:grid;place-items:center;transition:.25s}
-.theme-toggle:hover{border-color:var(--blue);color:var(--blue);transform:rotate(12deg)}
-.tt{width:20px;height:20px}
 .tt .sun{transform-origin:center;transition:transform .5s cubic-bezier(.5,1.25,.75,1.25)}
 .tt .sun-beams{transform-origin:center;transition:transform .5s cubic-bezier(.5,1.5,.75,1.25),opacity .4s}
 .tt .moon>circle{transition:transform .25s cubic-bezier(0,0,0,1)}
 [data-theme="dark"] .tt .sun{transform:scale(1.75)}
 [data-theme="dark"] .tt .sun-beams{opacity:0;transform:rotate(-.25turn)}
 [data-theme="dark"] .tt .moon>circle{transform:translateX(-7px)}
-.send svg{width:18px;height:18px}
 ::view-transition-new(root){animation:vt .5s cubic-bezier(.4,0,.2,1)}
 @keyframes vt{from{clip-path:circle(0 at var(--x,90%) var(--y,3%))}to{clip-path:circle(160% at var(--x,90%) var(--y,3%))}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}::view-transition-new(root){animation:none!important}}
 @media(max-width:820px){.badge span:first-of-type + span{display:none}}
 </style>
-  <link rel="stylesheet" href="/app-polish.css">
+<link rel="stylesheet" href="/app-polish.css">
 </head>
 <body>
 <aside class="side" id="side">
-  <div class="brand"><span class="logo">✦</span> Nyx</div>
-  <button class="newchat" id="newchat">＋ New chat</button>
+  <div class="brand"><img class="logo" src="/logo.svg" alt="Nyx" width="26" height="26"> Nyx</div>
+  <button class="newchat" id="newchat">New chat</button>
   <div class="chats" id="chats"></div>
-  <div class="foot"><span class="dotlive"></span><span>On-device</span><a class="sitelink" href="/" style="margin-left:auto;text-decoration:none">← Site</a></div>
+  <div class="foot"><span class="dotlive"></span><span>On-device</span></div>
 </aside>
 <div class="scrim" id="scrim"></div>
 
 <main class="main">
   <div class="topbar">
-    <button class="burger" id="burger">☰</button>
+    <button class="burger" id="burger">&#9776;</button>
     <div class="title" id="title">Nyx Copilot</div>
-    <span class="badge" id="statusPill"><span class="bdot" id="stDot"></span> <span>Status:</span> <b id="stVal">…</b></span>
-    <span class="badge" id="modelPill"><span class="bdot" id="mdDot"></span> <span>Model:</span> <b id="mdVal">…</b></span>
+    <span class="badge" id="statusPill"><span class="bdot" id="stDot"></span> <span>Status:</span> <b id="stVal">&#8230;</b></span>
+    <span class="badge" id="modelPill"><span class="bdot" id="mdDot"></span> <span>Model:</span> <b id="mdVal">&#8230;</b></span>
     <select class="langsel" id="lang" aria-label="Language">
       <option value="en">EN</option><option value="ru">RU</option><option value="uk">UK</option>
       <option value="es">ES</option><option value="de">DE</option><option value="fr">FR</option>
@@ -90,7 +79,8 @@
   var root=document.documentElement, q=function(s){return document.querySelector(s)};
   var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  q('#themeBtn').addEventListener('click',function(e){
+  var tb=q('#themeBtn');
+  if(tb) tb.addEventListener('click',function(e){
     var next=root.getAttribute('data-theme')==='dark'?'light':'dark';
     root.style.setProperty('--x',e.clientX+'px'); root.style.setProperty('--y',e.clientY+'px');
     var set=function(){root.setAttribute('data-theme',next); try{localStorage.setItem('nyx-theme',next)}catch(_){}};
@@ -98,33 +88,38 @@
   });
 
   var sel=q('#lang');
-  try{ sel.value=localStorage.getItem('nyx.lang')||'en'; }catch(_){}
-  if(!sel.value) sel.value='en';
-  sel.addEventListener('change',function(){
+  try{ if(sel) sel.value=localStorage.getItem('nyx.lang')||'en'; }catch(_){}
+  if(sel && !sel.value) sel.value='en';
+  if(sel) sel.addEventListener('change',function(){
     var v=sel.value;
     try{ localStorage.setItem('nyx.lang',v); localStorage.setItem('nyx-lang',v); localStorage.setItem('lang',v); }catch(_){}
     window.dispatchEvent(new Event('focus'));
   });
 
   var stDot=q('#stDot'), stVal=q('#stVal');
-  function paintStatus(){ var on=navigator.onLine; stVal.textContent=on?'Online':'Offline'; stDot.className='bdot '+(on?'on':'off'); }
+  function paintStatus(){ var on=navigator.onLine; if(stVal)stVal.textContent=on?'Online':'Offline'; if(stDot)stDot.className='bdot '+(on?'on':'off'); }
   paintStatus(); window.addEventListener('online',paintStatus); window.addEventListener('offline',paintStatus);
 
   var mdDot=q('#mdDot'), mdVal=q('#mdVal'), mdPill=q('#modelPill');
   function openPicker(){ location.href='/setup'; }
   function paintModel(r){
+    if(!mdVal) return;
     if(r && r.ready){
       var name=String(r.model||r.label||r.name||'on-device').replace(/^qvac:/,'');
       mdVal.textContent=name; mdDot.className='bdot on'; mdPill.classList.remove('dl'); mdPill.onclick=null; mdPill.title='';
     } else {
       mdVal.textContent = r ? 'Download' : 'local';
       mdDot.className='bdot '+(r?'warn':'off');
-      if(r){ mdPill.classList.add('dl'); mdPill.onclick=openPicker; mdPill.title='No model installed — click to choose & download'; }
+      if(r){ mdPill.classList.add('dl'); mdPill.onclick=openPicker; mdPill.title='No model installed'; }
       else { mdPill.classList.remove('dl'); mdPill.onclick=null; }
     }
   }
   function checkModel(){ fetch('/api/model/status').then(function(x){return x.json()}).then(paintModel).catch(function(){paintModel(null)}); }
   checkModel(); setInterval(checkModel,20000); window.addEventListener('focus',checkModel);
+
+  function pushTheme(){ try{ if(window.nyxWin&&window.nyxWin.setTheme) window.nyxWin.setTheme(root.getAttribute('data-theme')||'dark'); }catch(_){} }
+  pushTheme();
+  try{ new MutationObserver(pushTheme).observe(root,{attributes:true,attributeFilter:['data-theme']}); }catch(_){}
 })();
 </script>
 <script src="/settings.js"></script><script src="/picker.js"></script><script src="/app.js"></script>
