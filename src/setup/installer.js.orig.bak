@@ -108,7 +108,7 @@ export async function status() {
       os: specs.osBuild || specs.platform || null,
       platform: specs.platform || null,
     },
-    recommended: { key: rec.key, label: rec.label, approxGB: rec.approxGB, ramMinGB: rec.ramMinGB, note: rec.note },
+    recommended: { key: rec.key, label: rec.label, approxGB: rec.approxGB, note: rec.note },
     catalog: CATALOG.map((c) => ({ key: c.key, label: c.label, approxGB: c.approxGB, ramMinGB: c.ramMinGB, note: c.note, available: !!resolveConst(c) })),
     location: getLocation(),
     download: progress(),
@@ -143,7 +143,7 @@ export async function startDownload(modelKey) {
     const friendly = (raw) => {
       const s = String(raw || "")
       if (/rpc|timed out|timeout|worker|initializ/i.test(s)) {
-        return "Не удалось запустить движок модели на этом ПК. Чаще всего помогает: 1) установить Microsoft Visual C++ Redistributable x64 (aka.ms/vs/17/release/vc_redist.x64.exe); 2) обновить драйвер видеокарты; затем перезапустить Nyx. Технические детали: " + s
+        return "Не удалось запустить движок модели на этом ПК. Чаще всего помогает: 1) установить Microsoft Visual C++ Redistributable x64 (aka.ms/vs/17/release/vc_redist.x64.exe); 2) обновить драйвер видеокарты (AMD/NVIDIA); затем перезапустить Nyx. Технические детали: " + s
       }
       return s
     }

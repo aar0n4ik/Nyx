@@ -10,6 +10,9 @@ if (Resvg === null) { console.log("resvg unavailable, skipping icon gen"); proce
 if (!existsSync(src)) { console.log("logo.svg missing at", src, "- skipping"); process.exit(0) }
 
 const svg = readFileSync(src, "utf8")
-const png = new Resvg(svg, { fitTo: { mode: "width", value: 1024 } }).render().asPng()
+const png = new Resvg(svg, {
+  fitTo: { mode: "width", value: 512 },
+  background: "#050506",
+}).render().asPng()
 writeFileSync(out, png)
-console.log("generated", out, "from", src, "-", png.length, "bytes (transparent, 1024px)")
+console.log("generated", out, "from", src, "-", png.length, "bytes")
