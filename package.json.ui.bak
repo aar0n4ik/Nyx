@@ -1,6 +1,6 @@
 {
   "name": "nyx",
-  "version": "0.7.7",
+  "version": "0.7.6",
   "type": "module",
   "description": "Verifiable, on-device edge-AI copilot built on the QVAC SDK",
   "license": "Apache-2.0",
@@ -49,12 +49,12 @@
       "icon": "build/icon.png"
     },
     "nsis": {
-      "oneClick": true,
+      "oneClick": false,
       "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Nyx",
-      "runAfterFinish": true
+      "shortcutName": "Nyx"
     },
     "mac": {
       "target": [
@@ -100,23 +100,7 @@
       "!**/node_modules/@qvac/tts-ggml/**",
       "!**/node_modules/@qvac/ocr-onnx/**",
       "!**/node_modules/@qvac/bci-whispercpp/**",
-      "!**/node_modules/bare-ffmpeg/**",
-      "!**/*.ts",
-      "!**/*.h",
-      "!**/*.hpp",
-      "!**/*.c",
-      "!**/*.cc",
-      "!**/*.cpp",
-      "!**/*.lib",
-      "!**/*.a",
-      "!**/*.pdb",
-      "!**/*.exp",
-      "!**/test/**",
-      "!**/tests/**",
-      "!**/example/**",
-      "!**/examples/**",
-      "!**/docs/**",
-      "!**/.github/**"
+      "!**/node_modules/bare-ffmpeg/**"
     ]
   }
 }

@@ -84,9 +84,6 @@ function createWindow(startPath) {
   const win = new BrowserWindow({
     width: 1240, height: 820, minWidth: 940, minHeight: 640,
     backgroundColor: "#050506", autoHideMenuBar: true, title: "Nyx", show: false,
-    frame: false,
-    titleBarStyle: "hidden",
-    titleBarOverlay: { color: "#0d0d12", symbolColor: "#f4f4f7", height: 38 },
     icon: path.join(ROOT, "build", "icon.png"),
     webPreferences: { contextIsolation: true, nodeIntegration: false },
   })
@@ -94,21 +91,6 @@ function createWindow(startPath) {
   win.once("ready-to-show", () => win.show())
   win.loadURL("http://127.0.0.1:" + PORT + (startPath || "/app"))
   win.webContents.setWindowOpenHandler((d) => { shell.openExternal(d.url); return { action: "deny" } })
-
-  win.webContents.on("did-finish-load", () => {
-    const css = [
-      "::-webkit-scrollbar{width:10px;height:10px}",
-      "::-webkit-scrollbar-track{background:transparent}",
-      "::-webkit-scrollbar-thumb{background:#2a2a35;border-radius:8px}",
-      "::-webkit-scrollbar-thumb:hover{background:#3a3a48}",
-      "html{scrollbar-color:#2a2a35 transparent;scrollbar-width:thin}",
-      "body{padding-top:38px !important}",
-      "#nyx-drag{position:fixed;top:0;left:0;right:0;height:38px;-webkit-app-region:drag;z-index:2147483647;background:transparent}",
-      "#nyx-drag button,#nyx-drag a,#nyx-drag input{-webkit-app-region:no-drag}"
-    ].join("")
-    win.webContents.insertCSS(css).catch(() => {})
-    win.webContents.executeJavaScript("(function(){if(!document.getElementById('nyx-drag')){var d=document.createElement('div');d.id='nyx-drag';document.body.appendChild(d);}})();").catch(() => {})
-  })
   win.on("closed", () => { if (mainWindow === win) mainWindow = null })
 }
 function checkUpdates() {
