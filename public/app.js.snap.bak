@@ -219,8 +219,6 @@ const t = (k) => { const v = T()[k]; return v == null ? (I18N.en[k] ?? "") : v }
 const QUICK = () => [
   { ic: "📋", t: t("qSpecsT"), s: t("qSpecsS"), action: "specs" },
   { ic: "🔄", t: t("qUpdateT"), s: t("qUpdateS"), action: "update" },
-  { ic: "📸", t: snx("qSnapT"), s: snx("qSnapS"), action: "snapshot" },
-  { ic: "♻️", t: snx("qRestoreT"), s: snx("qRestoreS"), action: "restore" },
 ]
 
 // ---------- store ----------
@@ -285,7 +283,7 @@ function emptyState() {
   QUICK().forEach((b) => {
     const btn = el("button", "qbtn")
     btn.innerHTML = `<span class="qi">${b.ic}</span><span>${esc(b.t)}<span class="qs">${esc(b.s)}</span></span>`
-    btn.onclick = () => { if (b.action === "specs") runSpecs(); else if (b.action === "update") runUpdate(); else if (b.action === "snapshot") runSnapshotCreate(); else if (b.action === "restore") runRestorePick(); else sendText(b.send) }
+    btn.onclick = () => { if (b.action === "specs") runSpecs(); else if (b.action === "update") runUpdate(); else sendText(b.send) }
     q.appendChild(btn)
   })
   wrap.appendChild(q)
@@ -567,69 +565,4 @@ function showUnlockGate(){
   }
   btn.onclick = tryUnlock;
   inp.addEventListener("keydown", function(e){ if (e.key === "Enter") tryUnlock(); });
-}
-
-
-// ---------- Nyx Snapshot: capture / restore UI ----------
-var SNAP_I18N = {
-  en: { qSnapT: "System snapshot", qSnapS: "Save a .nyx blueprint of this PC", qRestoreT: "Restore from snapshot", qRestoreS: "Load a .nyx file and rebuild",
-        create: "Create snapshot", done: "Snapshot saved (.nyx downloaded).", bad: "Not a valid Nyx snapshot file.",
-        plan: "Restore plan (nothing has run yet):", restore: "Restore now", restored: "Restore finished:" },
-  ru: { qSnapT: "Снимок системы", qSnapS: "Сохранить .nyx-слепок этого ПК", qRestoreT: "Восстановить из снимка", qRestoreS: "Загрузить .nyx и восстановить",
-        create: "Создать снимок", done: "Снимок сохранён (.nyx скачан).", bad: "Это не похоже на снимок Nyx.",
-        plan: "План восстановления (пока ничего не запущено):", restore: "Восстановить сейчас", restored: "Восстановление завершено:" },
-  uk: { qSnapT: "Знімок системи", qSnapS: "Зберегти .nyx-зліпок цього ПК", qRestoreT: "Відновити зі знімка", qRestoreS: "Завантажити .nyx і відновити",
-        create: "Створити знімок", done: "Знімок збережено (.nyx завантажено).", bad: "Це не схоже на знімок Nyx.",
-        plan: "План відновлення (поки нічого не запущено):", restore: "Відновити зараз", restored: "Відновлення завершено:" },
-};
-function snx(k){ var m = SNAP_I18N[LANG] || SNAP_I18N.en; return m[k] || SNAP_I18N.en[k]; }
-
-async function runSnapshotCreate(){
-  var c = active(); if (!c) return;
-  pushMsg("user", { text: "📸 " + snx("create") }); maybeName(c, "snapshot device");
-  var tp = showTyping();
-  try {
-    var r = await fetch("/api/snapshot").then(function(x){ return x.json(); }); tp.remove();
-    if (!r || r.error) { pushMsg("bot", { text: "⚠️ " + ((r && r.error) || t("failed")) }); return; }
-    var blob = new Blob([JSON.stringify(r.snapshot, null, 2)], { type: "application/json" });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement("a"); a.href = url;
-    a.download = "nyx-snapshot-" + ((r.summary && r.summary.machine) || "pc") + ".nyx";
-    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-    pushMsg("bot", { text: "✓ " + snx("done") + "\n\n" + (r.text || "") });
-  } catch (e) { tp.remove(); pushMsg("bot", { text: serverHint() }); }
-}
-
-function runRestorePick(){
-  var inp = document.createElement("input");
-  inp.type = "file"; inp.accept = ".nyx,.json,application/json";
-  inp.onchange = async function(){
-    var f = inp.files && inp.files[0]; if (!f) return;
-    var snap; try { snap = JSON.parse(await f.text()); } catch (e) { pushMsg("bot", { text: "⚠️ " + snx("bad") }); return; }
-    var c = active(); if (!c) return;
-    pushMsg("user", { text: "📂 " + f.name }); maybeName(c, "restore snapshot");
-    var tp = showTyping();
-    try {
-      var r = await fetch("/api/snapshot/plan", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ snapshot: snap }) }).then(function(x){ return x.json(); });
-      tp.remove();
-      if (!r || !r.recognized) { pushMsg("bot", { text: "⚠️ " + ((r && r.error) || snx("bad")) }); return; }
-      pushMsg("bot", { text: snx("plan") + "\n\n" + (r.text || ""), actions: [
-        { label: "▶ " + snx("restore"), kind: "primary", run: function(){ execRestore(snap); } },
-        { label: t("cancel"), kind: "danger", run: function(){ pushMsg("bot", { text: t("execCancel") }); } },
-      ] });
-    } catch (e) { tp.remove(); pushMsg("bot", { text: serverHint() }); }
-  };
-  inp.click();
-}
-
-async function execRestore(snap){
-  var tp = showTyping();
-  try {
-    var r = await fetch("/api/snapshot/apply", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ snapshot: snap, confirm: true }) }).then(function(x){ return x.json(); });
-    tp.remove();
-    if (!r || r.type === "error") { pushMsg("bot", { text: "⚠️ " + ((r && r.error) || t("failed")) }); return; }
-    if (r.type === "proposal") { pushMsg("bot", { text: snx("plan") }); return; }
-    var lines = (r.results || []).map(function(x){ var ok = (x.ok || x.code === 0); return (ok ? "✓" : "✕") + " " + x.kind; }).join("\n");
-    pushMsg("bot", { text: "✓ " + snx("restored") + "\n\n" + (lines || "") });
-  } catch (e) { tp.remove(); pushMsg("bot", { text: serverHint() }); }
 }

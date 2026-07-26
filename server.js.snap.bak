@@ -318,21 +318,6 @@ createServer(async (req, res) => {
         return json(res, 200, { secret })
       } catch (e) { return json(res, 200, { error: String((e && e.message) || e) }) }
     }
-    // --- Snapshot restore (реальные изменения; только с явным confirm; сначала точка восстановления) ---
-    if (req.method === "POST" && path === "/api/snapshot/apply") {
-      try {
-        const body = await readBody(req)
-        const input = body.snapshot || body
-        const m = await import("./src/core/snapshot.js")
-        const S = m.default || m
-        const ident = await S.identify(input)
-        if (!ident.recognized) return json(res, 200, { type: "error", error: "Файл не распознан как снимок Nyx" })
-        if (body.confirm !== true) return json(res, 200, { type: "proposal", steps: S.plan(ident.snapshot, { select: body.select }) })
-        const out = await S.restore(ident.snapshot, { confirm: true, select: body.select, dataDir: body.dataDir })
-        if (out && out.type === "done") import("./src/accounts/ledger.js").then((L) => L.record("task", { kind: "restore" })).catch(() => {})
-        return json(res, 200, out)
-      } catch (e) { return json(res, 200, { type: "error", error: String((e && e.message) || e) }) }
-    }
     json(res, 404, { error: "not found" })
   } catch (e) {
     json(res, 500, { error: String(e?.message || e) })
