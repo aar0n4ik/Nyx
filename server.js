@@ -1,7 +1,7 @@
 import "./src/netguard.js"
 import { createServer } from "node:http"
 import { readFileSync, existsSync } from "node:fs"
-import { extname } from "node:path"
+import { extname, join } from "node:path"
 import { answer } from "./src/agents.js"
 import { collectSpecs } from "./src/system/specs.js"
 import { openSettings, startWindowsUpdateScan } from "./src/system/windows.js"
@@ -13,6 +13,7 @@ import { runScript } from "./src/shell/connector.js"
 import * as solutionCache from "./src/shell/solutionCache.js"
 import { rateLimit } from "./src/util/guard.js"
 import { PLAYBOOKS, matchPlaybook } from "./src/agent/playbooks.js"
+import { EVIDENCE_DIR } from "./src/paths.js"
 
 const PORT = process.env.NYX_PORT || 3000
 
@@ -128,8 +129,8 @@ createServer(async (req, res) => {
     if (req.method === "GET" && path === "/api/metrics") {
       try {
         let installs = new Set(), activated = new Set(), blocked = 0, tasks = 0, queries = 0, last = null
-        if (existsSync("evidence/metrics.jsonl")) {
-          const lines = readFileSync("evidence/metrics.jsonl", "utf8").split("\n")
+        if (existsSync(join(EVIDENCE_DIR, "metrics.jsonl"))) {
+          const lines = readFileSync(join(EVIDENCE_DIR, "metrics.jsonl"), "utf8").split("\n")
           for (const line of lines) {
             const t = line.trim(); if (!t) continue
             let e; try { e = JSON.parse(t) } catch { continue }
@@ -282,8 +283,8 @@ createServer(async (req, res) => {
       const doc = AT.build()
       try {
         const nfs = await import("node:fs")
-        nfs.mkdirSync("evidence", { recursive: true })
-        nfs.writeFileSync("evidence/tester-attestation.json", JSON.stringify(doc, null, 2))
+        nfs.mkdirSync(EVIDENCE_DIR, { recursive: true })
+        nfs.writeFileSync(join(EVIDENCE_DIR, "tester-attestation.json"), JSON.stringify(doc, null, 2))
       } catch (e) {}
       return json(res, 200, doc)
     }

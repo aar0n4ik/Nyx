@@ -2,8 +2,9 @@ import crypto from "node:crypto"
 import fs from "node:fs"
 import path from "node:path"
 import os from "node:os"
+import { DATA_SUBDIR } from "../paths.js"
 
-const DIR = process.env.NYX_ACCOUNT_DIR || path.join(process.cwd(), "data", "account")
+const DIR = process.env.NYX_ACCOUNT_DIR || path.join(DATA_SUBDIR, "account")
 const KEY = path.join(DIR, "key.pem")
 const PUB = path.join(DIR, "pub.pem")
 const PROFILE = path.join(DIR, "profile.json")

@@ -8,9 +8,10 @@
 import { readdirSync, readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs"
 import { join } from "node:path"
 import { embed, embedSource } from "./qvac.js"
+import { DATA_SUBDIR } from "./paths.js"
 
-const DOCS = "data/notes"
-const INDEX = "data/index.json"
+const DOCS = join(DATA_SUBDIR, "notes")
+const INDEX = join(DATA_SUBDIR, "index.json")
 
 function chunk(text, size = 400) {
 	const words = text.split(/\s+/)

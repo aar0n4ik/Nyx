@@ -5,6 +5,24 @@ const { pathToFileURL } = require("node:url")
 
 const ROOT = path.join(__dirname, "..")
 try { process.chdir(ROOT) } catch (e) {}
+
+// #13: route ALL app data (evidence, data, Models) into the folder the user
+// chose at install (next to the exe), never defaulting onto C:. An in-app model
+// location still wins. Dev (unpackaged) keeps writing in the repo cwd.
+try {
+  if (app.isPackaged) {
+    const _os = require("node:os"), _p = require("node:path"), _fs = require("node:fs")
+    let _base = null
+    try {
+      const _loc = _p.join(_os.homedir(), ".qvac", "nyx-location.json")
+      if (_fs.existsSync(_loc)) { const _j = JSON.parse(_fs.readFileSync(_loc, "utf8")); if (_j && _j.dataDir) _base = String(_j.dataDir) }
+    } catch (e) {}
+    if (!_base) _base = _p.dirname(app.getPath("exe"))
+    if (!process.env.NYX_DATA_DIR) process.env.NYX_DATA_DIR = _base
+    if (!process.env.NYX_QVAC_CACHE) process.env.NYX_QVAC_CACHE = _p.join(_base, "Models")
+    try { _fs.mkdirSync(_p.join(_base, "Models"), { recursive: true }) } catch (e) {}
+  }
+} catch (e) {}
 process.env.NYX_PORT = process.env.NYX_PORT || "3000"
 const PORT = process.env.NYX_PORT
 

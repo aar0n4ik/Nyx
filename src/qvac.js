@@ -6,6 +6,7 @@ import { performance } from "node:perf_hooks"
 import { homedir } from "node:os"
 import { existsSync, readdirSync, statSync } from "node:fs"
 import { join } from "node:path"
+import { MODELS_DIR } from "./paths.js"
 
 let sdk = null
 try {
@@ -190,7 +191,7 @@ export async function unloadAll() {
 // model load — just an honest disk check so the UI can reflect real state and
 // update the moment the user downloads (or removes) a model.
 function scanModelCache() {
-	const dir = process.env.NYX_QVAC_CACHE || join(homedir(), ".qvac", "models")
+	const dir = process.env.NYX_QVAC_CACHE || MODELS_DIR
 	const found = []
 	try {
 		if (!existsSync(dir)) return { dir, found }

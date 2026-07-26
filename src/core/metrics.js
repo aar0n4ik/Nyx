@@ -10,11 +10,12 @@ import { createPrivateKey, createPublicKey, sign as edSign, verify as edVerify, 
 import path from "node:path"
 import os from "node:os"
 import { pathToFileURL } from "node:url"
+import { EVIDENCE_DIR, POLI_KEY, POLI_PUB } from "../paths.js"
 
-const DIR = "evidence"
+const DIR = EVIDENCE_DIR
 const LOG = path.join(DIR, "metrics.jsonl")
-const KEY = ".poli.key"   // приватный ключ (общий с poli.js)
-const PUB = ".poli.pub"   // публичный ключ для верификации
+const KEY = POLI_KEY   // приватный ключ (общий с poli.js)
+const PUB = POLI_PUB   // публичный ключ для верификации
 const INSTALL = path.join(DIR, ".install")
 const EVENTS = new Set(["query", "activated", "task_done", "snapshot", "blocked_danger"])
 
