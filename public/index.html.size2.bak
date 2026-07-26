@@ -388,7 +388,7 @@ PC Copilot</h1>
   <div class="models reveal">
     <div class="mcard">
       <div class="mtier">Lite</div>
-      <div class="msize">1B params</div>
+      <div class="msize">~1B params</div>
       <p class="mfor">For older laptops and office PCs with no graphics card.</p>
       <ul class="mspec">
         <li><span class="sk">Runs on</span><b>CPU only</b></li>
@@ -400,7 +400,7 @@ PC Copilot</h1>
     <div class="mcard featured">
       <div class="mbadge">Most people pick this</div>
       <div class="mtier">Balanced</div>
-      <div class="msize">4B params</div>
+      <div class="msize">~4B params</div>
       <p class="mfor">The sweet spot for most modern laptops and desktops.</p>
       <ul class="mspec">
         <li><span class="sk">Runs on</span><b>CPU or entry GPU</b></li>
@@ -411,7 +411,7 @@ PC Copilot</h1>
     </div>
     <div class="mcard">
       <div class="mtier">Pro</div>
-      <div class="msize">8B params</div>
+      <div class="msize">~8B params</div>
       <p class="mfor">For gaming PCs and workstations with a real GPU.</p>
       <ul class="mspec">
         <li><span class="sk">Runs on</span><b>8–12 GB VRAM GPU</b></li>
@@ -422,7 +422,7 @@ PC Copilot</h1>
     </div>
     <div class="mcard">
       <div class="mtier">Standard</div>
-      <div class="msize">3B params</div>
+      <div class="msize">~3B params</div>
       <p class="mfor">A light step up from Lite for everyday work on typical laptops.</p>
       <ul class="mspec">
         <li><span class="sk">Runs on</span><b>CPU or a basic laptop GPU</b></li>
@@ -454,13 +454,13 @@ PC Copilot</h1>
       <li><span class="k">Cost</span><span class="v">Free &amp; open source</span></li>
       <li><span class="k">Account</span><span class="v">None needed</span></li>
       <li><span class="k">Internet</span><span class="v">Only to download — runs offline after</span></li>
-      <li><span class="k">Disk</span><span class="v">~<span data-nyx-size>888 MB</span> app + 0.81–5.03 GB per model</span></li>
+      <li><span class="k">Disk</span><span class="v">~<span data-nyx-size>888 MB</span> app + 1–5 GB per model</span></li>
     </ul>
   </div>
   <div class="steps reveal">
     <div class="istep"><span class="gh">01</span><h3>Download &amp; install</h3><p>Grab the installer, run it, click through. No admin gymnastics, no bundled junk — about a minute start to finish.</p></div>
     <div class="istep"><span class="gh">02</span><h3>Pick your model</h3><p>On first launch Nyx reads your hardware and recommends a model that will run smoothly. <a href="#models">See which one fits your PC →</a></p></div>
-    <div class="istep"><span class="gh">03</span><h3>It downloads once</h3><p>Your model is fetched a single time (0.81–5.03 GB by tier) and stored locally. After that Nyx works with no internet at all.</p></div>
+    <div class="istep"><span class="gh">03</span><h3>It downloads once</h3><p>Your model is fetched a single time (1–5 GB by tier) and stored locally. After that Nyx works with no internet at all.</p></div>
     <div class="istep"><span class="gh">04</span><h3>Just ask</h3><p>Type what you want in plain words. Nyx shows a plan, you approve, it acts — and every run is signed to ./evidence.</p></div>
   </div>
 </div></section>
@@ -478,7 +478,7 @@ PC Copilot</h1>
     <details class="qa"><summary>Is it safe to let an AI touch my PC?<span class="chev">+</span></summary><div class="ans">Nyx never acts on its own. It shows you a plain-English plan first, and nothing runs until you approve it. A validator blocks destructive commands, NetGuard blocks unknown network access, and every action is signed to ./evidence so you can check exactly what happened.</div></details>
     <details class="qa"><summary>Do I need to be technical to use it?<span class="chev">+</span></summary><div class="ans">Not at all. You talk to it in normal language — “clean up my downloads”, “why is my PC slow”, “rename these files by date”. There are no commands to memorize.</div></details>
     <details class="qa"><summary>Is it really free?<span class="chev">+</span></summary><div class="ans">Yes, and it's open source under Apache-2.0. No trial, no subscription, no upsell. You can read the code, run the verifier, and check the signed receipts yourself.</div></details>
-    <details class="qa"><summary>How much space does it need?<span class="chev">+</span></summary><div class="ans">The app itself is about (~<span data-nyx-size>888 MB</span>). Each model you pick is downloaded once and stored locally — 0.81 GB for the Lite tier up to 5.03 GB for the Pro tier. You only ever download the models you choose.</div></details>
+    <details class="qa"><summary>How much space does it need?<span class="chev">+</span></summary><div class="ans">The app itself is about (~<span data-nyx-size>888 MB</span>). Each model you pick is downloaded once and stored locally — about 1 GB for the Lite tier up to about 5 GB for the Pro tier. You only ever download the models you choose.</div></details>
   </div>
 </div></section>
 </main>
