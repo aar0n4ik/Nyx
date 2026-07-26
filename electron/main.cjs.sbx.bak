@@ -8,13 +8,6 @@ try { process.chdir(ROOT) } catch (e) {}
 process.env.NYX_PORT = process.env.NYX_PORT || "3000"
 const PORT = process.env.NYX_PORT
 
-// Point the shell connector at the bundled low-integrity sandbox launcher (packaged builds).
-try {
-  if (app.isPackaged && process.platform === "win32" && !process.env.NYX_SANDBOX_EXE) {
-    process.env.NYX_SANDBOX_EXE = path.join(process.resourcesPath, "Nyx.Sandbox.exe")
-  }
-} catch (e) {}
-
 // Honor the model download location chosen in the in-app model picker.
 try {
   const _fs = require("node:fs"); const _os = require("node:os"); const _p = require("node:path")
