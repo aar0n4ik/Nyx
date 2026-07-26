@@ -5,92 +5,180 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Установка Nyx</title>
 <style>
-  :root { --bg:#050506; --panel:#0d0d12; --line:#1c1c26; --fg:#f4f4f7; --dim:#9a9ab0; --accent:#7c5cff; --accent2:#19e3b1; }
-  * { box-sizing:border-box; }
-  body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.55 -apple-system,Segoe UI,Roboto,Inter,sans-serif; }
-  .glow { position:fixed; inset:0; z-index:0; background:
-      radial-gradient(600px 400px at 20% 0%, rgba(124,92,255,.18), transparent 60%),
-      radial-gradient(500px 360px at 90% 20%, rgba(25,227,177,.12), transparent 60%); pointer-events:none; }
-  .wrap { position:relative; z-index:1; max-width:860px; margin:0 auto; padding:56px 24px 80px; }
-  .brand { display:flex; align-items:center; gap:12px; font-weight:700; letter-spacing:.02em; }
-  .dot { width:12px; height:12px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent2)); box-shadow:0 0 24px var(--accent); }
-  h1 { font-size:40px; line-height:1.1; margin:26px 0 10px; letter-spacing:-.02em; }
-  .lede { color:var(--dim); font-size:17px; max-width:640px; }
-  .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:32px 0; }
-  .card { background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:18px 20px; }
-  .card h3 { margin:0 0 10px; font-size:13px; text-transform:uppercase; letter-spacing:.08em; color:var(--dim); }
-  .kv { display:flex; justify-content:space-between; gap:12px; padding:5px 0; border-bottom:1px dashed var(--line); }
-  .kv:last-child { border-bottom:0; }
-  .kv b { font-weight:600; }
-  .model { display:flex; align-items:center; justify-content:space-between; gap:12px; }
-  .pill { font-size:12px; color:var(--accent2); border:1px solid var(--line); border-radius:999px; padding:3px 10px; }
-  select { background:#101018; color:var(--fg); border:1px solid var(--line); border-radius:10px; padding:8px 10px; font-size:14px; }
-  .btn { appearance:none; border:0; cursor:pointer; border-radius:12px; padding:15px 26px; font-size:16px; font-weight:600; color:#0a0a0f;
-      background:linear-gradient(135deg,var(--accent),var(--accent2)); transition:transform .12s ease, box-shadow .2s; }
-  .btn:hover { transform:translateY(-1px); box-shadow:0 12px 40px rgba(124,92,255,.35); }
-  .btn[disabled] { opacity:.5; cursor:default; transform:none; box-shadow:none; }
-  .btn.secondary { background:transparent; color:var(--fg); border:1px solid var(--line); }
-  .steps { display:grid; gap:8px; margin:22px 0; color:var(--dim); }
-  .steps div::before { content:"—  "; color:var(--accent); }
-  .progress { display:none; margin-top:26px; }
-  .bar { height:12px; border-radius:999px; background:#12121a; border:1px solid var(--line); overflow:hidden; }
-  .bar i { display:block; height:100%; width:0%; border-radius:999px; background:linear-gradient(90deg,var(--accent),var(--accent2)); transition:width .5s ease; }
-  .bar.indet i { width:35%; animation:slide 1.3s ease-in-out infinite; }
-  @keyframes slide { 0%{margin-left:-35%} 100%{margin-left:100%} }
-  .pstat { display:flex; justify-content:space-between; margin-top:10px; color:var(--dim); font-size:14px; }
-  .foot { margin-top:34px; color:var(--dim); font-size:13px; }
-  .err { color:#ff6b6b; margin-top:14px; display:none; }
-  .actions { display:flex; gap:12px; flex-wrap:wrap; margin-top:8px; }
-  @media (max-width:680px){ .grid{grid-template-columns:1fr} h1{font-size:32px} }
+  :root{--bg:#050506;--panel:#0d0d12;--panel2:#101018;--line:#1c1c26;--fg:#f4f4f7;--dim:#9a9ab0;--accent:#7c5cff;--accent2:#19e3b1;--bad:#ff6b6b}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 -apple-system,Segoe UI,Roboto,Inter,sans-serif}
+  .glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:
+     radial-gradient(600px 400px at 18% 0%,rgba(124,92,255,.16),transparent 60%),
+     radial-gradient(520px 360px at 92% 8%,rgba(25,227,177,.10),transparent 60%)}
+  .wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:40px 24px 72px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px}
+  .brand img{display:block;border-radius:7px}
+  h1{font-size:38px;line-height:1.08;margin:22px 0 10px;letter-spacing:-.02em}
+  .lede{color:var(--dim);font-size:16px;max-width:660px;margin:0}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:30px 0 8px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 20px}
+  .card h3{margin:0 0 12px;font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:var(--dim)}
+  .kv{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px dashed var(--line)}
+  .kv:last-child{border-bottom:0}.kv b{font-weight:600}
+  .muted{color:var(--dim)}
+  .mcard{position:relative;border:1px solid var(--line);border-radius:14px;padding:14px 16px;cursor:pointer;transition:.15s;background:var(--panel2)}
+  .mcard+.mcard{margin-top:10px}
+  .mcard:hover{border-color:var(--accent)}
+  .mcard.sel{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+  .mcard .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .mcard .nm{font-weight:600;font-size:15px}
+  .mcard .meta{color:var(--dim);font-size:13px;margin-top:3px}
+  .mcard .note{color:var(--dim);font-size:13px;margin-top:6px}
+  .size{font-size:13px;font-weight:600;white-space:nowrap;border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+  .badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 9px;border-radius:999px;background:color-mix(in srgb,var(--accent2) 18%,transparent);color:var(--accent2);border:1px solid var(--accent2)}
+  .linkbtn{background:none;border:0;color:var(--accent);cursor:pointer;font-size:14px;padding:8px 0 0;font-weight:600}
+  .loc{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:8px}
+  .loc .t{font-size:12px;color:var(--dim);margin-bottom:3px}
+  .loc .p{font-size:13px;word-break:break-all}
+  .loc .row{display:flex;gap:8px;flex-wrap:wrap}
+  .loc input{flex:1;min-width:200px;background:#000;border:1px solid var(--line);color:var(--fg);border-radius:9px;padding:8px 10px;font-size:13px}
+  .btn{appearance:none;border:0;cursor:pointer;border-radius:12px;padding:14px 26px;font-size:16px;font-weight:600;color:#0a0a0f;background:linear-gradient(135deg,var(--accent),var(--accent2));transition:transform .12s,box-shadow .2s}
+  .btn:hover{transform:translateY(-1px);box-shadow:0 12px 40px rgba(124,92,255,.32)}
+  .btn[disabled]{opacity:.45;cursor:default;transform:none;box-shadow:none}
+  .btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+  .btn.small{padding:9px 14px;font-size:13px;border-radius:10px;color:var(--fg);background:transparent;border:1px solid var(--line)}
+  .actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:22px}
+  .prog{display:none;margin-top:22px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .bar{height:10px;border-radius:999px;background:#12121a;border:1px solid var(--line);overflow:hidden}
+  .bar i{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .5s}
+  .bar.indet i{width:34%;animation:sl 1.3s ease-in-out infinite}
+  @keyframes sl{0%{margin-left:-34%}100%{margin-left:100%}}
+  .pstat{display:flex;justify-content:space-between;gap:12px;margin-top:10px;color:var(--dim);font-size:14px}
+  .err{display:none;color:var(--bad);margin-top:14px;font-size:14px;line-height:1.5}
+  @media(max-width:720px){.cards{grid-template-columns:1fr}h1{font-size:30px}}
 </style>
 </head>
 <body>
 <div class="glow"></div>
 <div class="wrap">
-  <div class="brand"><span class="dot"></span> Nyx</div>
+  <div class="brand"><img src="/logo.svg" width="26" height="26" alt=""> Nyx</div>
   <h1>Установка Nyx</h1>
-  <p class="lede">Nyx — это ИИ-помощник для вашего ПК, работающий полностью на устройстве. Он ставит и настраивает программы, чинит проблемы системы, делает умные снапшоты Windows и отвечает без интернета. Никаких аккаунтов и облака — модель живёт локально.</p>
+  <p class="lede">Nyx — ИИ-помощник для вашего ПК, работающий полностью на устройстве. Ставит и настраивает программы, чинит проблемы Windows и отвечает без интернета. Без аккаунтов и облака — модель живёт локально.</p>
 
-  <div class="grid">
+  <div class="cards">
     <div class="card">
       <h3>Ваш компьютер</h3>
-      <div id="hw"><div class="kv"><span>Определяем железо…</span><b>…</b></div></div>
+      <div id="hw"><div class="kv muted"><span>Определяем железо…</span><b>…</b></div></div>
     </div>
     <div class="card">
       <h3>Модель ИИ</h3>
-      <div class="model">
-        <div>
-          <div id="modelLabel" style="font-weight:600">Подбираем под ваш ПК…</div>
-          <div id="modelNote" class="foot" style="margin-top:4px"></div>
-        </div>
-        <span id="modelSize" class="pill">—</span>
-      </div>
-      <div style="margin-top:14px">
-        <select id="modelSelect"></select>
-      </div>
+      <div id="rec"><div class="muted">Подбираем под ваш ПК…</div></div>
+      <div id="others" style="display:none;margin-top:10px"></div>
+      <button id="toggleOthers" class="linkbtn" style="display:none">Показать другие модели</button>
     </div>
   </div>
 
-  <div class="steps">
-    <div>Приложение уже установлено на ваш компьютер</div>
-    <div>Осталось скачать модель ИИ (один раз, дальше работает офлайн)</div>
-    <div>Загрузка возобновляемая — можно закрыть и продолжить позже</div>
-  </div>
+  <div class="loc" id="loc"></div>
 
   <div class="actions">
-    <button id="install" class="btn">Установить и запустить</button>
-    <button id="open" class="btn secondary" style="display:none">Открыть Nyx</button>
+    <button id="install" class="btn" disabled>Установить и запустить</button>
+    <button id="open" class="btn ghost" style="display:none">Открыть Nyx</button>
+    <span class="muted" id="hint" style="font-size:13px"></span>
   </div>
 
-  <div id="progress" class="progress">
+  <div class="prog" id="prog">
     <div class="bar" id="bar"><i id="barFill"></i></div>
     <div class="pstat"><span id="pnote">Подготовка…</span><span id="ppct"></span></div>
   </div>
-  <div id="err" class="err"></div>
-
-  <div class="foot">Модель кэшируется на устройстве. Место: <span id="cacheDir">—</span></div>
+  <div class="err" id="err"></div>
 </div>
-<script src="/setup.js"></script>
-<script src="/brand.js"></script>
+<script>
+(function(){
+  var S=null, sel=null, showOthers=false, poll=null, editing=false;
+  function $(id){return document.getElementById(id)}
+  function api(p,m,b){return fetch(p,{method:m||"GET",headers:b?{"content-type":"application/json"}:undefined,body:b?JSON.stringify(b):undefined}).then(function(r){return r.json()}).catch(function(){return null})}
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(m){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]})}
+  function fmt(bytes){ if(bytes==null||isNaN(bytes)) return "—"; if(bytes>=1e9) return (bytes/1e9).toFixed(2)+" GB"; if(bytes>=1e6) return Math.round(bytes/1e6)+" MB"; return Math.max(0,Math.round(bytes/1e3))+" KB"; }
+  function sizeOf(c){ return (Number(c.approxGB)||0).toFixed(2)+" GB"; }
+  function catEntry(k){ return (S&&S.catalog||[]).find(function(c){return c.key===k})||null }
+
+  function load(){ api("/api/setup/status").then(function(d){ S=d||{}; if(!sel){ sel=(S.recommended&&S.recommended.key)||(S.catalog&&S.catalog[0]&&S.catalog[0].key)||null } render(); if(S.download&&S.download.phase==="downloading") startPoll(); }); }
+
+  function renderHW(){
+    var el=$("hw"); if(!el) return; var h=(S&&S.hardware)||{}; var rows=[];
+    if(h.cpu) rows.push(["Процессор",h.cpu+(h.cores?(" · "+h.cores+" ядер"):"")]);
+    if(h.ramGB) rows.push(["Память",h.ramGB+" ГБ"+(h.ramFreeGB?(" (свободно "+h.ramFreeGB+")"):"")]);
+    if(h.gpu&&h.gpu.length) rows.push(["Графика",h.gpu[0]]);
+    if(h.os) rows.push(["Система",String(h.os)]);
+    if(!rows.length){ el.innerHTML='<div class="kv muted"><span>Не удалось определить железо</span><b>—</b></div>'; return; }
+    el.innerHTML=rows.map(function(r){return '<div class="kv"><span class="muted">'+esc(r[0])+'</span><b>'+esc(r[1])+'</b></div>'}).join("");
+  }
+  function mcard(c,isRec){
+    return '<div class="mcard'+(c.key===sel?" sel":"")+'" data-k="'+esc(c.key)+'">'
+      +'<div class="top"><div><div class="nm">'+esc(c.label)+'</div>'
+      +'<div class="meta">от '+esc(c.ramMinGB)+' ГБ ОЗУ'+(c.available===false?' · недоступна':'')+'</div></div>'
+      +'<span class="size">'+sizeOf(c)+'</span></div>'
+      +(isRec?'<div style="margin-top:8px"><span class="badge">Рекомендуется для вашего ПК</span></div>':'')
+      +(c.note?'<div class="note">'+esc(c.note)+'</div>':'')
+      +'</div>';
+  }
+  function renderModels(){
+    var rec=$("rec"), oth=$("others"), tog=$("toggleOthers"); if(!rec) return;
+    var cat=(S&&S.catalog)||[]; var recKey=(S&&S.recommended&&S.recommended.key)||null;
+    var recEntry=catEntry(recKey)||cat[0];
+    if(!recEntry){ rec.innerHTML='<div class="muted">Модели недоступны</div>'; return; }
+    rec.innerHTML=mcard(recEntry,true);
+    var rest=cat.filter(function(c){return c.key!==recEntry.key});
+    tog.style.display=rest.length?"inline-block":"none";
+    tog.textContent=showOthers?"Скрыть другие модели":"Показать другие модели";
+    oth.style.display=showOthers?"block":"none";
+    oth.innerHTML=showOthers?rest.map(function(c){return mcard(c,false)}).join(""):"";
+    Array.prototype.forEach.call(document.querySelectorAll(".mcard"),function(node){ node.addEventListener("click",function(){ sel=node.getAttribute("data-k"); renderModels(); updateBtn(); }); });
+  }
+  function renderLoc(){
+    var loc=(S&&S.location)||{}; var dir=loc.cacheDir||"—"; var el=$("loc");
+    if(editing){
+      el.innerHTML='<div style="flex:1"><div class="t">Куда установить модель</div><div class="row"><input id="locIn" value="'+esc(dir==="—"?"":dir)+'" placeholder="C:\\Models\\Nyx"><button class="btn small" id="locSave">Сохранить</button><button class="btn small" id="locCancel">Отмена</button></div></div>';
+      $("locSave").addEventListener("click",function(){ saveLoc($("locIn").value); });
+      $("locCancel").addEventListener("click",function(){ editing=false; renderLoc(); });
+    } else {
+      el.innerHTML='<div><div class="t">Куда установить модель</div><div class="p">'+esc(dir)+'</div></div>'
+        +'<div class="row"><button class="btn small" id="locBrowse">Выбрать папку…</button><button class="btn small" id="locManual">Указать путь</button></div>';
+      $("locBrowse").addEventListener("click",doBrowse);
+      $("locManual").addEventListener("click",function(){ editing=true; renderLoc(); });
+    }
+  }
+  function doBrowse(){ api("/api/setup/browse","POST",{}).then(function(r){ if(!r) return; if(r.path){ saveLoc(r.path); return; } if(r.electron===false){ editing=true; renderLoc(); } }); }
+  function saveLoc(v){ if(!v||!v.trim()) return; api("/api/setup/location","POST",{path:v.trim()}).then(function(r){ editing=false; if(r&&r.error) alert(r.error); load(); }); }
+
+  function render(){
+    renderHW(); renderModels(); renderLoc(); updateBtn();
+    $("toggleOthers").onclick=function(){ showOthers=!showOthers; renderModels(); };
+    if(S&&S.ready){ $("install").style.display="none"; $("open").style.display="inline-block"; $("hint").textContent="Модель установлена и готова к работе."; }
+  }
+  function updateBtn(){ var b=$("install"); if(b) b.disabled=!(S&&sel); }
+
+  function showErr(msg){ var e=$("err"); e.style.display="block"; e.textContent=msg; }
+  function showProg(p){
+    var pr=$("prog"); pr.style.display="block"; var pct=p.pct||0; var bar=$("bar");
+    if(pct>0){ bar.classList.remove("indet"); $("barFill").style.width=pct+"%"; } else bar.classList.add("indet");
+    var line=p.note||"Загрузка модели"; if(p.targetBytes) line=(p.note||"Загрузка модели")+" · "+fmt(p.bytes||0)+" / "+fmt(p.targetBytes);
+    $("pnote").textContent=line; $("ppct").textContent=pct?(pct+"%"):"";
+  }
+  function done(){ $("install").style.display="none"; $("open").style.display="inline-block"; $("hint").textContent="Готово! Модель установлена."; }
+  function startPoll(){
+    if(poll) clearInterval(poll); showProg({pct:0,note:"Начинаем загрузку"});
+    poll=setInterval(function(){ api("/api/setup/progress").then(function(p){
+      if(!p) return;
+      if(p.phase==="downloading") showProg(p);
+      else if(p.phase==="ready"){ clearInterval(poll); poll=null; showProg({pct:100,note:"Готово"}); done(); }
+      else if(p.phase==="error"){ clearInterval(poll); poll=null; $("prog").style.display="none"; showErr(p.error||"Ошибка загрузки"); var b=$("install"); b.disabled=false; b.textContent="Повторить"; }
+    }); },1200);
+  }
+
+  document.addEventListener("click",function(e){
+    if(e.target&&e.target.id==="install"){ if(!sel) return; var b=$("install"); b.disabled=true; b.textContent="Загрузка…"; $("err").style.display="none"; api("/api/setup/download","POST",{model:sel}).then(function(r){ if(r&&r.error){ showErr(r.error); b.disabled=false; b.textContent="Установить и запустить"; return; } startPoll(); }); }
+    if(e.target&&e.target.id==="open"){ location.href="/app"; }
+  });
+
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",load); else load();
+})();
+</script>
 </body>
 </html>
