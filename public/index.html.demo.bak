@@ -571,7 +571,10 @@ function buildDemo(d){
       at(1400,function(){var a=$('#apv');if(a)a.classList.add('clicked')});
       at(1750,function(){youMsg(d.dm_approve)});
       var tb2;at(2100,function(){tb2=typingBubble()});
-      at(3100,function(){if(tb2)tb2.remove();var b2=nyxWrap();typeInto(b2,d.dm_a2,function(){var dn=document.createElement("div");dn.className="done";dn.innerHTML='<span class="ok">✓</span> Reversible · signed to <code>./evidence</code>';b2.appendChild(dn);});});at(6800,function(){buildDemo(d)});
+      at(3100,function(){if(tb2)tb2.remove();var b2=nyxWrap();
+        b2.innerHTML='<div class="done"><span class="ok">'+CK+'</span><span>'+esc(d.dm_a2)+'</span></div><toggle class="nyx-verify"><summary class="nyx-verify-chip"><span class="vok">✓</span> Verified<div class="nyx-verify-card"><div class="vrow"><b>What ran</b><span>Trimmed 14 startup apps, cleared 8.4 GB, closed 3 tasks</span></div><div class="vrow"><b>What changed</b><span>Startup list, temp cache, background processes</span></div><div class="vrow"><b>Reversible</b><span>Yes — one-click undo</span></div><div class="vrow"><b>Signed</b><span><code>a1f9…c7e2</code> · Ed25519</span></div></div></toggle>';
+      });
+      at(6800,function(){buildDemo(d)});
     });
   });
 }
