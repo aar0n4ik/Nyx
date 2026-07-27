@@ -1,6 +1,8 @@
 !include LogicLib.nsh
 !include nsDialogs.nsh
 
+!ifdef BUILD_UNINSTALLER
+
 Var ModelCheckbox
 Var ModelState
 Var DataCheckbox
@@ -68,3 +70,13 @@ FunctionEnd
   RMDir "$INSTDIR\..\NyxKeep"
   RMDir "$INSTDIR"
 !macroend
+
+!else
+
+!macro customUnWelcomePage
+!macroend
+
+!macro customRemoveFiles
+!macroend
+
+!endif
