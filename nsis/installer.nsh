@@ -11,7 +11,6 @@ Var DataState
 !macroend
 
 Function un.NyxCleanupShow
-  !insertmacro MUI_HEADER_TEXT "Удаление Nyx" "Выберите, что удалить вместе с приложением"
   nsDialogs::Create 1018
   Pop $0
   ${If} $0 == error
@@ -42,27 +41,27 @@ FunctionEnd
 !macro customRemoveFiles
   CreateDirectory "$INSTDIR\..\NyxKeep"
 
-  ${IfNot} $DataState == ${BST_CHECKED}
-    Rename "$INSTDIR\evidence"  "$INSTDIR\..\NyxKeep\evidence"
-    Rename "$INSTDIR\data"      "$INSTDIR\..\NyxKeep\data"
+  ${IfNot} $DataState == 1
+    Rename "$INSTDIR\evidence" "$INSTDIR\..\NyxKeep\evidence"
+    Rename "$INSTDIR\data" "$INSTDIR\..\NyxKeep\data"
     Rename "$INSTDIR\.poli.key" "$INSTDIR\..\NyxKeep\poli.key"
     Rename "$INSTDIR\.poli.pub" "$INSTDIR\..\NyxKeep\poli.pub"
   ${EndIf}
 
-  ${IfNot} $ModelState == ${BST_CHECKED}
+  ${IfNot} $ModelState == 1
     Rename "$INSTDIR\Models" "$INSTDIR\..\NyxKeep\Models"
   ${EndIf}
 
   RMDir /r "$INSTDIR"
   CreateDirectory "$INSTDIR"
 
-  ${IfNot} $DataState == ${BST_CHECKED}
+  ${IfNot} $DataState == 1
     Rename "$INSTDIR\..\NyxKeep\evidence" "$INSTDIR\evidence"
-    Rename "$INSTDIR\..\NyxKeep\data"     "$INSTDIR\data"
+    Rename "$INSTDIR\..\NyxKeep\data" "$INSTDIR\data"
     Rename "$INSTDIR\..\NyxKeep\poli.key" "$INSTDIR\.poli.key"
     Rename "$INSTDIR\..\NyxKeep\poli.pub" "$INSTDIR\.poli.pub"
   ${EndIf}
-  ${IfNot} $ModelState == ${BST_CHECKED}
+  ${IfNot} $ModelState == 1
     Rename "$INSTDIR\..\NyxKeep\Models" "$INSTDIR\Models"
   ${EndIf}
 
