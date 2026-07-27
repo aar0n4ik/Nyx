@@ -19,6 +19,7 @@ import { diagnose } from "./agent/diagnose.js"
 import { matchPlaybook } from "./agent/playbooks.js"
 import { validateScript } from "./shell/validator.js"
 import { operate } from "./agent/operate.js"
+import { semanticCache } from "./engine/semanticCache.js"
 
 // Strip any chain-of-thought the model may leak (e.g. Qwen3 <think>…</think>),
 // so the user only ever sees the final, clean answer.
@@ -158,6 +159,25 @@ export async function answer(query, { onToken, lang: forcedLang, history: convoH
   const fast = await fastPath(query, lang, guard, started)
   if (fast) { onToken?.(fast.text); return fast }
 
+  // 0a-cache) Nyx Engine — Semantic Answer Cache: instant, zero-compute repeats.
+  // Only stable knowledge/chat questions are cached; live actions & system
+  // telemetry are deliberately excluded (their answers depend on machine state).
+  const cacheable =
+    !COMPLAINT_RE.test(query) &&
+    !ACTION_INTENT_RE.test(query) &&
+    !SYSTEM_INTENT_RE.test(query) &&
+    !PC_CONTEXT_RE.test(query) &&
+    !SPECS_FAST_RE.test(query) &&
+    !UPTIME_FAST_RE.test(query)
+  if (cacheable) {
+    const cached = await semanticCache.find(query)
+    if (cached && cached.answer) {
+      onToken?.(cached.answer)
+      recordInference({ model: "nyx-cache", prompt: query, output: cached.answer, metrics: { cache: true, similarity: cached.score, ttftMs: 0, totalMs: Date.now() - started } })
+      return { text: cached.answer, lang, sources: cached.sources || [], injection: guard, mode: "cache", cache: { hit: true, similarity: cached.score }, ms: Date.now() - started }
+    }
+  }
+
   // 0a2) Deterministic software operator: explicit install/uninstall of a known
   // app ("скачай Стим", "установи Discord") -> ONE exact winget command. No model,
   // no browser. Fires only on a catalog hit so it never hijacks other requests.
@@ -235,6 +255,7 @@ export async function answer(query, { onToken, lang: forcedLang, history: convoH
         if (r.type === "proposal") return { ...base, mode: "snapshot-proposal", steps: r.steps }
         if (r.type === "done") return { ...base, mode: "snapshot-done", results: r.results }
         if (r.type === "action") return { ...base, mode: "action", ok: r.ok }
+        if (cacheable && text) semanticCache.add(query, text)
         return { ...base, mode: "brain" }
       }
     } catch (err) {
@@ -315,6 +336,7 @@ export async function answer(query, { onToken, lang: forcedLang, history: convoH
       }
       const modelName = provider.name === "qvac" ? qvacModelLabel() : provider.name
       recordInference({ model: modelName, prompt: query, output: out, metrics })
+      if (cacheable) semanticCache.add(query, out, ctx.map((c) => c.source))
       return { text: out, lang, sources: ctx.map((c) => c.source), injection: guard, mode: "llm", provider: provider.name, model: modelName, metrics, ms: Date.now() - started }
     }
   }
