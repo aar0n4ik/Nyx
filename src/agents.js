@@ -20,6 +20,7 @@ import { matchPlaybook } from "./agent/playbooks.js"
 import { validateScript } from "./shell/validator.js"
 import { operate } from "./agent/operate.js"
 import { semanticCache } from "./engine/semanticCache.js"
+import { optimizeContext } from "./engine/contextOptimizer.js"
 
 // Strip any chain-of-thought the model may leak (e.g. Qwen3 <think>…</think>),
 // so the user only ever sees the final, clean answer.
@@ -297,7 +298,11 @@ export async function answer(query, { onToken, lang: forcedLang, history: convoH
 
   // 2) Retrieve user notes (RAG, QVAC embeddings) and build grounded context.
   const ctx = await retrieve(query, 3)
-  const context = ctx.map((c) => sanitize(c.text)).join("\n---\n")
+  const rawContext = ctx.map((c) => sanitize(c.text)).join("\n---\n")
+  // Nyx Engine — Context Optimizer: model reads ONLY the query-relevant
+  // parts of the notes (semantic, same embedder as RAG). Cuts prefill on
+  // large contexts; on any doubt returns the full context unchanged.
+  const { context } = await optimizeContext(query, rawContext)
 
   // 3) Tier 2 — on-device QVAC SDK LLM. Unconstrained, with isolated per-chat
   // conversation memory. Falls back to the deterministic offline brain only
