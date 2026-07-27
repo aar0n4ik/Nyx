@@ -1,8 +1,9 @@
 # Nyx Engine — Benchmarks
 
-_Run: 2026-07-27 · Model: Llama-3.2-1B Q4_K_M (same model for baseline and Nyx) · CPU-only, 8GB RAM_
+_Model: Llama-3.2-1B Q4_K_M (same model for baseline and Nyx) · CPU-only, 8GB RAM · 2026-07-27_
 
-Same model, with and without the Nyx Engine, on a realistic 6-question session where 3 questions are reworded repeats.
+## Test 1 — Repeated / reworded questions + idle memory
+Realistic 6-question session where 3 questions are reworded repeats.
 
 | Metric | Baseline (no Nyx) | Nyx Engine | Improvement |
 |---|---|---|---|
@@ -11,8 +12,16 @@ Same model, with and without the Nyx Engine, on a realistic 6-question session w
 | Idle memory (after the session) | 1736MB | 542MB | **-69%** |
 | Peak memory (while working) | 1736MB | 1890MB | +9% |
 
+## Test 2 — New-answer speed (context compression + flash attention)
+One brand-new question answered from a large ~60-note context. Nyx keeps only the relevant notes and enables flash attention. Same model.
+
+| Metric | Baseline | Nyx Engine | Improvement |
+|---|---|---|---|
+| Input tokens read by the model | 1524 | 524 | **-66%** |
+| Answer time | 74.5s | 19.0s | **-75%** |
+| Answer correctness | correct (5433) | correct (5433) | no quality loss |
+
 ## Honest notes
-- The engine does **not** speed up generating a *new, unique* answer — same tok/s on the same model.
-- The wins come from (1) instant answers to repeated / reworded questions via an on-device semantic cache (the model isn't re-run — 0 tokens), and (2) auto-unloading the model from RAM when idle.
-- Peak memory is ~9% higher because the cache's small embedder is briefly loaded alongside the model; in exchange, idle memory drops 69%.
-- The semantic cache matched 2 of 3 reworded questions; the third fell below the similarity threshold and was correctly regenerated (conservative — no wrong-answer reuse).
+- Test 1 wins are instant repeats (semantic cache) + freed idle RAM (auto-unload); the raw tok/s of a brand-new answer is unchanged there.
+- Test 2 win: the model reads ~66% fewer input tokens, so prefill (the heavy CPU step) drops ~75% while the answer stays correct.
+- Compression only helps when the input is large, and it must keep the relevant chunk — Nyx scores relevance so the key info survives (validated above).
