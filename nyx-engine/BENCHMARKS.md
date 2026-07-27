@@ -15,4 +15,4 @@ Same model, with and without the Nyx Engine, on a realistic 6-question session w
 - The engine does **not** speed up generating a *new, unique* answer — same tok/s on the same model.
 - The wins come from (1) instant answers to repeated / reworded questions via an on-device semantic cache (the model isn't re-run — 0 tokens), and (2) auto-unloading the model from RAM when idle.
 - Peak memory is ~9% higher because the cache's small embedder is briefly loaded alongside the model; in exchange, idle memory drops 69%.
-- The semantic cache matched 2 of 3 reworded questions; the third fell below the similarity threshold and was correctly regenerated (conservative behavior — no wrong-answer reuse).
+- The semantic cache matched 2 of 3 reworded questions; the third fell below the similarity threshold and was correctly regenerated (conservative — no wrong-answer reuse).
