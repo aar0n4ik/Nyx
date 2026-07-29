@@ -4,7 +4,7 @@
 import { collectSpecs } from "../system/specs.js"
 import { modelStatus } from "../qvac.js"
 import { existsSync, readdirSync, statSync, readFileSync, writeFileSync, mkdirSync } from "node:fs"
-import { homedir } from "node:os"
+import { homedir, freemem, totalmem, cpus } from "node:os"
 import { join } from "node:path"
 import { MODELS_DIR } from "../paths.js"
 
@@ -91,8 +91,8 @@ export function progress() {
 }
 
 export async function status() {
-  const specs = await collectSpecs().catch(() => ({}))
-  const rec = pickForRam(specs.ramGB)
+  const hw = quickHW()
+  const rec = pickForRam(hw.ramGB)
   const ms = modelStatus()
   return {
     ready: ms.ready,
@@ -100,19 +100,42 @@ export async function status() {
     cached: ms.cached,
     cachedModels: ms.cachedModels,
     cacheDir: cacheDir(),
-    hardware: {
-      cpu: specs.cpu || null,
-      cores: specs.cores || null,
-      ramGB: specs.ramGB || null,
-      ramFreeGB: specs.ramFreeGB || null,
-      gpu: Array.isArray(specs.gpu) ? specs.gpu : (specs.gpu ? [specs.gpu] : []),
-      os: specs.osBuild || specs.platform || null,
-      platform: specs.platform || null,
-    },
+    hardware: hw,
+    hwDetailed: false,
     recommended: { key: rec.key, label: rec.label, approxGB: rec.approxGB, ramMinGB: rec.ramMinGB, note: rec.note },
-    catalog: CATALOG.map((c) => ({ key: c.key, label: c.label, approxGB: c.approxGB, ramMinGB: c.ramMinGB, note: c.note, available: !!resolveConst(c) })),
+    catalog: CATALOG.map((c) => ({ key: c.key, label: c.label, approxGB: c.approxGB, ramMinGB: c.ramMinGB, note: c.note, available: true, sdkExposed: sdk === null ? null : !!resolveConst(c) })),
     location: getLocation(),
     download: progress(),
+  }
+}
+
+function quickHW() {
+  const cs = cpus() || []
+  const ramGB = Math.round((totalmem() / 1e9) * 10) / 10
+  const ramFreeGB = Math.round((freemem() / 1e9) * 10) / 10
+  return {
+    cpu: cs[0] && cs[0].model ? String(cs[0].model).trim() : null,
+    cores: cs.length || null,
+    ramGB: ramGB || null,
+    ramFreeGB: ramFreeGB || null,
+    gpu: [],
+    os: process.platform === "win32" ? "Windows" : process.platform,
+    platform: process.platform,
+    detailed: false,
+  }
+}
+
+export async function hardware() {
+  const specs = await collectSpecs().catch(() => ({}))
+  return {
+    cpu: specs.cpu || null,
+    cores: specs.cores || null,
+    ramGB: specs.ramGB || null,
+    ramFreeGB: specs.ramFreeGB || null,
+    gpu: Array.isArray(specs.gpu) ? specs.gpu : (specs.gpu ? [specs.gpu] : []),
+    os: specs.osBuild || specs.platform || null,
+    platform: specs.platform || null,
+    detailed: true,
   }
 }
 
@@ -142,9 +165,46 @@ export async function startDownload(modelKey) {
 
   ;(async () => {
     const friendly = (raw) => {
-      const s = String(raw || "")
-      if (/rpc|timed out|timeout|worker|initializ/i.test(s)) {
-        return "Не удалось запустить движок модели на этом ПК. Чаще всего помогает: 1) установить Microsoft Visual C++ Redistributable x64 (aka.ms/vs/17/release/vc_redist.x64.exe); 2) обновить драйвер видеокарты; затем перезапустить Nyx. Технические детали: " + s
+      const s = String(raw || "").trim()
+      const low = s.toLowerCase()
+      const freeGB = Math.round((freemem() / 1e9) * 10) / 10
+      const needGB = entry && entry.ramMinGB ? entry.ramMinGB : null
+      if (/rpc|timed out|timeout|worker|initializ|spawn|exited|sigabrt|abort|assertion|crash/.test(low)) {
+        const L = []
+        L.push("Nyx не смог запустить локальный движок модели на этом компьютере.")
+        L.push("")
+        L.push("Что произошло: фоновый процесс, который запускает модель, не ответил за 30 секунд и, скорее всего, аварийно закрылся сразу при старте. Сама модель скачалась нормально — проблема именно в запуске движка.")
+        L.push("")
+        L.push("Самые частые причины — начни с первой:")
+        if (needGB && freeGB && freeGB + 0.3 < needGB) {
+          L.push("1. Не хватает свободной оперативной памяти. Этой модели нужно примерно " + needGB + " ГБ, а сейчас свободно только около " + freeGB + " ГБ. Закрой тяжёлые программы (браузер с кучей вкладок, игры) или выбери модель поменьше на этом экране, затем нажми «Повторить».")
+        } else {
+          L.push("1. Возможно, не хватило свободной оперативной памяти при загрузке модели (сейчас свободно около " + (freeGB || "?") + " ГБ). Закрой тяжёлые программы или выбери модель поменьше и нажми «Повторить».")
+        }
+        L.push("2. Не установлен системный компонент Microsoft Visual C++ — без него движок (он написан на C++) не стартует. Скачай и установи: https://aka.ms/vs/17/release/vc_redist.x64.exe, затем перезапусти Nyx.")
+        L.push("3. Устаревший драйвер видеокарты. Обнови драйвер с сайта Intel / AMD / NVIDIA, перезагрузи компьютер и открой Nyx заново.")
+        L.push("4. Антивирус или Windows SmartScreen заблокировали фоновый процесс Nyx. Добавь Nyx в исключения и попробуй снова.")
+        L.push("")
+        L.push("Если ничего из этого не помогло — покажи разработчику эту строку:")
+        L.push(s || "(пусто)")
+        return L.join("
+")
+      }
+      if (/no space|enospc|disk full|not enough space/.test(low)) {
+        return "Не хватает места на диске, чтобы сохранить модель.
+
+Освободи место или укажи папку на другом диске в поле «Папка для модели» выше, затем нажми «Повторить».
+
+Строка для разработчика:
+" + s
+      }
+      if (/network|fetch failed|enotfound|econnrefused|econnreset|dns|getaddrinfo/.test(low)) {
+        return "Не удалось скачать модель — похоже на проблему с интернетом.
+
+Проверь подключение и нажми «Повторить». Модель качается один раз, дальше Nyx работает офлайн.
+
+Строка для разработчика:
+" + s
       }
       return s
     }

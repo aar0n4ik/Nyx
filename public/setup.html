@@ -49,7 +49,7 @@ h1{font-size:27px;letter-spacing:-.03em;margin:0 0 6px}
 .loc input:focus{border-color:var(--accent)}
 .hint{margin-top:11px;font-size:12.5px;color:var(--muted);line-height:1.45}
 .err{background:#241214;border:1px solid #4a1f22;color:#ffb0b0;border-radius:13px;padding:14px 16px;
- font-size:13.5px;line-height:1.55;margin-bottom:16px}
+ font-size:13.5px;line-height:1.55;margin-bottom:16px;white-space:pre-line}
 .prog{margin-bottom:18px}
 .pbar{height:10px;background:var(--cell);border:1px solid var(--line);border-radius:20px;overflow:hidden}
 #pfill{height:100%;width:0;background:var(--accent);border-radius:20px;transition:width .4s ease}
@@ -129,7 +129,7 @@ h1{font-size:27px;letter-spacing:-.03em;margin:0 0 6px}
     var lowRam=m.ramMinGB && ram() && m.ramMinGB>ram();
     var badge=recommended?'<div class="mbadge">Рекомендуется для вашего ПК</div>':'';
     var meta=(m.ramMinGB?("Нужно "+m.ramMinGB+" GB ОЗУ · "):"")+esc(m.note||"");
-    if(off) meta+=' · недоступно в этой сборке';
+    /* убрали ложную пометку «недоступно»: модель докачивается движком при установке */
     var warn=lowRam?'<div class="mmeta mwarn">Может не хватить оперативной памяти на вашем ПК</div>':'';
     return '<label class="mcard'+(sel?' sel':'')+(off?' off':'')+'" data-key="'+esc(m.key)+'">'
       +badge
@@ -204,14 +204,27 @@ h1{font-size:27px;letter-spacing:-.03em;margin:0 0 6px}
     });
   }
 
+  function hwSkeleton(){
+    var cells=["Процессор","Ядра","Память","Видеокарта","Система"];
+    $("#hw").innerHTML=cells.map(function(k){return '<div class="hwcell"><div class="k">'+k+'</div><div class="v" style="opacity:.5">определяем…</div></div>'}).join("");
+    $("#rec").innerHTML='<div class="mcard" style="opacity:.6;cursor:default"><div class="mmeta">Подбираем лучшую модель для вашего ПК…</div></div>';
+    var b=$("#install"); if(b){ b.textContent="Определяем ваш ПК…"; b.disabled=true; }
+  }
   function load(){
+    hwSkeleton();
     api("/api/setup/status").then(function(d){
-      if(!d){showErr("Не удалось получить статус установки. Перезапустите Nyx.");return}
+      if(!d){showErr("Не удалось получить статус установки. Перезапустите Nyx.");var eb=$("#install");if(eb)eb.textContent="Скачать и установить";return}
       statusData=d;
       renderHW(d.hardware);
+      if(d.hwDetailed===false){
+        var note=document.createElement("div"); note.id="hwnote"; note.className="hint"; note.textContent="Уточняем полные характеристики…";
+        var hwEl=$("#hw"); if(hwEl&&hwEl.parentNode) hwEl.parentNode.appendChild(note);
+        api("/api/setup/hardware").then(function(h){ if(h){ statusData.hardware=h; renderHW(h); } var n=document.getElementById("hwnote"); if(n) n.remove(); }).catch(function(){ var n=document.getElementById("hwnote"); if(n) n.remove(); });
+      }
       if(d.recommended&&d.recommended.key) selectedKey=d.recommended.key;
       renderModels();
       renderLoc(d.location);
+      var ib=$("#install"); if(ib) ib.textContent="Скачать и установить";
       if(d.ready){
         $("#install").classList.add("hidden");
         $("#open").classList.remove("hidden");

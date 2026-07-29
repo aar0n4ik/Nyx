@@ -217,6 +217,10 @@ createServer(async (req, res) => {
       const S = await import("./src/setup/installer.js")
       return json(res, 200, await S.status())
     }
+    if (req.method === "GET" && path === "/api/setup/hardware") {
+      const S = await import("./src/setup/installer.js")
+      return json(res, 200, await S.hardware())
+    }
     if (req.method === "POST" && path === "/api/setup/download") {
       const body = await readBody(req)
       const S = await import("./src/setup/installer.js")
