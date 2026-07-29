@@ -61,7 +61,7 @@ for (const r of rows) console.log(`${r[0]}: ${r[1]} -> ${r[2]} (${r[3]})`);
 
 const stamp = new Date().toISOString().slice(0, 16).replace("T", " ");
 let md = `# Nyx Engine - Benchmarks\n\n`;
-md += `_Прогон: ${stamp} UTC · модель: Llama-3.2-1B Q4_K_M (одна и та же для baseline и Nyx) · CPU-only · maxTokens=${config.maxTokens}_\n\n`;
+md += `_Прогон: ${stamp} UTC · модель: Qwen3-4B-Instruct-2507 Q4_K_M (одна и та же для baseline и Nyx) · CPU-only · maxTokens=${config.maxTokens}_\n\n`;
 md += `Сравнение ОДНОЙ модели с движком Nyx и без него на реалистичной сессии из 6 вопросов (3 - перефразированные повторы).\n\n`;
 md += `| Метрика | Baseline (без Nyx) | Nyx Engine | Улучшение |\n|---|---|---|---|\n`;
 for (const r of rows) md += `| ${r[0]} | ${r[1]} | ${r[2]} | **${r[3]}** |\n`;

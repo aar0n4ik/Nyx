@@ -143,7 +143,26 @@ const CONFIRM_HINT = {
   fr: "Appuie sur Exécuter pour lancer. Rien ne se passe sans ta confirmation.",
 }
 
-export async function answer(query, { onToken, lang: forcedLang, history: convoHistory = [] } = {}) {
+// --- Online mode strings: hint injected into the system prompt when we ground
+// the local model on fresh web results, and the header for the model-less raw view.
+const ONLINE_HINT = {
+  en: "You are in ONLINE mode. Fresh web results are provided in the context above. Answer using them, be specific and current, and end with a 'Sources:' line listing the result URLs you used.",
+  ru: "Ты в ОНЛАЙН-режиме. Выше в контексте — свежие результаты из интернета. Отвечай по ним, конкретно и актуально, а в конце добавь строку «Источники:» со ссылками, которые использовал.",
+  uk: "Ти в ОНЛАЙН-режимі. Вище в контексті — свіжі результати з інтернету. Відповідай за ними, конкретно й актуально, а в кінці додай рядок «Джерела:» з посиланнями, які використав.",
+  es: "Estás en modo ONLINE. Arriba tienes resultados web recientes. Responde con ellos, de forma concreta y actual, y termina con una línea 'Fuentes:' con los enlaces usados.",
+  de: "Du bist im ONLINE-Modus. Oben stehen aktuelle Web-Ergebnisse. Antworte damit, konkret und aktuell, und schließe mit einer Zeile 'Quellen:' mit den genutzten Links ab.",
+  fr: "Tu es en mode ONLINE. Ci-dessus, des résultats web récents. Réponds avec eux, de façon concrète et actuelle, et termine par une ligne 'Sources :' avec les liens utilisés.",
+}
+const ONLINE_HEAD = {
+  en: "Here's what I found on the web just now:",
+  ru: "Вот что я нашёл в интернете прямо сейчас:",
+  uk: "Ось що я знайшов в інтернеті прямо зараз:",
+  es: "Esto es lo que encontré en la web ahora mismo:",
+  de: "Das habe ich gerade im Web gefunden:",
+  fr: "Voici ce que j'ai trouvé sur le web à l'instant :",
+}
+
+export async function answer(query, { onToken, lang: forcedLang, history: convoHistory = [], web = null } = {}) {
   const started = Date.now()
   const lang = forcedLang || detectLang(query)
   const guard = scan(query)
@@ -159,6 +178,40 @@ export async function answer(query, { onToken, lang: forcedLang, history: convoH
   // 0a) Tier 1 — Automated Fast-Path Router: routine/low-level ops bypass the LLM.
   const fast = await fastPath(query, lang, guard, started)
   if (fast) { onToken?.(fast.text); return fast }
+
+  // 0a-online) ONLINE MODE (opt-in). By the time we get here, the server already
+  // sent ONLY the current query to the search endpoint — chat history and notes
+  // never touched the network. We ground the LOCAL model on the fresh web
+  // context and answer. This branch sits BEFORE the semantic cache on purpose,
+  // so a stale cached answer can never shadow live results.
+  if (web && web.online && web.context) {
+    const sources = Array.isArray(web.sources) ? web.sources : []
+    const oProvider = await pickProvider()
+    if (oProvider.name !== "fallback") {
+      const oSystem = systemPrompt(lang, web.context) + "\n" + (ONLINE_HINT[lang] || ONLINE_HINT.en)
+      const oPrior = (convoHistory || [])
+        .filter((m) => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string" && m.content.trim())
+        .slice(-6)
+        .map((m) => ({ role: m.role, content: m.content }))
+      const oMessages = [{ role: "system", content: oSystem }, ...oPrior, { role: "user", content: query }]
+      let oOut = ""
+      for await (const tok of generate(oMessages)) { oOut += tok; onToken?.(tok) }
+      oOut = stripThink(oOut.trim())
+      if (oOut) {
+        recordInference({ model: "nyx-online", prompt: query, output: oOut })
+        return { text: oOut, lang, sources, injection: guard, mode: "online", ms: Date.now() - started }
+      }
+    }
+    // No local model loaded yet — still deliver value: the fresh top results, raw.
+    const oHead = ONLINE_HEAD[lang] || ONLINE_HEAD.en
+    const oList = (web.results || []).slice(0, 5)
+      .map((r, i) => (i + 1) + ". " + r.title + "\n" + r.url + (r.snippet ? "\n" + r.snippet : ""))
+      .join("\n\n")
+    const oText = oHead + "\n\n" + oList
+    onToken?.(oText)
+    recordInference({ model: "nyx-online-raw", prompt: query, output: "online-raw" })
+    return { text: oText, lang, sources, injection: guard, mode: "online-raw", ms: Date.now() - started }
+  }
 
   // 0a-cache) Nyx Engine — Semantic Answer Cache: instant, zero-compute repeats.
   // Only stable knowledge/chat questions are cached; live actions & system

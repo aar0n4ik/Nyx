@@ -1,6 +1,6 @@
 export const config = {
   models: {
-    small: "./models/Llama-3.2-1B-Instruct-Q4_K_M.gguf",
+    small: "./models/Qwen_Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
     big:   "./models/Llama-3.2-3B-Instruct-Q4_K_M.gguf",
   },
   gpuLayers: 0,

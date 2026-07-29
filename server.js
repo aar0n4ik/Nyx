@@ -120,8 +120,18 @@ createServer(async (req, res) => {
 
     // --- Chat (local brain / LLM) ---
     if (req.method === "POST" && path === "/api/chat") {
-      const { q, lang, history } = await readBody(req)
-      const result = await answer(q || "", { lang, history })
+      const { q, lang, history, online } = await readBody(req)
+      let web = null
+      if (online && q) {
+        try {
+          const { webSearch } = await import("./src/web/search.js")
+          const r = await webSearch(String(q), { lang })
+          web = { online: true, context: r.context, sources: r.sources, results: r.results, error: r.error || null }
+        } catch (e) {
+          web = { online: true, context: "", sources: [], results: [], error: String((e && e.message) || e) }
+        }
+      }
+      const result = await answer(q || "", { lang, history, web })
       import("./src/accounts/ledger.js").then((m) => m.record("chat", {})).catch(() => {}); return json(res, 200, result)
     }
 

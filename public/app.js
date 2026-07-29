@@ -394,7 +394,8 @@ async function sendText(text) {
     // Per-chat isolated memory: send only THIS chat's prior turns (no cross-chat leak).
     const hist = c.msgs.slice(0, -1).filter((m) => m.text && !m.widget).map((m) => ({ role: m.role === "user" ? "user" : "assistant", content: cleanOut(m.text) })).slice(-8)
     // Tell the backend which language to answer in (the one chosen on the site).
-    const body = { q: text, chatId: c.id, history: hist }
+    var nyxOnline = false; try { nyxOnline = localStorage.getItem("nyx.online") === "1" } catch (e) {}
+    const body = { q: text, chatId: c.id, history: hist, online: nyxOnline }
     const r = await fetch("/api/chat", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) }).then((x) => x.json())
     tp.remove()
     const msg = { role: "bot", text: cleanOut(r.text || r.error || "…"), sources: r.sources, mode: r.mode }
