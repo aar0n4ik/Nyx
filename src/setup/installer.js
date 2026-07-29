@@ -3,7 +3,7 @@
 // report honest progress from real bytes on disk. No fake progress, no cloud.
 import { collectSpecs } from "../system/specs.js"
 import { modelStatus } from "../qvac.js"
-import { existsSync, readdirSync, statSync, readFileSync, writeFileSync, mkdirSync } from "node:fs"
+import { existsSync, readdirSync, statSync, readFileSync, writeFileSync, mkdirSync, statfsSync, appendFileSync } from "node:fs"
 import { homedir, freemem, totalmem, cpus } from "node:os"
 import { join } from "node:path"
 import { MODELS_DIR } from "../paths.js"
@@ -61,6 +61,108 @@ function cacheBytes() {
   }
   if (existsSync(dir)) walk(dir, 0)
   return total
+}
+
+function cacheFileNames() {
+  const dir = cacheDir()
+  const names = []
+  const walk = (d, depth) => {
+    if (depth > 3) return
+    let list = []
+    try { list = readdirSync(d) } catch { return }
+    for (const name of list) {
+      const p = join(d, name)
+      let st
+      try { st = statSync(p) } catch { continue }
+      if (st.isDirectory()) walk(p, depth + 1)
+      else names.push(name)
+    }
+  }
+  if (existsSync(dir)) walk(dir, 0)
+  return names
+}
+
+// Runs REAL checks on this machine to find the root cause of an engine-start
+// failure — never guesses. Returns {full, checks[], problems[]}.
+function diagnose(entry, err) {
+  const raw = String((err && (err.stack || err.message)) || err || "").trim()
+  const causeObj = err && err.cause ? err.cause : null
+  const cause = causeObj ? String(causeObj.message || causeObj) : ""
+  const full = (raw + (cause ? "\nПричина (cause): " + cause : "")).trim()
+  const low = full.toLowerCase()
+  const checks = []
+  const problems = []
+
+  // 0. Network — explicit in the error text, no probe needed.
+  if (/network|fetch failed|enotfound|econnrefused|econnreset|\bdns\b|getaddrinfo|socket hang|etimedout/.test(low)) {
+    problems.push({ p: 0, title: "Оборвалась сеть при скачивании модели", fix: "Модель ещё не докачалась, а соединение пропало. Проверь интернет и нажми «Повторить». Качается один раз — дальше Nyx работает офлайн." })
+  }
+
+  // 1. Free RAM vs what the model needs (live).
+  const freeGB = Math.round((freemem() / 1e9) * 10) / 10
+  const totGB = Math.round((totalmem() / 1e9) * 10) / 10
+  const needGB = entry && entry.ramMinGB ? entry.ramMinGB : null
+  const ramOk = !needGB || freeGB + 0.3 >= needGB
+  checks.push({ label: "Свободная оперативная память", ok: ramOk, detail: "свободно ~" + freeGB + " ГБ из " + totGB + " ГБ" + (needGB ? ", модели нужно ~" + needGB + " ГБ" : "") })
+  if (!ramOk) problems.push({ p: 1, title: "Не хватает свободной оперативной памяти", fix: "Сейчас свободно только ~" + freeGB + " ГБ, а модели нужно ~" + needGB + " ГБ — движок не смог загрузить веса и закрылся. Закрой тяжёлые программы (браузер с кучей вкладок, игры) или выбери модель поменьше на этом экране и нажми «Повторить»." })
+
+  // 2. Visual C++ runtime — actually look in System32.
+  if (process.platform === "win32") {
+    const sysDir = process.env.SystemRoot ? join(process.env.SystemRoot, "System32") : "C:\\Windows\\System32"
+    const vcNeeded = ["vcruntime140.dll", "vcruntime140_1.dll", "msvcp140.dll"]
+    const vcMissing = vcNeeded.filter((f) => !existsSync(join(sysDir, f)))
+    const vcOk = vcMissing.length === 0
+    checks.push({ label: "Microsoft Visual C++ Runtime", ok: vcOk, detail: vcOk ? "установлен" : "не найдено: " + vcMissing.join(", ") })
+    if (!vcOk) problems.push({ p: 2, title: "Не установлен Microsoft Visual C++ Runtime", fix: "Движок написан на C++ и без этого системного компонента не стартует. Я проверил папку System32 и не нашёл там " + vcMissing.join(", ") + ". Установи https://aka.ms/vs/17/release/vc_redist.x64.exe и перезапусти Nyx." })
+  }
+
+  // 3. Free disk space in the model folder (live).
+  let freeDiskGB = null
+  try { const st = statfsSync(cacheDir()); freeDiskGB = Math.round((Number(st.bavail) * Number(st.bsize) / 1e9) * 10) / 10 } catch (e) {}
+  const needDisk = entry && entry.approxGB ? entry.approxGB : null
+  const diskOk = freeDiskGB === null || !needDisk || freeDiskGB >= needDisk + 0.5
+  checks.push({ label: "Свободное место на диске", ok: freeDiskGB === null ? null : diskOk, detail: freeDiskGB === null ? "не удалось измерить" : "свободно ~" + freeDiskGB + " ГБ" + (needDisk ? ", нужно ~" + needDisk + " ГБ" : "") })
+  if (!diskOk && freeDiskGB !== null) problems.push({ p: 3, title: "Мало места на диске", fix: "Свободно только ~" + freeDiskGB + " ГБ. Освободи место или укажи папку на другом диске в поле «Папка для модели» и нажми «Повторить»." })
+
+  // 4. Is the downloaded model file actually complete? (live)
+  const onDisk = cacheBytes()
+  const target = entry && entry.approxGB ? Math.round(entry.approxGB * 1e9) : 0
+  const partials = cacheFileNames().filter((n) => /\.(part|download|tmp)$/i.test(n))
+  const incomplete = target > 0 && onDisk > 0 && onDisk < target * 0.85
+  const fileOk = !(partials.length || incomplete)
+  checks.push({ label: "Файл модели на диске", ok: onDisk > 0 ? fileOk : null, detail: onDisk > 0 ? "на диске ~" + (Math.round(onDisk / 1e8) / 10) + " ГБ" + (partials.length ? ", есть недокачанные части" : incomplete ? ", файл меньше ожидаемого" : "") : "ещё не скачан" })
+  if (!fileOk && onDisk > 0) problems.push({ p: 4, title: "Файл модели скачан не полностью", fix: "Загрузка прервалась, файл битый. Удали папку модели (" + cacheDir() + ") и нажми «Повторить» — Nyx перекачает её заново." })
+
+  // 5. GPU / Vulkan — only if the crash text points at the GPU.
+  if (process.platform === "win32" && /vulkan|gpu|device|vk_|d3d|directx|driver|видеокар/.test(low)) {
+    const sysDir = process.env.SystemRoot ? join(process.env.SystemRoot, "System32") : "C:\\Windows\\System32"
+    const vkOk = existsSync(join(sysDir, "vulkan-1.dll"))
+    checks.push({ label: "Vulkan / видеодрайвер", ok: vkOk, detail: vkOk ? "vulkan-1.dll на месте" : "vulkan-1.dll не найден" })
+    if (!vkOk) problems.push({ p: 5, title: "Проблема с видеодрайвером", fix: "Движок пытался задействовать видеокарту, а компонент драйвера (vulkan-1.dll) не найден. Обнови драйвер с сайта AMD / Intel / NVIDIA и перезагрузи компьютер." })
+  }
+
+  problems.sort((a, b) => a.p - b.p)
+  return { full, checks, problems }
+}
+
+// Persist a real, timestamped diagnostic log so failures are traceable.
+function writeErrorLog(entry, d) {
+  try {
+    const dir = cacheDir()
+    mkdirSync(dir, { recursive: true })
+    const file = join(dir, "nyx-engine-errors.log")
+    const lines = []
+    lines.push("==== " + new Date().toISOString() + " ====")
+    lines.push("Модель: " + ((entry && entry.label) || "?"))
+    lines.push("Проверки:")
+    d.checks.forEach((c) => lines.push("  [" + (c.ok === false ? "FAIL" : c.ok === true ? "OK" : "n/a") + "] " + c.label + ": " + c.detail))
+    lines.push("Итог: " + (d.problems.length ? d.problems.map((p) => p.title).join("; ") : "явная причина не найдена"))
+    lines.push("Сырая ошибка:")
+    lines.push(d.full || "(пусто)")
+    lines.push("")
+    appendFileSync(file, lines.join("\n") + "\n", "utf8")
+    return file
+  } catch (e) { return null }
 }
 
 function pickForRam(ramGB) {
@@ -164,49 +266,37 @@ export async function startDownload(modelKey) {
   if (poller.unref) poller.unref()
 
   ;(async () => {
-    const friendly = (raw) => {
-      const s = String(raw || "").trim()
-      const low = s.toLowerCase()
-      const freeGB = Math.round((freemem() / 1e9) * 10) / 10
-      const needGB = entry && entry.ramMinGB ? entry.ramMinGB : null
-      if (/rpc|timed out|timeout|worker|initializ|spawn|exited|sigabrt|abort|assertion|crash/.test(low)) {
-        const L = []
-        L.push("Nyx не смог запустить локальный движок модели на этом компьютере.")
+    // Honest, self-diagnosing error text: runs REAL checks on this machine,
+    // names the root cause it found, lists what it checked, and logs details.
+    const friendly = (err) => {
+      const d = diagnose(entry, err)
+      const logPath = writeErrorLog(entry, d)
+      const L = []
+      L.push("Nyx не смог запустить локальный движок модели на этом компьютере.")
+      L.push("")
+      if (d.problems.length) {
+        const root = d.problems[0]
+        L.push("Я сам проверил систему и нашёл причину:")
         L.push("")
-        L.push("Что произошло: фоновый процесс, который запускает модель, не ответил за 30 секунд и, скорее всего, аварийно закрылся сразу при старте. Сама модель скачалась нормально — проблема именно в запуске движка.")
-        L.push("")
-        L.push("Самые частые причины — начни с первой:")
-        if (needGB && freeGB && freeGB + 0.3 < needGB) {
-          L.push("1. Не хватает свободной оперативной памяти. Этой модели нужно примерно " + needGB + " ГБ, а сейчас свободно только около " + freeGB + " ГБ. Закрой тяжёлые программы (браузер с кучей вкладок, игры) или выбери модель поменьше на этом экране, затем нажми «Повторить».")
-        } else {
-          L.push("1. Возможно, не хватило свободной оперативной памяти при загрузке модели (сейчас свободно около " + (freeGB || "?") + " ГБ). Закрой тяжёлые программы или выбери модель поменьше и нажми «Повторить».")
+        L.push("→ " + root.title)
+        L.push(root.fix)
+        if (d.problems.length > 1) {
+          L.push("")
+          L.push("Возможно, мешает ещё:")
+          d.problems.slice(1).forEach((p) => L.push("• " + p.title + " — " + p.fix))
         }
-        L.push("2. Не установлен системный компонент Microsoft Visual C++ — без него движок (он написан на C++) не стартует. Скачай и установи: https://aka.ms/vs/17/release/vc_redist.x64.exe, затем перезапусти Nyx.")
-        L.push("3. Устаревший драйвер видеокарты. Обнови драйвер с сайта Intel / AMD / NVIDIA, перезагрузи компьютер и открой Nyx заново.")
-        L.push("4. Антивирус или Windows SmartScreen заблокировали фоновый процесс Nyx. Добавь Nyx в исключения и попробуй снова.")
-        L.push("")
-        L.push("Если ничего из этого не помогло — покажи разработчику эту строку:")
-        L.push(s || "(пусто)")
-        return L.join("
-")
+      } else {
+        L.push("Я сам прогнал проверки на твоём ПК — оперативная память, Visual C++, место на диске и файл модели в порядке. Значит, движок аварийно закрылся при старте по внутренней причине, а не из-за очевидной нехватки чего-то.")
+        L.push("Попробуй по порядку: перезапусти Nyx; если не поможет — обнови драйвер видеокарты и перезагрузи компьютер; затем переустанови модель.")
       }
-      if (/no space|enospc|disk full|not enough space/.test(low)) {
-        return "Не хватает места на диске, чтобы сохранить модель.
-
-Освободи место или укажи папку на другом диске в поле «Папка для модели» выше, затем нажми «Повторить».
-
-Строка для разработчика:
-" + s
-      }
-      if (/network|fetch failed|enotfound|econnrefused|econnreset|dns|getaddrinfo/.test(low)) {
-        return "Не удалось скачать модель — похоже на проблему с интернетом.
-
-Проверь подключение и нажми «Повторить». Модель качается один раз, дальше Nyx работает офлайн.
-
-Строка для разработчика:
-" + s
-      }
-      return s
+      L.push("")
+      L.push("Что я проверил прямо сейчас:")
+      d.checks.forEach((c) => L.push((c.ok === false ? "✗ " : c.ok === true ? "✓ " : "• ") + c.label + ": " + c.detail))
+      L.push("")
+      L.push("Технические детали (покажи разработчику):")
+      L.push(d.full || "(пусто)")
+      if (logPath) { L.push(""); L.push("Полный лог со всеми проверками сохранён здесь: " + logPath) }
+      return L.join("\n")
     }
     const attempt = async () => {
       try { return await sdk.loadModel({ modelSrc, modelType }) }
@@ -223,7 +313,7 @@ export async function startDownload(modelKey) {
     }
     try {
       if (lastErr) {
-        state.phase = "error"; state.error = friendly((lastErr && lastErr.message) || lastErr)
+        state.phase = "error"; state.error = friendly(lastErr)
       } else {
         state.phase = "ready"; state.pct = 100; state.bytes = cacheBytes(); state.note = "Готово"
         try { if (modelId) await sdk.unloadModel({ modelId }) } catch {}
