@@ -1,3 +1,12 @@
 /* Nyx app polish — neutral flat layer (gradients removed on purpose) */
 .empty .hi img,.side .brand .logo,.msg .av img{image-rendering:auto}
 @media (prefers-reduced-motion:reduce){.empty,.msg{animation:none}}
+
+/* NYX_LOGO_FIX: логотип теперь учитывает фон/тему как на сайте
+   (белый на тёмной теме, чёрный на светлой) — больше не «весь белый». */
+:root{--logo-invert:1}
+[data-theme="dark"]{--logo-invert:0}
+.side .brand .logo,
+.side .brand .nyx-logo,
+.empty .hi img,
+.msg.bot .av img{filter:invert(var(--logo-invert))}
